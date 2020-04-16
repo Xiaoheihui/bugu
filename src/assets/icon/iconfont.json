@@ -1,0 +1,72 @@
+{
+  "id": "1760476",
+  "name": "no name",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1346584",
+      "name": "会话",
+      "font_class": "session_B",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
+      "icon_id": "9696451",
+      "name": "添加好友",
+      "font_class": "addFriend_B",
+      "unicode": "e605",
+      "unicode_decimal": 58885
+    },
+    {
+      "icon_id": "11488168",
+      "name": "set",
+      "font_class": "set_B",
+      "unicode": "e76c",
+      "unicode_decimal": 59244
+    },
+    {
+      "icon_id": "11488221",
+      "name": "contacts-fill",
+      "font_class": "contacts_B",
+      "unicode": "e776",
+      "unicode_decimal": 59254
+    },
+    {
+      "icon_id": "13649479",
+      "name": "交友",
+      "font_class": "jiaoyou_B",
+      "unicode": "e67b",
+      "unicode_decimal": 59003
+    },
+    {
+      "icon_id": "14140016",
+      "name": "会话",
+      "font_class": "session_W",
+      "unicode": "e777",
+      "unicode_decimal": 59255
+    },
+    {
+      "icon_id": "14140018",
+      "name": "set",
+      "font_class": "set-copy",
+      "unicode": "e778",
+      "unicode_decimal": 59256
+    },
+    {
+      "icon_id": "14140019",
+      "name": "contacts-fill",
+      "font_class": "contacts_W",
+      "unicode": "e779",
+      "unicode_decimal": 59257
+    },
+    {
+      "icon_id": "14140020",
+      "name": "交友",
+      "font_class": "jiaoyou_W",
+      "unicode": "e77a",
+      "unicode_decimal": 59258
+    }
+  ]
+}
