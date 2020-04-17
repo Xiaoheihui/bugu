@@ -26,7 +26,15 @@
 					</el-button>
 				</div>
 			</el-col>
-			<el-col :span="15" class="bg-purple"><div>sss</div></el-col>
+			<el-col :span="15" class="bg-purple">
+				<div class="chatHead">
+					<div class="chatLeft">
+						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" :fit="fit" alt="用户头像"></el-image>
+						<span class="friendName">{{friendInfo.friendname}}</span>
+					</div>
+					<el-button class="info" icon="el-icon-more"></el-button>
+				</div>
+			</el-col>
 		  </el-row>
 	  </div>
   </div>
@@ -39,6 +47,10 @@
       return {
         userInfo:{
 		  avatarUrl:require('../static/img/logo.png')
+		},
+		friendInfo:{
+		  avatarUrl:require('../static/img/logo.png'),
+		  friendname:"log李"
 		},
 		searchInput:'',
 		menuList:[
@@ -110,7 +122,7 @@
 	margin:0vh 18vw;
 	height:99vh;
 	width:64vw;
-	border:2px solid;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .34)
   }
   .container{
 	height:100%;
@@ -125,8 +137,8 @@
 	justify-content: center;
 	align-items: center;
 	z-index:3;
-/* 	border-top-left-radius:20px;
-	border-bottom-left-radius:20px; */
+ 	border-top-left-radius:3px;
+	border-bottom-left-radius:3px; 
   }
   .myAvatar{
 	position:absolute;
@@ -206,11 +218,38 @@
 	width:62.5%;
 	display:flex;
 	flex-direction:column;
-	justify-content: center;
-	align-items: center;
 	z-index:3;
-/* 	border-top-right-radius:20px;
-	border-bottom-right-radius:20px; */
+ 	border-top-right-radius:3px;
+	border-bottom-right-radius:3px; 
   }
-
+  .chatHead{
+	height:10%;
+	width:100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid #a4a6a9;
+  }
+  .chatLeft{
+	left:5%;
+	position: relative;
+	height: 100%;
+  	display: flex;
+	align-items: center;
+  }
+  .chatAvatar{
+	width:4vw;
+	border-radius:100%;
+	margin-right: 30px;
+  }
+  .friendName{
+	font-size:18px;
+  }
+  .info{
+	background: none;
+	border: none;
+	font-size: 20px;
+	position: relative;
+    right: 5%;
+  }
 </style>

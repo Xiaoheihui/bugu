@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import login from '@/pages/login'
 import register from '@/pages/register'
-import welcome from '@/pages/welcome'
+import main from '@/pages/main'
 
 Vue.use(Router)
 
@@ -25,9 +25,9 @@ export default new Router({
       component: register
     },
     {
-      path: "/welcome",
-      name: "welcome",
-      component: welcome
+      path: "/main",
+      name: "main",
+      component: main
     }
   ]
 });
