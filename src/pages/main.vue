@@ -59,12 +59,31 @@
 				</div>
 			</el-col>
 			<el-col :span="15" class="bg-purple">
-				<div class="chatHead">
+				<div class="sessionHead">
 					<div class="chatLeft">
 						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" :fit="fit" alt="用户头像"></el-image>
 						<span class="friendName">{{friendInfo.friendname}}</span>
 					</div>
 					<el-button class="info" icon="el-icon-more"></el-button>
+				</div>
+				<div class="sessionArea">
+
+				</div>
+				<div class="sessionBottom">
+					<div class="chatOption">
+						<div class="chatIcon">
+							<i class="el-icon-folder-opened"></i>
+							<i class="el-icon-scissors"></i>
+							<i class="el-icon-chat-dot-square"></i>
+						</div>
+						<div class="chatIcon">
+							<i class="el-icon-phone-outline"></i>
+							<i class="el-icon-video-camera"></i>
+						</div>
+					</div>
+					<el-input class="chatText" resize="none" type="textarea" rows="5" v-model="textarea"> </el-input>
+					
+					<el-button class="sendButton">发送(S)</el-button>
 				</div>
 			</el-col>
 		  </el-row>
@@ -77,6 +96,7 @@
     name: 'welcome',
     data () {
       return {
+		textarea: '',
         userInfo:{
 		  avatarUrl:require('../static/img/logo.png')
 		},
@@ -232,7 +252,7 @@
 	height:25%;
   }
   .menuOnClick{
-	background:#FFFFFF;
+	background:#f1f1f1;
 	width:100%;
 	height:100%;
 	border-radius:0;
@@ -249,7 +269,7 @@
   }
   /* 主菜单 */
   .list{
-	background: #FFFFFF;
+	background: #f1f1f1;
 	height: 100%;
 	width:25%;
 	display:flex;
@@ -293,7 +313,7 @@
 	align-items:center;
   }
   .groupList .header{
-	background:#FFFFFF;
+	background:#f1f1f1;
 	width:100%;
 	height:auto;
 	font-size:2.5vh;
@@ -331,7 +351,7 @@
 	font-size:18px;
   }
   .bg-purple {
-    background: #d3dce6;
+    background: #e0e0e0;
 	height:100%;
 	width:62.5%;
 	display:flex;
@@ -340,7 +360,7 @@
  	border-top-right-radius:3px;
 	border-bottom-right-radius:3px; 
   }
-  .chatHead{
+  .sessionHead{
 	height:10%;
 	width:100%;
 	display: flex;
@@ -369,5 +389,32 @@
 	font-size: 20px;
 	position: relative;
     right: 5%;
+  }
+  .sessionArea{
+	height:65%;
+	width:100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid #a4a6a9;
+  }
+  .chatOption{
+	width:100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+   }
+  .chatIcon{
+	padding: 0 10px;
+    font-size: 25px;
+  }
+  .chatText >>> .el-textarea__inner{
+	border: none;
+  }
+  .sessionBottom{
+	background: #FFFFFF;
+  }
+  .sendButton{
+	float: right;
   }
 </style>
