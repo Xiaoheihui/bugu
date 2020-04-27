@@ -2,14 +2,21 @@ import axios from './http';
 
 const user = {
   //用户注册
-  register(params){
-    return axios.post('/register', JSON.stringify(params))
+  register(params) {
+    return axios.post("/register", JSON.stringify(params));
   },
   //用户登录
-  login(params){
-    return axios.post('/login', JSON.stringify(params))
+  login(params) {
+    return axios.post("/login", JSON.stringify(params));
   },
-
-}
+  //获取用户信息
+  getUser(params) {
+    return axios.post("/getUser", JSON.stringify(params));
+  },
+  //修改用户信息
+  editUser(params) {
+    return axios.post("/editUser", JSON.stringify(params));
+  }
+};
 
 export default user;
