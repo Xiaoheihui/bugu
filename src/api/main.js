@@ -8,6 +8,10 @@ const main = {
   //获取会话记录
   getSessions(params) {
     return axios.post("/getSessions", JSON.stringify(params));
+  },
+  //获取通讯录列表
+  getFriendAndGroup(params) {
+    return axios.post("/getFriendAndGroup", JSON.stringify(params));
   }
 };
 
