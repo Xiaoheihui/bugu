@@ -86,7 +86,7 @@
               phone:this.registerForm.phone,
               password:this.registerForm.password,
             }).then((res)=>{
-                if(res.data.msg=='0'){
+                if(res.data.state=='0'){
                   this.$message.success("注册成功")
                 }else {
                   this.$message.error("手机号或密码错误，请重试！");
