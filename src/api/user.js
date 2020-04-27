@@ -16,6 +16,14 @@ const user = {
   //修改用户信息
   editUser(params) {
     return axios.post("/editUser", JSON.stringify(params));
+  },
+  //获取好友被申请列表
+  getFriendApplication(params) {
+    return axios.post("/getFriendApplication", JSON.stringify(params));
+  },
+  //获取群被申请列表
+  getGroupApplication(params) {
+    return axios.post("/getGroupApplication", JSON.stringify(params));
   }
 };
 

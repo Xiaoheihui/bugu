@@ -10,8 +10,8 @@ const main = {
     return axios.post("/getSessions", JSON.stringify(params));
   },
   //获取通讯录列表
-  getFriendAndGroup(params) {
-    return axios.post("/getFriendAndGroup", JSON.stringify(params));
+  getContacts(params) {
+    return axios.post("/getContacts", JSON.stringify(params));
   }
 };
 
