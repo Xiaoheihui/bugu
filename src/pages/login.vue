@@ -69,13 +69,24 @@
               phone:this.loginForm.phone,
               password:this.loginForm.password,
             }).then((res)=>{
-              console.log(res.data)
+              //console.log(res.data)
                 if(res.data.state=="0"){
                   this.$message.success("登录成功")
                   _this.$store.commit('login', res.data)
-                  console.log(_this.$store.state.user.user_id)
-                  var path = this.$route.query.redirect
-                  this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
+                  // console.log(_this.$store.state.user["user_id"])
+                  this.$api.main.getContacts({
+                    user_id:_this.$store.state.user["user_id"]
+                  }).then((res)=>{
+                    // console.log(res.data)
+					          if(res.data.state=="0"){
+                      _this.$store.commit('getContacts', res.data)
+                      // console.log(_this.$store.state.contacts)
+                    }else {
+                      this.$message.error("获取通讯录失败");
+                    }
+			            })
+                var path = this.$route.query.redirect
+                this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
                 }else {
                   this.$message.error("手机号或密码错误，请重试！");
                 }

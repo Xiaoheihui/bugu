@@ -5,7 +5,6 @@ import register from '@/pages/register'
 import main from '@/pages/main'
 import contact from '@/pages/contact'
 
-
 Vue.use(Router)
 
 export default new Router({

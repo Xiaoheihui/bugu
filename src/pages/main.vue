@@ -2,66 +2,10 @@
   <div class="welcome">
 	  <div class="page">
 		  <el-row :gutter="1" class="container">
-			<el-col :span="3" class="aside" :model="userInfo">
-				<el-image :src="userInfo.avatarUrl" class="myAvatar" alt="用户头像"></el-image>
-				<div class="menu">
-					<el-row v-for="menu in menuList" :key="menu.name" class="menuSub">
-						<el-button :class="{menuOnClick:menu.style,menuUnClick:!menu.style}" :icon="menu.selected" 
-						@click="changeMenu(menu.path)"></el-button>
-					</el-row>
-				</div>
-			</el-col>
-			<el-col :span="6" class="list">
-				<div class="searchNav">
-					<el-input class="searchInput" v-model="searchInput" clearable placeholder="搜索" prefix-icon="el-icon-search">
-						<el-button slot="append" icon="el-icon-search"></el-button>
-					</el-input>
-				</div>
-				<div class="addFriend">
-					<el-button class="addFriend">
-						<div class="addFriendAccess">
-							<i class="addIcon iconfont icon-addFriend_B"></i>
-							<span class="addText">新的好友</span>
-						</div>
-					</el-button>
-				</div>
-				<!-- 聊天室列表 -->
-				<div class="groupList">
-					<div class="header" @click="toggleSheet1">
-					  	<i class="el-icon-caret-right" ref="toggleicon1"></i>
-						<span class="header-span">{{group_item.name}}</span>
-					</div>
-					
-					<div v-if="showSheets1" style="width:100%;">
-						<div class="sheetList" v-for="i in group_item.details" :key="i.details_id">
-							<div class="access" @click="showInfo(i.details_id)">
-								<div class="sheetImage">
-									<img :src="i.details_image" width="50" height="50">
-							  	</div>
-							  	<span class="sheetContent">{{i.details_name}}</span>
-							</div>
-						</div>	 
-					</div>	  
-				</div>
-				<!-- 好友列表 -->
-				<div class="groupList">
-					<div class="header" @click="toggleSheet2">
-					  	<i class="el-icon-caret-right" ref="toggleicon2"></i>
-						<span class="header-span">{{friend_item.name}}</span>
-					</div>
-					
-					<div v-if="showSheets2" style="width:100%;">
-						<div class="sheetList" v-for="i in friend_item.details" :key="i.details_id">
-							<div class="access">
-								<div class="sheetImage">
-									<img :src="i.details_image" width="50" height="50">
-							  	</div>
-							  	<span class="sheetContent">{{i.details_name}}</span>
-							</div>
-						</div>
-					</div>  
-				</div>
-			</el-col>
+			<!-- 侧边栏菜单 -->
+			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
+			<!-- 中间的通讯录 -->
+            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
@@ -96,19 +40,26 @@
 </template>
 
 <script>
+  import { mapState, mapMutations } from 'vuex';
+  import menu from '../components/left-menu'
+  import midContact from '../components/mid-contact'
   export default {
-    name: 'welcome',
+	computed: mapState({
+		userInfo: state => state.user,
+		contacts: state => state.contacts
+	}),
+	name: 'welcome',
+	components:{
+		'left-menu':menu,
+		'mid-contact':midContact,
+    },
     data () {
       return {
 		textarea: '',
-        userInfo:{
-		  avatarUrl:require('../static/img/logo.png')
-		},
 		friendInfo:{
 		  avatarUrl:require('../static/img/logo.png'),
 		  friendname:"log李"
 		},
-		searchInput:'',
 		menuList:[
 			{
 				name:0,
@@ -135,53 +86,15 @@
 				style:false
 			}
 		],
-		showSheets1:false,
-		showSheets2:false,
-		group_item:{
-			name:"聊天室",
-			details:[
-				{
-		          details_id:1,
-		          details_name:'女装讨论群',
-		          details_image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1521191038714&di=117b8f1d83605767e8a7faf01cb9be9b&imgtype=0&src=http%3A%2F%2Fimgsrc.baidu.com%2Fimgad%2Fpic%2Fitem%2F8435e5dde71190efc4376916c41b9d16fcfa602f.jpg'
-		        },{
-		          details_id:2,
-		          details_name:'课设交流群',
-		          details_image:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1521190642670&di=67822ec270160c1fb21e67d49e95a97f&imgtype=0&src=http%3A%2F%2Fpic30.nipic.com%2F20130615%2F2861027_140302450156_2.jpg'
-		        },
-			]
-		},
-		friend_item:{
-			name:"好友",
-			details:[
-				{
-		          details_id:1,
-		          details_name:'王总',
-		          details_image:require('../static/img/logo.png')
-		        },{
-		          details_id:2,
-		          details_name:'王总的小弟',
-		          details_image:require('../static/img/bg.jpg')
-		        },
-			]
-		}
-		}
+		// 详情页的类型
+		pageType:0,
+	  	}
 	},
     methods:{
-	  changeMenu(path){
-		  this.$router.replace(path);
-	  },
-	  errorHandler() {
-	      return true;
-	  },
-	  toggleSheet1:function(index){
-		this.$refs.toggleicon1.style.transform = !this.showSheets1 ? 'rotate(90deg)' : 'rotate(0)'
-		this.showSheets1 = !this.showSheets1;
-	  },
-	  toggleSheet2:function(index){
-		this.$refs.toggleicon2.style.transform = !this.showSheets2 ? 'rotate(90deg)' : 'rotate(0)'
-		this.showSheets2 = !this.showSheets2;
-	  }
+	  	change(){
+        return this.pageType = this.$refs.choose.detailType;
+        //将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
+        }
     }
   }
 </script>
@@ -218,131 +131,7 @@
 	height:100%;
 	width:100%;
   }
-  /* 侧边栏菜单 */
-  .aside{
-	background: #505559;
-	height: 100%;
-	width:12.5%;
-	display:flex;
-	flex-direction:column;
-	justify-content: center;
-	align-items: center;
-	z-index:3;
- 	border-top-left-radius:3px;
-	border-bottom-left-radius:3px; 
-  }
-  .myAvatar{
-	position:absolute;
-	top:4%;
-	height:6vw;
-	width:6vw;
-	border-radius:100%;
-  }
-  .menu{
-	position: absolute;
-	top:23vh;
-	height:32vh;
-	width:12.5%;
-  }
-  .menuOnClick{
-	background:#f1f1f1;
-	width:100%;
-	height:100%;
-	border-radius:0;
-	border:0;
-	font-size:30px;  
-  }
-  .menuUnClick{
-	background:#c2ced6;
-	width:100%;
-	height:100%;
-	border-radius:0;
-	border:0;
-	font-size:30px;
-  }
-  /* 主菜单 */
-  .list{
-	background: #f1f1f1;
-	height: 100%;
-	width:25%;
-	display:flex;
-	flex-direction:column;
-	justify-content: flex-start;
-	align-items: center;
-	z-index:3;
-  }
-  .searchNav{
-	width:100%;
-  }
-  .searchNav .searchInput{
-	width:100%;
-	border:0;
-  }
-  .addFriend{
-	width:100%;
-  }
-  .addFriend .addFriendAccess{
-	width:100%;
-	height:6vh;
-	font-size:16px;
-	display:flex;
-	flex-direction:row;
-	align-items:center;
-  }
-  .addIcon{
-	font-size:40px;
-	padding:5px;
-	margin-right:20px;
-  }
-  .addText{
-	font-size:18px;
-  }
-  /* 聊天室收拉菜单 */
-  .groupList{
-	width:100%;
-	height:auto;
-	display:flex;
-	flex-direction:column;
-	align-items:center;
-  }
-  .groupList .header{
-	background:#f1f1f1;
-	width:100%;
-	height:auto;
-	font-size:2.5vh;
-	display:flex;
-	flex-direction:row;
-	align-items:center;
-  }
-  .groupList .header i{
-  	padding:10px;
-  }
-  .groupList .header .header-span{
-	padding:10px;
-  }
-  .groupList .sheetList{
-	height:auto;
-	width:100%;
-  }
-  .groupList .sheetList .access{
-	padding:10px 5px;
-	display:flex;
-	flex-direction:row;
-	align-items:center; 
-	justify-content:flex-start;
-  }
-  .groupList .sheetList .access .sheetImage{
-  	height:auto;
-	width:auto;
-	margin-right:20px;
-  }
-  .groupList .sheetList .access .sheetImage img{
-  	border-radius:100%;
-  }
-  .groupList .sheetList .access .sheetContent{
-	width:auto;
-	font-size:18px;
-  }
+  /* 会话窗口样式 */
   .bg-purple {
     background: #e0e0e0;
 	height:100%;
