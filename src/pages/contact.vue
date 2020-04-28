@@ -8,7 +8,7 @@
 				<div class="menu">
 					<el-row v-for="menu in menuList" :key="menu.name" class="menuSub">
 						<el-button :class="{menuOnClick:menu.style,menuUnClick:!menu.style}" :icon="menu.selected" 
-						@click="changeMenu(menu.name)"></el-button>
+						@click="changeMenu(menu.path)"></el-button>
 					</el-row>
 				</div>
 			</el-col>
@@ -34,15 +34,16 @@
 					  	<i class="el-icon-caret-right" ref="toggleicon1"></i>
 						<span class="header-span">{{group_item.name}}</span>
 					</div>
-					
-					<div v-if="showSheets1" class="sheetList" v-for="i in group_item.details" :key="i.details_id">
-						<div class="groupAccess">
-							<div class="sheetImage">
-								<img :src="i.details_image" width="50" height="50">
-						  	</div>
-						  	<span class="sheetContent">{{i.details_name}}</span>
-						</div>
-					</div>	  
+					<div v-if="showSheets1" style="width:100%;">
+						<div class="sheetList" v-for="i in group_item.details" :key="i.details_id">
+							<div class="access" @click="showInfo(i.details_id)">
+								<div class="sheetImage">
+									<img :src="i.details_image" width="50" height="50">
+							  	</div>
+							  	<span class="sheetContent">{{i.details_name}}</span>
+							</div>
+						</div>	 
+					</div> 
 				</div>
 				<!-- 好友列表 -->
 				<div class="groupList">
@@ -50,13 +51,14 @@
 					  	<i class="el-icon-caret-right" ref="toggleicon2"></i>
 						<span class="header-span">{{friend_item.name}}</span>
 					</div>
-					
-					<div v-if="showSheets2" class="sheetList" v-for="i in friend_item.details" :key="i.details_id">
-						<div class="groupAccess">
-							<div class="sheetImage">
-								<img :src="i.details_image" width="50" height="50">
-						  	</div>
-						  	<span class="sheetContent">{{i.details_name}}</span>
+					<div v-if="showSheets2" style="width:100%;">
+						<div class="sheetList" v-for="i in friend_item.details" :key="i.details_id">
+							<div class="access" @click="showInfo(i.details_id)">
+								<div class="sheetImage">
+									<img :src="i.details_image" width="50" height="50">
+							  	</div>
+							  	<span class="sheetContent">{{i.details_name}}</span>
+							</div>
 						</div>
 					</div>	  
 				</div>
@@ -64,7 +66,15 @@
 			<!-- 好友申请主页/详情页面 -->
 			<el-col :span="15" class="detailPage">
 				<div v-if="!showDetail" class="emptyPage">
-					
+					暂无内容
+				</div>
+				<div v-if="showDetail" class="friendDetail">
+					<div class="friendInfo">
+						<el-image :src="friendHead" class="head" alt="好友头像"></el-image>
+						<span  class="name">{{friendName}}</span>
+					</div>
+					<div class="diviveLine">
+					</div>
 				</div>
 			</el-col>
 		  </el-row>
@@ -76,35 +86,47 @@
   export default {
     name: 'welcome',
     data () {
+	  var getContact=(user_id)=>{
+
+	  };
       return {
+		// 用户信息
         userInfo:{
 		  avatarUrl:require('../static/img/logo.png')
 		},
+		// 搜索框输入
 		searchInput:'',
+		// 菜单列表
 		menuList:[
 			{
 				name:0,
 				selected:"el-icon-chat-dot-round",
+				path:"/main",
 				style:false
 			},
 			{
 				name:1,
 				selected:"el-icon-notebook-2",
+				path:"/contact",
 				style:true
 			},
 			{
 				name:2,
 				selected:"el-icon-guide",
+				path:"/guide",
 				style:false
 			},
 			{
 				name:3,
 				selected:"el-icon-setting",
+				path:"/setting",
 				style:false
 			}
 		],
+		// 是否显示群聊和好友列表
 		showSheets1:false,
 		showSheets2:false,
+		// 聊天室列表
 		group_item:{
 			name:"聊天室",
 			details:[
@@ -119,6 +141,7 @@
 		        },
 			]
 		},
+		// 好友列表
 		friend_item:{
 			name:"好友",
 			details:[
@@ -132,24 +155,17 @@
 		          details_image:require('../static/img/bg.jpg')
 		        },
 			]
-		}
+		},
+		// 是否显示详情
+		showDetail:false,
+		// 好友详情
+		friendHead:require('../static/img/logo.png'),
+		friendName:"性感荷官"
 		}
 	},
     methods:{
-	  changeMenu(key){
-		  var that=JSON.parse(JSON.stringify(this.menuList));		  
-		  let l=that.length;
-		  for(let i=0;i<l;i++){
-			  if(that[i].name===key){
-				  that[i].style=true;
-			  }else{
-				  that[i].style=false;
-			  }
-		  }
-		  this.menuList=that;
-	  },
-	  errorHandler() {
-	      return true;
+	  changeMenu(path){
+		  this.$router.replace(path);
 	  },
 	  toggleSheet1:function(index){
 		this.$refs.toggleicon1.style.transform = !this.showSheets1 ? 'rotate(90deg)' : 'rotate(0)'
@@ -158,6 +174,9 @@
 	  toggleSheet2:function(index){
 		this.$refs.toggleicon2.style.transform = !this.showSheets2 ? 'rotate(90deg)' : 'rotate(0)'
 		this.showSheets2 = !this.showSheets2;
+	  },
+	  showInfo(key){
+		this.showDetail=true;
 	  }
     }
   }
@@ -221,10 +240,6 @@
 	height:32vh;
 	width:12.5%;
   }
-  .menuSub{
-	width:100%;
-	height:25%;
-  }
   .menuOnClick{
 	background:#FFFFFF;
 	width:100%;
@@ -257,7 +272,6 @@
   }
   .searchNav .searchInput{
 	width:100%;
-	border:0;
   }
   .addFriend{
 	width:100%;
@@ -305,25 +319,26 @@
 	height:auto;
 	width:100%;
   }
-  .groupList .sheetList .groupAccess{
+  .groupList .sheetList .access{
 	padding:10px 5px;
 	display:flex;
 	flex-direction:row;
 	align-items:center; 
 	justify-content:flex-start;
   }
-  .groupList .sheetList .groupAccess .sheetImage{
+  .groupList .sheetList .access .sheetImage{
   	height:auto;
 	width:auto;
 	margin-right:20px;
   }
-  .groupList .sheetList .groupAccess .sheetImage img{
+  .groupList .sheetList .access .sheetImage img{
   	border-radius:100%;
   }
-  .groupList .sheetList .groupAccess .sheetContent{
+  .groupList .sheetList .access .sheetContent{
 	width:auto;
 	font-size:18px;
   }
+  /* 详情页样式 */
   .detailPage {
     background: #f4f4f4;
 	height:100%;
@@ -332,9 +347,33 @@
 	flex-direction:column;
 	justify-content: center;
 	align-items: center;
-	z-index:3;
-/* 	border-top-right-radius:20px;
-	border-bottom-right-radius:20px; */
+	border-top-right-radius:3px;
+	border-bottom-right-radius:3px; 
+  }
+  .friendDetail{
+	width:100%;
+	display:flex;
+	flex-direction:column;
+	justify-content: center;
+	align-items: center;
+  }
+  .friendDetail .friendInfo{
+	display:flex;
+	align-items: center;
+  }
+  .friendDetail .friendInfo .head{
+	height:7vh;
+	width:7vh;
+	border-radius:100%;
+  }
+  .friendDetail .friendInfo .name{
+	margin-left:20px;
+	font-size:2vh;
+  }
+  .friendDetail .diviveLine{
+	width:70%;
+	height:5px;
+	background:#000000;
   }
 
 </style>

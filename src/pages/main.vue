@@ -7,7 +7,7 @@
 				<div class="menu">
 					<el-row v-for="menu in menuList" :key="menu.name" class="menuSub">
 						<el-button :class="{menuOnClick:menu.style,menuUnClick:!menu.style}" :icon="menu.selected" 
-						@click="changeMenu(menu.name)"></el-button>
+						@click="changeMenu(menu.path)"></el-button>
 					</el-row>
 				</div>
 			</el-col>
@@ -32,13 +32,15 @@
 						<span class="header-span">{{group_item.name}}</span>
 					</div>
 					
-					<div v-if="showSheets1" class="sheetList" v-for="i in group_item.details" :key="i.details_id">
-						<div class="groupAccess">
-							<div class="sheetImage">
-								<img :src="i.details_image" width="50" height="50">
-						  	</div>
-						  	<span class="sheetContent">{{i.details_name}}</span>
-						</div>
+					<div v-if="showSheets1" style="width:100%;">
+						<div class="sheetList" v-for="i in group_item.details" :key="i.details_id">
+							<div class="access" @click="showInfo(i.details_id)">
+								<div class="sheetImage">
+									<img :src="i.details_image" width="50" height="50">
+							  	</div>
+							  	<span class="sheetContent">{{i.details_name}}</span>
+							</div>
+						</div>	 
 					</div>	  
 				</div>
 				<!-- 好友列表 -->
@@ -48,20 +50,22 @@
 						<span class="header-span">{{friend_item.name}}</span>
 					</div>
 					
-					<div v-if="showSheets2" class="sheetList" v-for="i in friend_item.details" :key="i.details_id">
-						<div class="groupAccess">
-							<div class="sheetImage">
-								<img :src="i.details_image" width="50" height="50">
-						  	</div>
-						  	<span class="sheetContent">{{i.details_name}}</span>
+					<div v-if="showSheets2" style="width:100%;">
+						<div class="sheetList" v-for="i in friend_item.details" :key="i.details_id">
+							<div class="access">
+								<div class="sheetImage">
+									<img :src="i.details_image" width="50" height="50">
+							  	</div>
+							  	<span class="sheetContent">{{i.details_name}}</span>
+							</div>
 						</div>
-					</div>	  
+					</div>  
 				</div>
 			</el-col>
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
-						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" :fit="fit" alt="用户头像"></el-image>
+						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" alt="用户头像"></el-image>
 						<span class="friendName">{{friendInfo.friendname}}</span>
 					</div>
 					<el-button class="info" icon="el-icon-more"></el-button>
@@ -109,21 +113,25 @@
 			{
 				name:0,
 				selected:"el-icon-chat-dot-round",
-				style:false
+				path:"/main",
+				style:true
 			},
 			{
 				name:1,
 				selected:"el-icon-notebook-2",
-				style:true
+				path:"/contact",
+				style:false
 			},
 			{
 				name:2,
 				selected:"el-icon-guide",
+				path:"/guide",
 				style:false
 			},
 			{
 				name:3,
 				selected:"el-icon-setting",
+				path:"/setting",
 				style:false
 			}
 		],
@@ -160,28 +168,17 @@
 		}
 	},
     methods:{
-	  changeMenu(key){
-		  var that=JSON.parse(JSON.stringify(this.menuList));		  
-		  let l=that.length;
-		  for(let i=0;i<l;i++){
-			  if(that[i].name===key){
-				  that[i].style=true;
-			  }else{
-				  that[i].style=false;
-			  }
-		  }
-		  this.menuList=that;
+	  changeMenu(path){
+		  this.$router.replace(path);
 	  },
 	  errorHandler() {
 	      return true;
 	  },
 	  toggleSheet1:function(index){
-		console.log(this.$refs);
 		this.$refs.toggleicon1.style.transform = !this.showSheets1 ? 'rotate(90deg)' : 'rotate(0)'
 		this.showSheets1 = !this.showSheets1;
 	  },
 	  toggleSheet2:function(index){
-		console.log(this.$refs);
 		this.$refs.toggleicon2.style.transform = !this.showSheets2 ? 'rotate(90deg)' : 'rotate(0)'
 		this.showSheets2 = !this.showSheets2;
 	  }
@@ -246,10 +243,6 @@
 	top:23vh;
 	height:32vh;
 	width:12.5%;
-  }
-  .menuSub{
-	width:100%;
-	height:25%;
   }
   .menuOnClick{
 	background:#f1f1f1;
@@ -331,22 +324,22 @@
 	height:auto;
 	width:100%;
   }
-  .groupList .sheetList .groupAccess{
+  .groupList .sheetList .access{
 	padding:10px 5px;
 	display:flex;
 	flex-direction:row;
 	align-items:center; 
 	justify-content:flex-start;
   }
-  .groupList .sheetList .groupAccess .sheetImage{
+  .groupList .sheetList .access .sheetImage{
   	height:auto;
 	width:auto;
 	margin-right:20px;
   }
-  .groupList .sheetList .groupAccess .sheetImage img{
+  .groupList .sheetList .access .sheetImage img{
   	border-radius:100%;
   }
-  .groupList .sheetList .groupAccess .sheetContent{
+  .groupList .sheetList .access .sheetContent{
 	width:auto;
 	font-size:18px;
   }
