@@ -87,33 +87,7 @@
                 })
             }
         }
-<<<<<<< Updated upstream
-      }
-    },
-    methods:{
-      login(form){
-        this.$refs[form].validate((valid) => {
-          if (valid) {
-            this.$api.user.login({
-              phone:this.loginForm.phone,
-              password:this.loginForm.password,
-            }).then((res)=>{
-              console.log(res.data)
-                if(res.data.state=="0"){
-                  this.$message.success("登录成功")
-                  this.$router.push({ path: '/main' });
-                }else {
-                  this.$message.error("手机号或密码错误，请重试！");
-                }
-              }
-            )
-          } else {
-            this.$message.error('请完善登录信息');
-          }
-        })
-      }
-=======
->>>>>>> Stashed changes
+
     }
 </script>
 
