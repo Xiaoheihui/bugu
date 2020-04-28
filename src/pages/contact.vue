@@ -6,7 +6,7 @@
 			<el-col :span="3" class="aside" :model="userInfo">
 				<el-image :src="userInfo.avatarUrl" class="myAvatar" alt="用户头像"></el-image>
 				<div class="menu">
-					<el-row v-for="menu in menuList" :key="menu.name" class="menuSub">
+					<el-row v-for="menu in menuList" :key="menu.name">
 						<el-button :class="{menuOnClick:menu.style,menuUnClick:!menu.style}" :icon="menu.selected" 
 						@click="changeMenu(menu.path)"></el-button>
 					</el-row>
@@ -21,7 +21,6 @@
 						<i class="iconfont icon-addFriend_B"></i>
 					</el-button>
 				</div>
-				
 				<!-- 聊天室列表 -->
 				<div class="groupList">
 					<div class="header" @click="toggleSheet1">
@@ -271,9 +270,6 @@
   .searchNav .addfriend_button{
 	margin-left:2px;
 	padding: 10px;
-  }
-  .addText{
-	font-size:18px;
   }
   /* 聊天室收拉菜单 */
   .groupList{
