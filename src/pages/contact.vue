@@ -16,18 +16,12 @@
 				<!-- 搜索框 -->
 				<div class="searchNav">
 					<el-input class="searchInput" v-model="searchInput" clearable placeholder="搜索" prefix-icon="el-icon-search">
-						<el-button slot="append" icon="el-icon-search"></el-button>
 					</el-input>
-				</div>
-				<!-- 新的朋友入口 -->
-				<div class="addFriend">
-					<el-button class="addFriend">
-						<div class="addFriendAccess">
-							<i class="addIcon iconfont icon-addFriend_B"></i>
-							<span class="addText">新的好友</span>
-						</div>
+					<el-button class="addfriend_button">
+						<i class="iconfont icon-addFriend_B"></i>
 					</el-button>
 				</div>
+				
 				<!-- 聊天室列表 -->
 				<div class="groupList">
 					<div class="header" @click="toggleSheet1">
@@ -256,24 +250,10 @@
 	width:100%;
   }
   .searchNav .searchInput{
-	width:100%;
-	border:0;
+	width:75%;
   }
-  .addFriend{
-	width:100%;
-  }
-  .addFriend .addFriendAccess{
-	width:100%;
-	height:6vh;
-	font-size:16px;
-	display:flex;
-	flex-direction:row;
-	align-items:center;
-  }
-  .addIcon{
-	font-size:40px;
-	padding:5px;
-	margin-right:20px;
+  .addfriend_button{
+	padding: 8px;
   }
   .addText{
 	font-size:18px;
