@@ -69,15 +69,16 @@
               password:this.loginForm.password,
             }).then((res)=>{
               console.log(res.data)
-                if(res.data.msg=='0'){
+                if(res.data.state=="0"){
                   this.$message.success("登录成功")
+                  this.$router.push({ path: '/main' });
                 }else {
                   this.$message.error("手机号或密码错误，请重试！");
                 }
               }
             )
           } else {
-            this.$message.error('请完善注册信息');
+            this.$message.error('请完善登录信息');
           }
         })
       }
