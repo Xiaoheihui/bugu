@@ -42,7 +42,7 @@
         @click="friendDetail">
           <div class="access">
             <div class="sheetImage">
-              <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
+              <el-image :src="i.avatar_url ? i.avatar_url: require('../static/img/logo.png')" class="myAvatar" alt="好友头像"></el-image>
             </div>
             <span class="sheetContent">{{i.friend_note==""?i.friend_name:i.friend_note}}</span>
           </div>
