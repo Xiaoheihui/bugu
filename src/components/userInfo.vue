@@ -4,12 +4,14 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="form">
 
       <el-form-item label="头像">
+
         <el-upload
           class="avatar-uploader"
-          action="no"
+          action=""
+          ref="uploadAvatar"
           :show-file-list="false"
-          :on-success="handleAvatarSuccess"
-          :before-upload="beforeAvatarUpload">
+          :auto-upload="false"
+          :on-change="changeFile">
           <img v-if="form.avatar_url" :src="form.avatar_url" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
@@ -110,8 +112,27 @@
             }
         },
         methods: {
-            handleAvatarSuccess(res, file) {
-                this.avatar_url = URL.createObjectURL(file.raw);
+            changeFile(file, fileList) {
+                const isJPGORPNG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
+                const isLt1M = file.size / 1024 / 1024 < 1;
+
+                if (!isJPGORPNG) {
+                    this.$message.info('上传头像图片只能是 JPG 或 PNG 格式!');
+                    return;
+                }
+                if (!isLt1M) {
+                    this.$message.info('上传头像图片大小不能超过 1MB!');
+                    return;
+                }
+
+                var This = this;
+                var reader = new FileReader();
+                reader.readAsDataURL(file.raw);
+                reader.onload = function(e){
+                    this.result; //base64编码
+                    This.form.avatar_url = this.result
+                }
+
             },
             submitForm(formName) {
                 let _this = this
@@ -172,8 +193,8 @@
     }
 
     .avatar {
-      width: 95px;
-      height: 95px;
+      width: 80px;
+      height: 80px;
       display: block;
     }
 
