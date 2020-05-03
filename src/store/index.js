@@ -32,8 +32,9 @@ export default new Vuex.Store({
       window.localStorage.setItem('contacts', JSON.stringify(contacts))
     },
     editUser(state, new_user) {
-        state.user = new_user;
+      state.user = new_user;
       window.localStorage.setItem('user', JSON.stringify(new_user))
     }
   }
 })
+
