@@ -4,6 +4,7 @@ import login from '@/pages/login'
 import register from '@/pages/register'
 import main from '@/pages/main'
 import contact from '@/pages/contact'
+import setting from '@/pages/setting'
 
 Vue.use(Router)
 
@@ -37,6 +38,14 @@ export default new Router({
       path: "/contact",
       name: "contact",
       component: contact,
+      meta:{
+        requireAuth:true
+      }
+    },
+    {
+      path: "/setting",
+      name: "setting",
+      component: setting,
       meta:{
         requireAuth:true
       }

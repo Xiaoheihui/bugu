@@ -24,6 +24,10 @@ const user = {
   //获取群被申请列表
   getGroupApplication(params) {
     return axios.post("/getGroupApplication", JSON.stringify(params));
+  },
+  //通过手机号搜索用户
+  searchUser(params){
+    return axios.post("/searchUser", JSON.stringify(params));
   }
 };
 
