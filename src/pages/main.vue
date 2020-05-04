@@ -9,7 +9,7 @@
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
-						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" alt="用户头像"></el-image>
+						<el-image :src="friendInfo.avatarUrl ? friendInfo.avatar_url : require('../static/img/logo.png')" class="chatAvatar" alt="用户头像"></el-image>
 						<span class="friendName">{{friendInfo.friendname}}</span>
 					</div>
 					<el-button class="info" icon="el-icon-more"></el-button>
@@ -31,7 +31,7 @@
 					</div>
 					<el-input class="chatText" resize="none" type="textarea" rows="5" v-model="textarea"> </el-input>
 					
-					<el-button class="sendButton">发送(S)</el-button>
+					<el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
 				</div>
 			</el-col>
 		  </el-row>
@@ -43,6 +43,7 @@
   import { mapState, mapMutations } from 'vuex';
   import menu from '../components/left-menu'
   import midContact from '../components/mid-contact'
+  import store from '../store'
   export default {
 	computed: mapState({
 		userInfo: state => state.user,
@@ -91,6 +92,17 @@
 	  	}
 	},
     methods:{
+		sendInfo(){
+			store.state.socket_instance.send(JSON.stringify({
+				user_id:store.state.user.user_id,
+				content:this.textarea,
+				session_id:"",
+				sender_name:store.state.user.nickname,
+				type:'contact'
+			}))
+			this.textarea = ''
+			console.log('success')
+		},
 	  	change(){
         return this.pageType = this.$refs.choose.detailType;
         //将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型

@@ -198,17 +198,16 @@
       display: block;
     }
 
-    .el-form-item {
-    }
-
     .form {
-      background-color: #f7f7f7;
+      background-color: #eaeaea;
       position: relative;
       top: 90px;
       left: 10px;
       height: 60%;
-      width: 60%;
+      width: 70%;
+      padding:40px 40px 20px 0px;
       font-weight: bolder;
+      border-radius:8px;
       font-size: 65px;
     }
 

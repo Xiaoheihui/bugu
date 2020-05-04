@@ -9,7 +9,7 @@
         placeholder="搜索"
         prefix-icon="el-icon-search"
       ></el-input>
-      <el-button class="addfriend_button">
+      <el-button class="addfriend_button" title="添加好友" @click="friendApply">
         <i class="iconfont icon-addFriend_B"></i>
       </el-button>
     </div>
@@ -21,10 +21,10 @@
       </div>
       <div v-if="showSheets1" style="width:100%;">
         <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id" 
-        @click="groupDetail">
-          <div class="access" @click="showInfo(i.group_id)">
+        @click="groupDetail(i)">
+          <div class="access">
             <div class="sheetImage">
-              <el-image :src="i.avatar_url" class="myAvatar" alt="群头像"></el-image>
+              <el-image :src="i.group_avatar" class="myAvatar" alt="群头像"></el-image>
             </div>
             <span class="sheetContent">{{i.group_name}}</span>
           </div>
@@ -39,7 +39,7 @@
       </div>
       <div v-if="showSheets2" style="width:100%;">
         <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id" 
-        @click="friendDetail">
+        @click="friendDetail(i)">
           <div class="access">
             <div class="sheetImage">
               <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
@@ -62,7 +62,9 @@ export default {
       // 是否显示群聊和好友列表
       showSheets1: false,
       showSheets2: false,
-      detailType:0
+      detailType:0,
+      selectedFriendInfo:{},
+      selectedGroupInfo:{}
     };
   },
   methods: {
@@ -78,19 +80,26 @@ export default {
         : "rotate(0)";
       this.showSheets2 = !this.showSheets2;
     },
-    groupDetail:function(){
-      this.detailType=2;
-    },
-    friendDetail:function(){
+    friendDetail:function(info){
       this.detailType=1;
+      this.selectedFriendInfo=JSON.parse(JSON.stringify(info));
+    },
+    groupDetail:function(info){
+      this.detailType=2;
+      this.selectedGroupInfo=JSON.parse(JSON.stringify(info));
+      // console.log(JSON.parse(JSON.stringify(info)));
+    },
+    friendApply:function(){
+      this.detailType=3;
     }
+    
 }
 };
 </script>
 <style scoped>
 /* 主菜单 */
 .list {
-  background: #f1f1f1;
+  background: #ececec;
   height: 100%;
   width: 25%;
   display: flex;
@@ -119,7 +128,7 @@ export default {
   align-items: center;
 }
 .groupList .header {
-  background: #f1f1f1;
+  background: #e2e2e2;
   width: 100%;
   height: auto;
   font-size: 2.5vh;
@@ -150,12 +159,13 @@ export default {
   margin-right: 20px;
 }
 .groupList .sheetList .access .sheetImage .myAvatar {
-  height:72px;
-  width:72px;
+  height:4vw;
+  width:4vw;
   border-radius: 100%;
 }
 .groupList .sheetList .access .sheetContent {
   width: auto;
-  font-size: 18px;
+  font-size: 1.8vh;
+  font-weight:bold;
 }
 </style>

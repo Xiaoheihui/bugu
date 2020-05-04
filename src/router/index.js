@@ -4,8 +4,8 @@ import login from '@/pages/login'
 import register from '@/pages/register'
 import main from '@/pages/main'
 import contact from '@/pages/contact'
-import setting from "../pages/setting"
-import socket from "../pages/socket_demo"
+import socket from '@/pages/socket_demo'
+import setting from '@/pages/setting'
 
 Vue.use(Router)
 
