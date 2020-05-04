@@ -92,7 +92,7 @@
                 }
               }
             ).catch(e => {
-                console.log('error')
+                console.log(e)
             })
           } else {
             this.$message.error('请完善登录信息');
