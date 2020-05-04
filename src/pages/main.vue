@@ -9,7 +9,7 @@
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
-						<el-image :src="friendInfo.avatarUrl" class="chatAvatar" alt="用户头像"></el-image>
+						<el-image :src="friendInfo.avatarUrl ? friendInfo.avatar_url : require('../static/img/logo.png')" class="chatAvatar" alt="用户头像"></el-image>
 						<span class="friendName">{{friendInfo.friendname}}</span>
 					</div>
 					<el-button class="info" icon="el-icon-more"></el-button>
