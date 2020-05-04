@@ -99,7 +99,19 @@ var server = ws.createServer(function(conn) {
 									}
 									//发给自己
 									conns.sendText(to_str(message_between));
-
+									
+									//更新该会话的最后一条消息时间
+									axios.post("https://af8ko6.toutiao15.com/update_last_time", {
+										session_id: data['session_id'],
+										updatetime: time,
+									}).then((res) => {
+										if (res.data.state == "0") {
+											console.log("最后一条消息时间修改成功");
+										} else {
+											console.log("最后一条消息时间修改失败");
+										}
+									});
+									
 									//存储聊天记录
 									axios.post("https://af8ko6.toutiao15.com/add_char_history", {
 										session_id: data['session_id'],
@@ -144,7 +156,19 @@ var server = ws.createServer(function(conn) {
 								//发给自己
 								conns[data.user_id].sendText(to_str(message_between));
 							}
-
+							
+							//更新该会话的最后一条消息时间
+							axios.post("https://af8ko6.toutiao15.com/update_last_time", {
+								session_id: data['session_id'],
+								updatetime: time,
+							}).then((res) => {
+								if (res.data.state == "0") {
+									console.log("最后一条消息时间修改成功");
+								} else {
+									console.log("最后一条消息时间修改失败");
+								}
+							});
+							
 							//存储聊天记录
 							axios.post("https://af8ko6.toutiao15.com/add_char_history", {
 								session_id: data['session_id'],
@@ -173,6 +197,18 @@ var server = ws.createServer(function(conn) {
 
 	//断开连接的回调
 	conn.on('close', function() {
+		//更新该用户所有会话的离开时间
+		let time = moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
+		axios.post("https://af8ko6.toutiao15.com/update_leave_time", {
+			user_id: uid,
+			updatetime: time,
+		}).then((res) => {
+			if (res.data.state == "0") {
+				console.log("离开时间修改成功");
+			} else {
+				console.log("离开时间修改失败");
+			}
+		});
 		//删除成员信息
 		delete conns[uid];
 		console.log(conns.hasOwnProperty(uid));
