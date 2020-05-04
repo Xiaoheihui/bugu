@@ -4,10 +4,11 @@
 		  <el-row :gutter="1" class="container">
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
-            <!-- 中间的通讯录 -->
-            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+        <!-- 中间的通讯录 -->
+        <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
 			<!-- 好友申请主页/详情页面 -->
-			<right-detail :pageType="pageType"></right-detail>
+			<right-detail :pageType="pageType" :selectedFriendInfo="selectedFriendInfo" 
+			:selectedGroupInfo="selectedGroupInfo"></right-detail>
 		  </el-row>
 	  </div>
   </div>
@@ -57,16 +58,21 @@
 				style:false
 			}
 		],
-		
+
 		// 详情页的类型
 		pageType:0,
-		
+		// 展示好友信息
+		selectedFriendInfo:{},
+		// 展示聊天室信息
+		selectedGroupInfo:{}
 		}
 	},
     methods:{
         change(){
-        return this.pageType = this.$refs.choose.detailType;
-        //将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
+        	this.pageType = this.$refs.choose.detailType;
+			// 将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
+			this.selectedFriendInfo=this.$refs.choose.selectedFriendInfo;
+			this.selectedGroupInfo=this.$refs.choose.selectedGroupInfo;
         }
     }
   }

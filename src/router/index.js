@@ -4,6 +4,8 @@ import login from '@/pages/login'
 import register from '@/pages/register'
 import main from '@/pages/main'
 import contact from '@/pages/contact'
+import socket from '@/pages/socket_demo'
+import setting from '@/pages/setting'
 
 Vue.use(Router)
 
@@ -25,21 +27,34 @@ export default new Router({
       name: "register",
       component: register
     },
-	  {
-	  	path: "/main",
-		  name: "main",
+    {
+      path: "/main",
+      name: "main",
       component: main,
-      meta:{
-        requireAuth:true
+      meta: {
+        requireAuth: true
       }
-	  },
+    },
     {
       path: "/contact",
       name: "contact",
       component: contact,
-      meta:{
-        requireAuth:true
+      meta: {
+        requireAuth: true
       }
+    },
+    {
+      path: "/setting",
+      name: "setting",
+      component: setting,
+      meta: {
+        requireAuth: true
+      }
+    },
+    {
+      path: "/socket",
+      name: "socket",
+      component: socket
     }
   ]
 });
