@@ -8,8 +8,8 @@ var server = ws
   .createServer(function(conn) {
     console.log("New connection");
     conn.on("text", function(str) {
-      console.log("Received： " + str);
-      conn.sendText(str.toUpperCase() + "!!!"); //大写收到的数据
+      console.log("Received： " + JSON.parse(str).toString());
+      conn.sendText(str); //大写收到的数据
     });
     conn.on("close", function(code, reason) {
       console.log("connection closed");
