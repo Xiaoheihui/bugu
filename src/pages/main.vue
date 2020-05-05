@@ -5,7 +5,7 @@
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
 			<!-- 中间的通讯录 -->
-            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+            <mid-session :sessions="sessions" ref="choose" @click.native="change"></mid-session>
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
@@ -42,17 +42,28 @@
 <script>
   import { mapState, mapMutations } from 'vuex';
   import menu from '../components/left-menu'
-  import midContact from '../components/mid-contact'
-  import store from '../store'
+  import midSession from '../components/mid-session'
   export default {
 	computed: mapState({
-		userInfo: state => state.user,
-		contacts: state => state.contacts
+		userInfo: state => state.user
 	}),
 	name: 'welcome',
+	created(){
+		this.$api.main.getSessions({
+          user_id: this.$store.state.user["user_id"]
+        })
+        .then((res) => {
+          if (res.data.state == "0") {
+			this.$store.commit("getSessions", res.data);
+			this.sessions=this.$store.state.sessions;
+          } else {
+            this.$message.error("获取会话列表失败");
+          }
+        });
+	},
 	components:{
 		'left-menu':menu,
-		'mid-contact':midContact,
+		'mid-session':midSession,
     },
     data () {
       return {
@@ -61,6 +72,7 @@
 		  avatarUrl:require('../static/img/logo.png'),
 		  friendname:"log李"
 		},
+		sessions:{},
 		menuList:[
 			{
 				name:0,
