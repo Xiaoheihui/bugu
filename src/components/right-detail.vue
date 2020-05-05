@@ -95,19 +95,19 @@
             >{{i.verify_msg.length>25?i.verify_msg.slice(0,25)+"......":i.verify_msg}}</div>
           </div>
           <div class="state">
-            <el-button v-if="i.flag==1" class="toAccept" @click="acceptApplyVisible = true">接受</el-button>
-            <!-- 接受申请弹窗，对好友设置备注 -->
-            <el-dialog title="接受申请" :visible.sync="acceptApplyVisible">
-              <el-form :model="acceptForm">
-                <el-form-item label="好友备注">
-                  <el-input v-model="acceptForm.notes" autocomplete="off"></el-input>
-                </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="acceptApplyVisible = false">取 消</el-button>
-                <el-button type="primary" @click="acceptApply(i.applicant_id)">确 定</el-button>
-              </div>
-            </el-dialog>
+            <el-button v-if="i.flag==1" class="toAccept" @click="toDialog(i.applicant_id)">接受</el-button>
+              <!-- 接受申请弹窗，对好友设置备注 -->
+              <el-dialog title="接受申请" :visible.sync="acceptApplyVisible">
+                <el-form :model="acceptForm">
+                  <el-form-item label="好友备注">
+                    <el-input v-model="acceptForm.notes" autocomplete="off"></el-input>
+                  </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="acceptApplyVisible = false">取 消</el-button>
+                  <el-button type="primary" @click="acceptApply()">确 定</el-button>
+                </div>
+              </el-dialog>
             <el-button v-if="i.flag==1" class="toRefuse" @click="refuseApply(i.applicant_id)">拒绝</el-button>
 
             <div v-if="i.flag==2" class="refused">已拒绝</div>
@@ -130,6 +130,7 @@ export default {
       acceptApplyVisible: false,
       searchFriendResult: null,
       applicantList: [],
+      applicant_id_selected: 0,
       applyForm: {
         verify: "",
         notes: ""
@@ -142,11 +143,11 @@ export default {
   methods: {
     getContacts() {
       this.$api.main.getContacts({
-          user_id: _this.$store.state.user["user_id"]
+          user_id: this.$store.state.user["user_id"]
         })
         .then(res => {
           if (res.data.state == "0") {
-            _this.$store.commit("getContacts", res.data);
+            this.$store.commit("getContacts", res.data);
           } else {
             this.$message.error("获取通讯录失败");
           }
@@ -155,9 +156,12 @@ export default {
     toAdd() {
       this.navSelected = 0;
     },
+    toDialog(id){
+      this.applicant_id_selected=id;
+      this.acceptApplyVisible=true;
+    },
     toApply() {
       this.navSelected = 1;
-      // console.log(this.$store.state.user["user_id"]);
       this.$api.user
         .getFriendApplication({
           user_id: this.$store.state.user["user_id"]
@@ -165,7 +169,6 @@ export default {
         .then(res => {
           if (res.data.state == "0") {
             this.applicantList = res.data.applicant_list;
-            // console.log(this.applicantList);
           } else {
             this.$message.error("获取好友申请列表失败");
           }
@@ -224,16 +227,16 @@ export default {
           }
         });
     },
-    acceptApply(applicant_id) {
+    acceptApply() {
       this.$api.friend
         .acceptFriendApplication({
-          apply_user_id: applicant_id,
+          apply_user_id: this.applicant_id_selected,
           applyed_user_id: this.$store.state.user["user_id"],
           if_accept: true,
           friend_notes: this.acceptForm.notes
         })
         .then(res => {
-          console.log(res.data);
+          // console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("好友添加成功");
             this.getContacts(); // 更新通讯录
@@ -252,7 +255,7 @@ export default {
           if_accept: false
         })
         .then(res => {
-          console.log(res.data);
+          // console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("已拒绝对方的请求");
             this.toApply(); // 刷新被申请表

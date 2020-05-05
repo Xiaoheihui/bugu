@@ -5,7 +5,7 @@
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
 			<!-- 中间的通讯录 -->
-            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+            <mid-session :sessions="sessions" ref="choose" @click.native="change"></mid-session>
 			<el-col :span="15" class="bg-purple">
 				<div class="sessionHead">
 					<div class="chatLeft">
@@ -31,7 +31,7 @@
 					</div>
 					<el-input class="chatText" resize="none" type="textarea" rows="5" v-model="textarea"> </el-input>
 					
-					<el-button class="sendButton">发送(S)</el-button>
+					<el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
 				</div>
 			</el-col>
 		  </el-row>
@@ -42,16 +42,29 @@
 <script>
   import { mapState, mapMutations } from 'vuex';
   import menu from '../components/left-menu'
-  import midContact from '../components/mid-contact'
+  import midSession from '../components/mid-session'
   export default {
 	computed: mapState({
-		userInfo: state => state.user,
-		contacts: state => state.contacts
+		userInfo: state => state.user
 	}),
 	name: 'welcome',
+	created(){
+		this.$api.main.getSessions({
+          user_id: this.$store.state.user["user_id"]
+        })
+        .then((res) => {
+          if (res.data.state == "0") {
+			this.$store.commit("getSessions", res.data);
+			this.sessions=this.$store.state.sessions;
+			console.log(this.sessions)
+          } else {
+            this.$message.error("获取会话列表失败");
+          }
+        });
+	},
 	components:{
 		'left-menu':menu,
-		'mid-contact':midContact,
+		'mid-session':midSession,
     },
     data () {
       return {
@@ -60,6 +73,7 @@
 		  avatarUrl:require('../static/img/logo.png'),
 		  friendname:"log李"
 		},
+		sessions:{},
 		menuList:[
 			{
 				name:0,
@@ -91,6 +105,17 @@
 	  	}
 	},
     methods:{
+		sendInfo(){
+			store.state.socket_instance.send(JSON.stringify({
+				user_id:store.state.user.user_id,
+				content:this.textarea,
+				session_id:"",
+				sender_name:store.state.user.nickname,
+				type:'contact'
+			}))
+			this.textarea = ''
+			console.log('success')
+		},
 	  	change(){
         return this.pageType = this.$refs.choose.detailType;
         //将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
