@@ -4,8 +4,8 @@
 		  <el-row :gutter="1" class="container">
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
-        <!-- 中间的通讯录 -->
-        <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+            <!-- 中间的通讯录 -->
+            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
 			<!-- 好友申请主页/详情页面 -->
 			<right-detail :pageType="pageType" :selectedFriendInfo="selectedFriendInfo" 
 			:selectedGroupInfo="selectedGroupInfo"></right-detail>
@@ -58,7 +58,7 @@
 				style:false
 			}
 		],
-
+		
 		// 详情页的类型
 		pageType:0,
 		// 展示好友信息
