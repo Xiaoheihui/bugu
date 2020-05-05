@@ -56,6 +56,7 @@
           if (res.data.state == "0") {
 			this.$store.commit("getSessions", res.data);
 			this.sessions=this.$store.state.sessions;
+			console.log(this.sessions)
           } else {
             this.$message.error("获取会话列表失败");
           }

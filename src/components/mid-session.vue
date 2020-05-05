@@ -15,13 +15,13 @@
     </div>
     <!-- 会话列表 -->
     <div class="sessionList">
-        <div class="sheetList" v-for="i in sessions.session_list" :key="i.session_id" 
+        <div class="sheetList" v-for="i in sessions.session_list" :key="i.last_time" 
         @click="groupDetail(i)">
           <div class="access">
             <div class="sheetImage">
-              <el-image :src="i.avatar_url" class="myAvatar" alt="群头像"></el-image>
+              <el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
             </div>
-            <span class="sheetContent">{{i.group_name}}</span>
+            <span class="sheetContent">{{i.group_name==undefined?(i.friend_notes==""?i.friend_nickname:i.friend_notes):i.group_name}}</span>
           </div>
         </div>
     </div>
