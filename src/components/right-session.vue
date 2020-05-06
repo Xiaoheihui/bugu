@@ -69,20 +69,22 @@ export default {
     userInfo: state => state.user,
     cur_session: state => state.cur_session
   }),
+  
 
+    
+  
   updated() {
     this.$nextTick(() => {
       let msg = document.getElementById("chat"); // 获取对象
       msg.scrollTop = msg.scrollHeight; // 滚动高度
-    });
-  },
+    });},
   // mounted(){
   //   this.msgObj = document.getElementById("chat");
   // },
   data() {
     return {
       textarea: "",
-      msgObj: null
+      msgObj:null,
     };
   },
   methods: {
@@ -105,7 +107,7 @@ export default {
           .utcOffset(+8)
           .format("YYYY-MM-DD HH:mm:ss")
       });
-
+      
       this.textarea = "";
       console.log("success");
     }

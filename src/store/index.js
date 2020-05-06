@@ -94,6 +94,15 @@ export default new Vuex.Store({
 			state.socket_instance.onerror = error
 			// 监听socket消息
 			state.socket_instance.onmessage = getMessage
-		}
+		},
+    updateSessionHistory(state, data){
+		  for(let index in state.sessions.session_list){
+		    if(state.sessions.session_list[index].session_id == data.session_id){
+          console.log("Sddsdadda");
+          state.sessions.session_list[index].last_time = data.last_time;
+          state.sessions.session_list[index].last_record = data.last_record;
+        }window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+      }
+    }
 	}
 })
