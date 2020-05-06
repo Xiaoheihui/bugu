@@ -120,57 +120,63 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  img{
-    width:150px;
-    height:150px;
-    border-radius:50%;
-    margin-bottom:30px;
-  }
-  .login-session{
-    padding-top:100px;
-    display:flex;
-    flex-direction:column;
-    justify-content: center;
-    align-items: center;
-    z-index:3;
-  }
-  .hello{
-    position: relative;
-    height:100%;
-    width:100%;
-  }
-  .hello::before{
-    content:'';
-    position: absolute;
-    top:0;
-    left:0;
-    height:100%;
-    width:100%;
-    background:transparent url(../static/img/bg.jpg) center center no-repeat;
-    filter: blur(25px);
-    z-index: -1;
-    background-size:cover;
-  }
-  .input-item >>> .el-input__inner{
-    width:320px;
-    opacity: 0.8;
-    margin-top:6px;
-    margin-bottom:6px;
-    border-radius: 30px;
-  }
-  .el-button{
-    width:320px;
-    border-radius: 30px;
-  }
-  .register{
-    width:320px;
-    text-align:right;
-    float:right;
-  }
-  a{
-    margin-right:10px;
-    color:black;
-    text-decoration:none;
-  }
+	img {
+		width: 150px;
+		height: 150px;
+		border-radius: 50%;
+		margin-bottom: 30px;
+	}
 
+	.login-session {
+		padding-top: 100px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		z-index: 3;
+	}
+
+	.hello {
+		position: relative;
+		height: 100%;
+		width: 100%;
+	}
+
+	.hello::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background: transparent url(../static/img/bg.jpg) center center no-repeat;
+		filter: blur(25px);
+		z-index: -1;
+		background-size: cover;
+	}
+
+	.input-item>>>.el-input__inner {
+		width: 320px;
+		opacity: 0.8;
+		margin-top: 6px;
+		margin-bottom: 6px;
+		border-radius: 30px;
+	}
+
+	.el-button {
+		width: 320px;
+		border-radius: 30px;
+	}
+
+	.register {
+		width: 320px;
+		text-align: right;
+		float: right;
+	}
+
+	a {
+		margin-right: 10px;
+		color: black;
+		text-decoration: none;
+	}
 </style>
