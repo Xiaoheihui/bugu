@@ -42,7 +42,7 @@
             <i class="el-icon-video-camera"></i>
           </div>
         </div>
-        <el-input v-model="textarea" class="chatText" resize="none" type="textarea" rows="5"></el-input>
+        <el-input v-model="textarea" class="chatText" resize="none" type="textarea" rows="5" @keyup.enter.native="sendInfo"></el-input>
 
         <div class="chatBottom">
           <el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
