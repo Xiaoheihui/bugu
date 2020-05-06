@@ -13,14 +13,14 @@
       <div class="sessionArea" id="chat">
         <div class="scrollContent">
           <div v-for="i in selectedSessionHistory" :key="i.time">
-            <div class="sessionContentLeft" v-if="i.sender_id==cur_session.friend_id">
+            <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
                 <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
             </div>
-            <div class="sessionContentRight" v-if="i.sender_id!=cur_session.friend_id">
+            <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
               <div class="nameAndContent">
                 <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
                 <div class="chatContent">{{i.content}}</div>

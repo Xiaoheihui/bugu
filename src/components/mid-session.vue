@@ -60,7 +60,7 @@ export default {
           session_id: s_id
         })
         .then(res => {
-          this.selectedSessionHistory = res.data.history_list;
+            this.$emit("selectSessionHis", res.data.history_list)
         })
         .catch(e => {
           this.$message.error(e);
