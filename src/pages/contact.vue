@@ -24,7 +24,19 @@
 		userInfo: state => state.user,
 		contacts: state => state.contacts
 	}),
-    name: 'contact',
+	name: 'contact',
+	created(){
+      this.$api.main.getContacts({
+          user_id: this.$store.state.user["user_id"]
+        })
+        .then(res => {
+          if (res.data.state == "0") {
+            this.$store.commit("getContacts", res.data);
+          } else {
+            this.$message.error("获取通讯录失败");
+          }
+        });
+	},
     components:{
         'left-menu':menu,
         'mid-contact':midContact,
