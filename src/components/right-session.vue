@@ -64,10 +64,20 @@ export default {
     cur_session: state => state.cur_session
   }),
   updated() {
-    this.$nextTick(() => {
-      let msg = document.getElementById("chat"); // 获取对象
-      msg.scrollTop = msg.scrollHeight; // 滚动高度
-    });
+    this.$api.main
+        .getSessionsContent({
+          session_id: this.cur_session.session_id
+        })
+        .then(res => {
+          this.selectedSessionHistory = res.data.history_list;
+          this.$nextTick(() => {
+            let msg = document.getElementById("chat"); // 获取对象
+            msg.scrollTop = msg.scrollHeight; // 滚动高度
+          });
+        })
+        .catch(e => {
+          this.$message.error(e);
+        });
   },
   data() {
     return {
