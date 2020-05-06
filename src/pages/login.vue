@@ -1,127 +1,121 @@
 <template>
-	<div class="hello">
-		<div class="login-session">
-			<img src="../static/img/logo.png" alt="布谷" />
-			<el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" class="loginForm">
-				<el-form-item label="" prop="phone">
-					<el-input class="input-item" v-model="loginForm.phone" clearable placeholder="手机号" prefix-icon="el-icon-user"></el-input>
-				</el-form-item>
-				<el-form-item label="" prop="password">
-					<el-input class="input-item" type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码"
-					 clearable prefix-icon="el-icon-lock" @keyup.enter.native="login('loginForm')"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" @click="login('loginForm')">
-						登录
-					</el-button>
-				</el-form-item>
-			</el-form>
-			<div class='register'>
-				<router-link to='/register'>还没账号？去注册</router-link>
-			</div>
-		</div>
-	</div>
+  <div class="hello">
+    <div class="login-session">
+      <img src="../static/img/logo.png" alt="布谷"/>
+      <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm"  class="loginForm">
+        <el-form-item label="" prop="phone">
+          <el-input class="input-item" v-model="loginForm.phone" clearable placeholder="手机号" prefix-icon="el-icon-user"></el-input>
+        </el-form-item>
+        <el-form-item label="" prop="password">
+          <el-input class="input-item" type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码" clearable prefix-icon="el-icon-lock" @keyup.enter.native="login('loginForm')"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="login('loginForm')">
+            登录
+          </el-button>
+        </el-form-item>
+      </el-form>
+      <div class='register'><router-link to='/register'>还没账号？去注册</router-link></div>
+    </div>
+  </div>
 </template>
 
 <script>
-	export default {
-		name: 'login',
-		data() {
-			var checkPhone = (rule, value, callback) => {
-				let reg = new RegExp("^1(3|4|5|7|8)\\d{9}$");
-				if (!value) {
-					return callback(new Error('手机号不能为空'));
-				}
-				if (!reg.test(value)) {
-					callback(new Error('请输入正确的手机号码'));
-				} else {
-					callback();
-				}
-			};
-			var validatePass = (rule, value, callback) => {
-				let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
-				if (value === '') {
-					callback(new Error('请输入密码'));
-				} else if (!reg.test(value)) {
-					callback(new Error('密码长度需6-16位，且包含字母和字符'))
-				} else {
-					callback();
-				}
-			};
-			return {
-				loginForm: {
-					phone: "",
-					password: ""
-				},
-				rules: {
-					password: [{
-						validator: validatePass,
-						trigger: 'blur'
-					}],
-					phone: [{
-						validator: checkPhone,
-						trigger: 'blur'
-					}],
-				}
-			}
-		},
-		methods: {
-			getContacts() {
-				this.$api.main.getContacts({
-						user_id: this.$store.state.user["user_id"]
-					})
-					.then((res) => {
-						if (res.data.state == "0") {
-							this.$store.commit("getContacts", res.data);
-						} else {
-							this.$message.error("获取通讯录失败");
-						}
-					});
-			},
-			getSessions() {
-				this.$api.main.getSessions({
-						user_id: this.$store.state.user["user_id"]
-					})
-					.then((res) => {
-						if (res.data.state == "0") {
-							this.$store.commit("getSessions", res.data);
-						} else {
-							this.$message.error("获取会话列表失败");
-						}
-					});
-			},
-			login(form) {
-				this.$refs[form].validate((valid) => {
-					if (valid) {
-						this.$api.user.login({
-							phone: this.loginForm.phone,
-							password: this.loginForm.password,
-						}).then((res) => {
-							console.log(res.data)
-							if (res.data.state == "0") {
-								this.$message.success("登录成功")
-								this.$store.commit('login', res.data)
-								// 保存通讯录
-								this.getContacts();
-								// 保存会话列表
-								this.getSessions();
-								var path = this.$route.query.redirect;
-								this.$router.replace({
-									path: path === '/' || path === undefined ? '/main' : path
-								})
-							} else {
-								this.$message.error("手机号或密码错误，请重试！");
-							}
-						}).catch(e => {
-							console.log(e)
-						})
-					} else {
-						this.$message.error('请完善登录信息');
-					}
-				})
-			}
-		}
-	}
+  export default {
+    name: 'login',
+    data () {
+      var checkPhone = (rule, value, callback) => {
+        let reg = new RegExp("^1(3|4|5|7|8)\\d{9}$");
+        if (!value) {
+          return callback(new Error('手机号不能为空'));
+        }
+        if (!reg.test(value)) {
+          callback(new Error('请输入正确的手机号码'));
+        } else {
+          callback();
+        }
+      };
+      var validatePass = (rule, value, callback) => {
+        let reg = /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,16}$/;
+        if (value === '') {
+          callback(new Error('请输入密码'));
+        }else if(!reg.test(value)){
+          callback(new Error('密码长度需6-16位，且包含字母和字符'))
+        } else {
+          callback();
+        }
+      };
+      return {
+        loginForm:{
+          phone:"",
+          password:""
+        },
+        rules:{
+          password: [
+            { validator: validatePass, trigger: 'blur' }
+          ],
+          phone: [
+            { validator: checkPhone, trigger: 'blur'}
+          ],
+        }
+      }
+    },
+    methods:{
+      getContacts() {
+      this.$api.main.getContacts({
+          user_id: this.$store.state.user["user_id"]
+        })
+        .then((res) => {
+          if (res.data.state == "0") {
+            this.$store.commit("getContacts", res.data);
+          } else {
+            this.$message.error("获取通讯录失败");
+          }
+        });
+      },
+      getSessions() {
+        this.$api.main.getSessions({
+          user_id: this.$store.state.user["user_id"]
+        })
+        .then((res) => {
+          if (res.data.state == "0") {
+            this.$store.commit("getSessions", res.data);
+          } else {
+            this.$message.error("获取会话列表失败");
+          }
+        });
+      },
+      login(form){
+        this.$refs[form].validate((valid) => {
+          if (valid) {
+            this.$api.user.login({
+              phone:this.loginForm.phone,
+              password:this.loginForm.password,
+            }).then((res)=>{
+              console.log(res.data)
+                if(res.data.state=="0"){
+                  this.$message.success("登录成功")
+                  this.$store.commit('login', res.data)
+                  // 保存通讯录
+                  this.getContacts();
+                  // 保存会话列表
+                  this.getSessions();
+                  var path = this.$route.query.redirect;
+                  this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
+                }else {
+                  this.$message.error("手机号或密码错误，请重试！");
+                }
+              }
+            ).catch(e => {
+                console.log(e)
+            })
+          } else {
+            this.$message.error('请完善登录信息');
+          }
+        })
+      }
+    }
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

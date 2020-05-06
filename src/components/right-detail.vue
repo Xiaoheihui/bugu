@@ -258,18 +258,67 @@
 	};
 </script>
 <style scoped>
-	/* 详情页样式 */
-	.detailPage {
-		background: #f4f4f4;
-		height: 100%;
-		width: 62.5%;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		align-items: center;
-		border-top-right-radius: 3px;
-		border-bottom-right-radius: 3px;
-	}
+/* 详情页样式 */
+.detailPage {
+  border-left:1px solid #a4a6a9;
+  background: #f4f4f4;
+  height: 100%;
+  width: 62.5%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.friendDetail {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.friendIcon {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-left: 10%;
+  margin-top: 10%;
+  height: auto;
+}
+.friendIcon .head {
+  height: 7vh;
+  width: 7vh;
+  border-radius: 100%;
+}
+.friendIcon .name {
+  margin-left: 20px;
+  font-size: 1.8vh;
+  font-weight: bold;
+}
+.diviveLine {
+  margin: 10% 10%;
+  width: 80%;
+  height: 2px;
+  border-radius: 50px;
+  background: #bbbbbb;
+}
+.friendInfo {
+  margin-left: 18%;
+  margin-right: 12%;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: flex-start;
+}
+.friendInfo .infoHeader {
+  font-size: 1.8vh;
+  font-weight: bold;
+  text-align: left;
+  width: 100px;
+  line-height: 26px;
+}
 
 	.friendDetail {
 		width: 100%;
