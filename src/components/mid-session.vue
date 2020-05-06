@@ -29,13 +29,9 @@
             <div
               class="sheetName"
             >{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}</div>
-            <div v-if="i.session_id!=currSessId || !lastText"
-              class="sheetRecord"
-            >{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</div>
 
-            <div v-else-if="i.session_id==currSessId"
-                 class="sheetRecord">
-              {{lastText.length>20?lastText.slice(0,20)+"......":lastText}}
+            <div class="sheetRecord">
+              {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
             </div>
           </div>
         </div>
@@ -46,8 +42,7 @@
 <script>
 export default {
   name: "mid-session",
-    props:["lastText"],
-    mounted() {
+    created() {
     this.sessions = this.$store.state.sessions;
   },
   data() {

@@ -85,8 +85,6 @@ export default {
           type: "chat"
         })
       );
-
-      this.$emit("lastText", this.textarea);
         this.$store.commit("updateSessionHistory",
             {
               session_id: this.cur_session.session_id,
