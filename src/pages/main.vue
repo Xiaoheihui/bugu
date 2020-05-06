@@ -5,11 +5,12 @@
         <!-- 侧边栏菜单 -->
         <left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
         <!-- 中间的会话列表 -->
-        <mid-session ref="choose" @selectSessionHis="selectSH"  @pageTpye_="changePageType" ></mid-session>
+        <mid-session ref="choose" @selectSessionHis="selectSH" @pageTpye_="changePageType"></mid-session>
         <!-- 右侧的会话窗口，显示聊天记录与发送窗口 -->
         <right-session
           :pageType="pageType"
           :selectedSessionHistory="selectedSessionHistory"
+          v-on:lastText="updateHistory"
         ></right-session>
       </el-row>
     </div>
@@ -34,22 +35,10 @@ export default {
       .then(res => {
         if (res.data.state == "0") {
           this.$store.commit("getSessions", res.data);
-        //   console.log(res.data);
+          //   console.log(res.data);
         } else {
           this.$message.error("获取会话列表失败");
         }
-      });
-  },
-  updated() {
-    this.$api.main
-      .getSessionsContent({
-        session_id: this.$store.state.cur_session.session_id
-      })
-      .then(res => {
-        this.selectedSessionHistory = res.data.history_list;
-      })
-      .catch(e => {
-        this.$message.error(e);
       });
   },
   components: {
@@ -60,7 +49,7 @@ export default {
   data() {
     return {
       selectedSessionHistory: [],
-        lastText1: "",
+      lastText1: "",
       menuList: [
         {
           name: 0,
@@ -95,10 +84,22 @@ export default {
     changePageType(res) {
       this.pageType = res;
     },
-      selectSH(res) {
-        this.lastText1 = "";
-        this.selectedSessionHistory = res;
-      },
+    selectSH(res) {
+      this.lastText1 = "";
+      this.selectedSessionHistory = res;
+    },
+    updateHistory(params) {
+      this.$api.main
+        .getSessionsContent({
+          session_id: this.$store.state.cur_session.session_id
+        })
+        .then(res => {
+          this.selectedSessionHistory = res.data.history_list;
+        })
+        .catch(e => {
+          this.$message.error(e);
+        });
+    }
   }
 };
 </script>
