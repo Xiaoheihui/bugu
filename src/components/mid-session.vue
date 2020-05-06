@@ -29,9 +29,14 @@
             <div
               class="sheetName"
             >{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}</div>
-            <div
+            <div v-if="i.session_id!=currSessId || !lastText"
               class="sheetRecord"
             >{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</div>
+
+            <div v-else-if="i.session_id==currSessId"
+                 class="sheetRecord">
+              {{lastText.length>20?lastText.slice(0,20)+"......":lastText}}
+            </div>
           </div>
         </div>
       </div>
@@ -41,16 +46,19 @@
 <script>
 export default {
   name: "mid-session",
-  created() {
+    props:["lastText"],
+    mounted() {
     this.sessions = this.$store.state.sessions;
   },
   data() {
     return {
+      sessions:'',
       // 搜索框输入
       searchInput: "",
       // 判断右边的页面类型（1：单聊，2：拉群）
       detailType: 0,
-      selectedSessionHistory: []
+      selectedSessionHistory: [],
+      currSessId: 0,
     };
   },
   methods: {
@@ -60,6 +68,7 @@ export default {
           session_id: s_id
         })
         .then(res => {
+            this.$emit("pageTpye_", this.detailType)
             this.$emit("selectSessionHis", res.data.history_list)
         })
         .catch(e => {
@@ -70,8 +79,8 @@ export default {
       this.detailType = 1;
       // console.log(info);
       this.$store.commit("getCurSession", info);
-      let sessionId = info.session_id;
-      this.getSessionsContent(sessionId);
+      this.currSessId = info.session_id;
+      this.getSessionsContent(this.currSessId);
     },
     groupApply: function() {
       this.detailType = 2;
