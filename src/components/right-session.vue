@@ -6,7 +6,7 @@
           <el-image :src="cur_session.avatar_url" class="chatAvatar" alt="用户头像"></el-image>
           <span
             class="friendName"
-          >{{cur_session.group_name==undefined?cur_session.friend_nickname:cur_session.group_name}}</span>
+          >{{cur_session.group_name==undefined?(cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
         </div>
         <el-button class="info" icon="el-icon-more"></el-button>
       </div>
