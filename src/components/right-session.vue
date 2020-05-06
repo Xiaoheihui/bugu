@@ -6,7 +6,7 @@
           <el-image :src="cur_session.avatar_url" class="chatAvatar" alt="用户头像"></el-image>
           <span
             class="friendName"
-          >{{cur_session.group_name==undefined?(cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
+          >{{cur_session.group_name==undefined?(cur_session.friend_notes==''||cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
         </div>
         <el-button class="info" icon="el-icon-more"></el-button>
       </div>
@@ -16,7 +16,7 @@
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                <div style="font-size:1.6vh;font-weight:bold;">{{cur_session.friend_notes==''||cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes}}</div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
             </div>
