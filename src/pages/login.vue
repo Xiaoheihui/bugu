@@ -80,8 +80,6 @@
         .then((res) => {
           if (res.data.state == "0") {
             this.$store.commit("getSessions", res.data);
-            var path = this.$route.query.redirect;
-            this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
           } else {
             this.$message.error("获取会话列表失败");
           }
@@ -102,6 +100,8 @@
                   this.getContacts();
                   // 保存会话列表
                   this.getSessions();
+                  var path = this.$route.query.redirect;
+                  this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
                 }else {
                   this.$message.error("手机号或密码错误，请重试！");
                 }

@@ -81,8 +81,8 @@ export default {
     };
   },
   methods: {
-    changePageType(res) {
-      this.pageType = res;
+    change() {
+      this.pageType = this.$refs.choose.detailType;
     },
     selectSH(res) {
       this.lastText1 = "";

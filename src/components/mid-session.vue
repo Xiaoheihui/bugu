@@ -17,7 +17,7 @@
     <div class="sessionList">
       <div
         class="sheetList"
-        v-for="i in $store.state.sessions.session_list"
+        v-for="i in sessions.session_list"
         :key="i.last_time"
         @click="sessionDetail(i)"
       >
@@ -29,10 +29,9 @@
             <div
               class="sheetName"
             >{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}</div>
-
-            <div class="sheetRecord">
-              {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
-            </div>
+            <div
+              class="sheetRecord"
+            >{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</div>
           </div>
         </div>
       </div>
@@ -42,18 +41,16 @@
 <script>
 export default {
   name: "mid-session",
-    created() {
+  created() {
     this.sessions = this.$store.state.sessions;
   },
   data() {
     return {
-      sessions:'',
       // 搜索框输入
       searchInput: "",
       // 判断右边的页面类型（1：单聊，2：拉群）
       detailType: 0,
-      selectedSessionHistory: [],
-      currSessId: 0,
+      selectedSessionHistory: []
     };
   },
   methods: {
@@ -63,7 +60,6 @@ export default {
           session_id: s_id
         })
         .then(res => {
-            this.$emit("pageTpye_", this.detailType)
             this.$emit("selectSessionHis", res.data.history_list)
         })
         .catch(e => {
@@ -74,8 +70,8 @@ export default {
       this.detailType = 1;
       // console.log(info);
       this.$store.commit("getCurSession", info);
-      this.currSessId = info.session_id;
-      this.getSessionsContent(this.currSessId);
+      let sessionId = info.session_id;
+      this.getSessionsContent(sessionId);
     },
     groupApply: function() {
       this.detailType = 2;
