@@ -56,6 +56,7 @@
 import { mapState, mapMutations } from "vuex";
 
 export default {
+
   name: "right-session",
   props: ["pageType", "selectedSessionHistory"], // 获取父组件的传值
   computed: mapState({
@@ -84,7 +85,16 @@ export default {
           type: "chat"
         })
       );
-      this.textarea = "";
+
+      this.$emit("lastText", this.textarea);
+        this.$store.commit("updateSessionHistory",
+            {
+              session_id: this.cur_session.session_id,
+              last_record:this.textarea,
+              last_time: this.$moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss')
+            }
+         )
+        this.textarea = "";
       console.log("success");
     },
   }
