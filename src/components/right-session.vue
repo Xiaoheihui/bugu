@@ -42,14 +42,7 @@
             <i class="el-icon-video-camera"></i>
           </div>
         </div>
-        <el-input
-          v-model="textarea"
-          class="chatText"
-          resize="none"
-          type="textarea"
-          rows="5"
-          @keyup.enter.native="sendInfo"
-        ></el-input>
+        <el-input v-model="textarea" class="chatText" resize="none" type="textarea" rows="5" @keyup.enter.native="sendInfo"></el-input>
 
         <div class="chatBottom">
           <el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
@@ -74,8 +67,6 @@ export default {
       let msg = document.getElementById("chat"); // 获取对象
       msg.scrollTop = msg.scrollHeight; // 滚动高度
     });
-
-    
   },
   data() {
     return {
@@ -93,26 +84,16 @@ export default {
           type: "chat"
         })
       );
-
-      this.$emit("lastText", this.textarea);
-      this.$store.commit("updateSessionHistory", {
-        session_id: this.cur_session.session_id,
-        last_record: this.textarea,
-        last_time: this.$moment()
-          .utcOffset(+8)
-          .format("YYYY-MM-DD HH:mm:ss")
-      });
-      
       this.textarea = "";
       console.log("success");
-    }
+    },
   }
 };
 </script>
 
 <style scoped>
 /* 会话窗口样式 */
-.sessionDetail {
+.sessionDetail{
   border-left: 1px solid #a4a6a9;
   background: #e7e7e7;
   height: 100%;
@@ -199,7 +180,6 @@ export default {
 }
 .sessionContentLeft .nameAndContent .chatContent {
   margin-top: 1.2vh;
-  margin-right: 1.2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
@@ -226,7 +206,6 @@ export default {
 }
 .sessionContentRight .nameAndContent .chatContent {
   margin-top: 1.2vh;
-  margin-left: 1.2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
@@ -236,14 +215,14 @@ export default {
   background: #ffffff;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction:column;
   justify-content: space-between;
   align-items: flex-end;
 }
 .chatOption {
   background: #e7e7e7;
   width: 100%;
-  height: auto;
+  height:auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -252,13 +231,13 @@ export default {
   padding: 0 10px;
   font-size: 25px;
 }
-.chatText {
-  height: auto;
+.chatText{
+  height:auto;
 }
 .chatText >>> .el-textarea__inner {
   border: none;
 }
-.chatBottom {
+.chatBottom{
   height: auto;
 }
 .sendButton {

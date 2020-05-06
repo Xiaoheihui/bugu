@@ -5,7 +5,7 @@
         <!-- 侧边栏菜单 -->
         <left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
         <!-- 中间的会话列表 -->
-        <mid-session ref="choose" @selectSessionHis="selectSH"  @pageTpye_="changePageType" ></mid-session>
+        <mid-session ref="choose" @click.native="change" @selectSessionHis="selectSH"></mid-session>
         <!-- 右侧的会话窗口，显示聊天记录与发送窗口 -->
         <right-session
           :pageType="pageType"
@@ -40,18 +40,6 @@ export default {
         }
       });
   },
-  updated() {
-    this.$api.main
-      .getSessionsContent({
-        session_id: this.$store.state.cur_session.session_id
-      })
-      .then(res => {
-        this.selectedSessionHistory = res.data.history_list;
-      })
-      .catch(e => {
-        this.$message.error(e);
-      });
-  },
   components: {
     "left-menu": menu,
     "mid-session": midSession,
@@ -60,7 +48,6 @@ export default {
   data() {
     return {
       selectedSessionHistory: [],
-        lastText1: "",
       menuList: [
         {
           name: 0,
@@ -92,13 +79,12 @@ export default {
     };
   },
   methods: {
-    changePageType(res) {
-      this.pageType = res;
+    change() {
+      this.pageType = this.$refs.choose.detailType;
     },
       selectSH(res) {
-        this.lastText1 = "";
-        this.selectedSessionHistory = res;
-      },
+        this.selectedSessionHistory = res
+      }
   }
 };
 </script>
