@@ -268,6 +268,7 @@ export default {
 <style scoped>
 /* 详情页样式 */
 .detailPage {
+  border-left:1px solid #a4a6a9;
   background: #f4f4f4;
   height: 100%;
   width: 62.5%;

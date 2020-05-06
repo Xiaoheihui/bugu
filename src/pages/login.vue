@@ -7,7 +7,7 @@
           <el-input class="input-item" v-model="loginForm.phone" clearable placeholder="手机号" prefix-icon="el-icon-user"></el-input>
         </el-form-item>
         <el-form-item label="" prop="password">
-          <el-input class="input-item" type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码" clearable prefix-icon="el-icon-lock"></el-input>
+          <el-input class="input-item" type="password" v-model="loginForm.password" autocomplete="off" placeholder="密码" clearable prefix-icon="el-icon-lock" @keyup.enter.native="login('loginForm')"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="login('loginForm')">
@@ -107,7 +107,7 @@
                 }
               }
             ).catch(e => {
-                this.$message.error('error')
+                console.log(e)
             })
           } else {
             this.$message.error('请完善登录信息');

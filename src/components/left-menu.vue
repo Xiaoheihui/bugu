@@ -1,6 +1,6 @@
 <template>
   <el-col :span="3" class="aside" :model="userInfo">
-    <el-image :src="userInfo.avatar_url" class="myAvatar" :title="'用户：'+userInfo.nickname"></el-image>
+    <el-image :src="userInfo.avatar_url ? userInfo.avatar_url: require('../static/img/logo.png')" class="myAvatar" :title="'用户：'+userInfo.nickname"></el-image>
     <div class="menu">
       <el-row v-for="menu in menuList" :key="menu.name">
         <el-button

@@ -9,68 +9,74 @@
         placeholder="搜索"
         prefix-icon="el-icon-search"
       ></el-input>
-      <el-button class="addfriend_button" title="添加好友" @click="friendApply">
+      <el-button class="addfriend_button" title="添加好友" @click="groupApply">
         <i class="iconfont icon-addFriend_B"></i>
       </el-button>
     </div>
     <!-- 会话列表 -->
     <div class="sessionList">
-        <div class="sheetList" v-for="i in sessions.session_list" :key="i.last_time" 
-        @click="groupDetail(i)">
-          <div class="access">
-            <div class="sheetImage">
-              <el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
-            </div>
-            <span class="sheetContent">{{i.group_name==undefined?(i.friend_notes==""?i.friend_nickname:i.friend_notes):i.group_name}}</span>
+      <div
+        class="sheetList"
+        v-for="i in sessions.session_list"
+        :key="i.last_time"
+        @click="sessionDetail(i)"
+      >
+        <div class="access">
+          <div class="sheetImage">
+            <el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
+          </div>
+          <div class="sheetContent">
+            <div
+              class="sheetName"
+            >{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}</div>
+            <div
+              class="sheetRecord"
+            >{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</div>
           </div>
         </div>
+      </div>
     </div>
-    
   </el-col>
 </template>
 <script>
 export default {
-  name: "mid-contact",
-  props: ["sessions"], // 获取父组件的传值
+  name: "mid-session",
+  created() {
+    this.sessions = this.$store.state.sessions;
+  },
   data() {
     return {
       // 搜索框输入
       searchInput: "",
-      // 是否显示群聊和好友列表
-      showSheets1: false,
-      showSheets2: false,
-      detailType:0,
-      selectedFriendInfo:{},
-      selectedGroupInfo:{}
+      // 判断右边的页面类型（1：单聊，2：拉群）
+      detailType: 0,
+      selectedSessionHistory: []
     };
   },
   methods: {
-    toggleSheet1: function(index) {
-      this.$refs.toggleicon1.style.transform = !this.showSheets1
-        ? "rotate(90deg)"
-        : "rotate(0)";
-      this.showSheets1 = !this.showSheets1;
+    getSessionsContent(s_id) {
+      this.$api.main
+        .getSessionsContent({
+          session_id: s_id
+        })
+        .then(res => {
+          this.selectedSessionHistory = res.data.history_list;
+        })
+        .catch(e => {
+          this.$message.error(e);
+        });
     },
-    toggleSheet2: function(index) {
-      this.$refs.toggleicon2.style.transform = !this.showSheets2
-        ? "rotate(90deg)"
-        : "rotate(0)";
-      this.showSheets2 = !this.showSheets2;
+    sessionDetail: function(info) {
+      this.detailType = 1;
+      // console.log(info);
+      this.$store.commit("getCurSession", info);
+      let sessionId = info.session_id;
+      this.getSessionsContent(sessionId);
     },
-    friendDetail:function(info){
-      this.detailType=1;
-      this.selectedFriendInfo=JSON.parse(JSON.stringify(info));
-    },
-    groupDetail:function(info){
-      this.detailType=2;
-      this.selectedGroupInfo=JSON.parse(JSON.stringify(info));
-      // console.log(JSON.parse(JSON.stringify(info)));
-    },
-    friendApply:function(){
-      this.detailType=3;
+    groupApply: function() {
+      this.detailType = 2;
     }
-    
-}
+  }
 };
 </script>
 <style scoped>
@@ -136,13 +142,24 @@ export default {
   margin-right: 20px;
 }
 .sessionList .sheetList .access .sheetImage .myAvatar {
-  height:4vw;
-  width:4vw;
+  height: 4vw;
+  width: 4vw;
   border-radius: 100%;
 }
-.sessionList .sheetList .access .sheetContent {
+.sheetContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.sheetName {
   width: auto;
   font-size: 1.8vh;
-  font-weight:bold;
+  font-weight: bold;
+  margin-bottom: 0.6vh;
+}
+.sheetRecord {
+  width: auto;
+  font-size: 1.2vh;
+  text-align: left;
 }
 </style>

@@ -27,28 +27,28 @@ export default new Router({
       name: "register",
       component: register
     },
-    {
-      path: "/main",
-      name: "main",
+	  {
+	  	path: "/main",
+		  name: "main",
       component: main,
-      meta: {
-        requireAuth: true
+      meta:{
+        requireAuth:true
       }
-    },
+	  },
     {
       path: "/contact",
       name: "contact",
       component: contact,
-      meta: {
-        requireAuth: true
+      meta:{
+        requireAuth:true
       }
     },
     {
       path: "/setting",
       name: "setting",
       component: setting,
-      meta: {
-        requireAuth: true
+      meta:{
+        requireAuth:true
       }
     },
     {
