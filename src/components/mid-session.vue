@@ -17,7 +17,7 @@
     <div class="sessionList">
       <div
         class="sheetList"
-        v-for="i in sessions.session_list"
+        v-for="i in $store.state.sessions.session_list"
         :key="i.last_time"
         @click="sessionDetail(i)"
       >
