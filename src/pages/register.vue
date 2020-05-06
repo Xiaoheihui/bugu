@@ -88,7 +88,7 @@
             }).then((res)=>{
                 if(res.data.state=='0'){
                   this.$message.success("注册成功")
-                  this.$router.push({path:'/register'});
+                  this.$router.push({path:'/login'});
                 }else {
                   this.$message.error("手机号或密码错误，请重试！");
                 }
