@@ -28,6 +28,7 @@
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
             </div>
           </div>
+
           <div v-if="$store.state.temp_history.length>0" v-for="(i, index) in $store.state.temp_history" :key="i.time">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
@@ -85,7 +86,6 @@ export default {
   computed: mapState({
     userInfo: state => state.user,
     cur_session: state => state.cur_session,
-    if_receive: state => state.messgaeReceive,
   }),
   updated() {
     this.$nextTick(() => {
@@ -97,7 +97,6 @@ export default {
   // },
   data() {
     return {
-      if_receive: false,
       textarea: "",
       msgObj:null,
     };
