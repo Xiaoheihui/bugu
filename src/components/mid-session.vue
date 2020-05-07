@@ -34,6 +34,7 @@
 
             <div class="sheetRecord">
               {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
+              <p v-if="!i.if_read">小红点</p>
             </div>
           </div>
         </div>

@@ -64,6 +64,7 @@ export default new Vuex.Store({
 			window.localStorage.setItem('contacts', JSON.stringify(contacts))
 		},
 		getSessions(state, sessions) {
+
 			state.sessions = sessions
 			window.localStorage.setItem('sessions', JSON.stringify(sessions))
 		},
@@ -105,6 +106,17 @@ export default new Vuex.Store({
             if(state.sessions.session_list[index].session_id == msg.session_id){
               state.sessions.session_list[index].last_time = msg.transmit_time;
               state.sessions.session_list[index].last_record = msg.content;
+            }
+            window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+          }
+        }
+        else if(msg.sender_id!=state.user.user_id){
+          // 收到消息，但现在不在该会话的界面
+          for(let index in state.sessions.session_list){
+            if(state.sessions.session_list[index].session_id == msg.session_id){
+              state.sessions.session_list[index].last_time = msg.transmit_time;
+              state.sessions.session_list[index].last_record = msg.content;
+              state.sessions.session_list[index].if_read = false;
             }
             window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
           }
