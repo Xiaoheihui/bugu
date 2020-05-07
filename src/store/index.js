@@ -101,7 +101,8 @@ export default new Vuex.Store({
           console.log("Sddsdadda");
           state.sessions.session_list[index].last_time = data.last_time;
           state.sessions.session_list[index].last_record = data.last_record;
-        }window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+        }
+		    window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
       }
     }
 	}
