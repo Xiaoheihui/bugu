@@ -96,9 +96,9 @@
             }).then((res)=>{
               console.log(res.data)
                 if(res.data.state=="0"){
-                  this.$message.success("登录成功")
-                  this.$store.commit('login', res.data)
-                  // 保存通讯录
+                  this.$message.success("登录成功");
+				  console.log("我是在login.vue中登录的！！！");
+				  this.$store.commit('login', res.data)                  // 保存通讯录
                   this.getContacts();
                   // 保存会话列表
                   this.getSessions();

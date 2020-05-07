@@ -99,7 +99,6 @@ export default {
         })
       );
 
-      this.$emit("lastText", this.textarea);
       this.$store.commit("updateSessionHistory", {
         session_id: this.cur_session.session_id,
         last_record: this.textarea,
@@ -107,7 +106,7 @@ export default {
           .utcOffset(+8)
           .format("YYYY-MM-DD HH:mm:ss")
       });
-      
+      this.$emit("lastText", this.textarea);
       this.textarea = "";
       console.log("success");
     }
