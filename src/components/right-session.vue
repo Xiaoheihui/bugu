@@ -12,7 +12,7 @@
       </div>
       <div class="sessionArea" id="chat">
         <div class="scrollContent">
-          <div v-for="(i, index) in selectedSessionHistory" >
+          <div v-for="(i, index) in selectedSessionHistory">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
@@ -188,7 +188,7 @@ export default {
 }
 .sessionContentLeft {
   margin-top: 1.2vh;
-  margin-bottom: 1vh;
+  margin-bottom: 1.5vh;
   margin-left: 10px;
   display: flex;
   flex-direction: row;
@@ -203,12 +203,16 @@ export default {
 .sessionContentLeft .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
+  min-height: 6vh;
+  min-width: 6vh;
   border-radius: 100%;
   margin-right: 15px;
 }
 .sessionContentLeft .nameAndContent .chatContent {
+  word-break: break-all;
+  text-align:left;
   margin-top: 1.2vh;
-  margin-right: 1.2vh;
+  margin-right: 2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
@@ -216,7 +220,7 @@ export default {
 }
 .sessionContentRight {
   margin-top: 1.2vh;
-  margin-bottom: 1vh;
+  margin-bottom: 1.5vh;
   margin-right: 10px;
   display: flex;
   flex-direction: row;
@@ -230,12 +234,16 @@ export default {
 .sessionContentRight .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
+  min-height: 6vh;
+  min-width: 6vh;
   border-radius: 100%;
   margin-left: 15px;
 }
 .sessionContentRight .nameAndContent .chatContent {
+  word-break: break-all;
+  text-align:left;
   margin-top: 1.2vh;
-  margin-left: 1.2vh;
+  margin-left: 2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
