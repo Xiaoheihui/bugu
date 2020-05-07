@@ -28,7 +28,9 @@
           <div class="sheetContent">
             <div
               class="sheetName"
-            >{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}</div>
+            >
+              {{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}
+            </div>
 
             <div class="sheetRecord">
               {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
@@ -40,130 +42,148 @@
   </el-col>
 </template>
 <script>
-export default {
-  name: "mid-session",
-    created() {
-    this.sessions = this.$store.state.sessions;
-  },
-  data() {
-    return {
-      sessions:'',
-      // 搜索框输入
-      searchInput: "",
-      // 判断右边的页面类型（1：单聊，2：拉群）
-      detailType: 0,
-      selectedSessionHistory: [],
-      currSessId: 0,
+    import {mapState, mapMutations} from 'vuex'
+    export default {
+        name: "mid-session",
+        watch:{
+            '$store.state.messgaeReceive'(){
+                if(this.$store.state.temp_history.length >= 8){
+                    this.sessionDetail(this.$store.state.cur_session)
+                }
+            }
+        },
+        data() {
+            return {
+                // 搜索框输入
+                searchInput: "",
+                // 判断右边的页面类型（1：单聊，2：拉群）
+                detailType: 0,
+                selectedSessionHistory: [],
+                currSessId: 0,
+            };
+        },
+        methods: {
+            getSessionsContent(s_id) {
+                this.$api.main
+                    .getSessionsContent({
+                        session_id: s_id
+                    })
+                    .then(res => {
+                        this.$emit("pageTpye_", this.detailType)
+                        this.$emit("selectSessionHis", res.data.history_list)
+                        this.$store.commit("clearTempHis", ''); // 发消息发得太快会有吞消息的现象出现
+                    })
+                    .catch(e => {
+                        this.$message.error(e);
+                    });
+            },
+            sessionDetail: function (info) {
+                this.detailType = 1;
+                this.$store.commit("getCurSession", info);
+                this.currSessId = info.session_id;
+                this.getSessionsContent(this.currSessId);
+            },
+            groupApply: function () {
+                this.detailType = 2;
+            }
+        }
     };
-  },
-  methods: {
-    getSessionsContent(s_id) {
-      this.$api.main
-        .getSessionsContent({
-          session_id: s_id
-        })
-        .then(res => {
-            this.$emit("pageTpye_", this.detailType)
-            this.$emit("selectSessionHis", res.data.history_list)
-        })
-        .catch(e => {
-          this.$message.error(e);
-        });
-    },
-    sessionDetail: function(info) {
-      this.detailType = 1;
-      // console.log(info);
-      this.$store.commit("getCurSession", info);
-      this.currSessId = info.session_id;
-      this.getSessionsContent(this.currSessId);
-    },
-    groupApply: function() {
-      this.detailType = 2;
-    }
-  }
-};
 </script>
 <style scoped>
-/* 主菜单 */
-.list {
-  background: #ececec;
-  height: 100%;
-  width: 25%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  z-index: 3;
-}
-.searchNav {
-  width: 100%;
-}
-.searchNav .searchInput {
-  width: 75%;
-  height: auto;
-}
-.searchNav .addfriend_button {
-  margin-left: 2px;
-  padding: 10px;
-}
-/* 聊天室收拉菜单 */
-.sessionList {
-  width: 100%;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.sessionList .header {
-  background: #e2e2e2;
-  width: 100%;
-  height: auto;
-  font-size: 2.5vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.sessionList .header i {
-  padding: 10px;
-}
-.sessionList .header .header-span {
-  padding: 10px;
-}
-.sessionList .sheetList {
-  height: auto;
-  width: 100%;
-}
-.sessionList .sheetList .access {
-  padding: 10px 5px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
-.sessionList .sheetList .access .sheetImage {
-  height: auto;
-  width: auto;
-  margin-right: 20px;
-}
-.sessionList .sheetList .access .sheetImage .myAvatar {
-  height: 4vw;
-  width: 4vw;
-  border-radius: 100%;
-}
-.sheetContent {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.sheetName {
-  width: auto;
-  font-size: 1.8vh;
-  font-weight: bold;
-  margin-bottom: 0.6vh;
-}
-.sheetRecord {
-  width: auto;
-  font-size: 1.2vh;
-  text-align: left;
-}
+  /* 主菜单 */
+  .list {
+    background: #ececec;
+    height: 100%;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 3;
+  }
+
+  .searchNav {
+    width: 100%;
+  }
+
+  .searchNav .searchInput {
+    width: 75%;
+    height: auto;
+  }
+
+  .searchNav .addfriend_button {
+    margin-left: 2px;
+    padding: 10px;
+  }
+
+  /* 聊天室收拉菜单 */
+  .sessionList {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sessionList .header {
+    background: #e2e2e2;
+    width: 100%;
+    height: auto;
+    font-size: 2.5vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .sessionList .header i {
+    padding: 10px;
+  }
+
+  .sessionList .header .header-span {
+    padding: 10px;
+  }
+
+  .sessionList .sheetList {
+    height: auto;
+    width: 100%;
+  }
+
+  .sessionList .sheetList .access {
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .sessionList .sheetList .access .sheetImage {
+    height: auto;
+    width: auto;
+    margin-right: 20px;
+  }
+
+  .sessionList .sheetList .access .sheetImage .myAvatar {
+    height: 4vw;
+    width: 4vw;
+    border-radius: 100%;
+  }
+
+  .sheetContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sheetName {
+    width: auto;
+    font-size: 1.8vh;
+    font-weight: bold;
+    margin-bottom: 0.6vh;
+  }
+
+  .sheetRecord {
+    width: auto;
+    font-size: 1.2vh;
+    text-align: left;
+  }
 </style>

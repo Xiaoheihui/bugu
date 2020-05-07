@@ -12,7 +12,7 @@
       </div>
       <div class="sessionArea" id="chat">
         <div class="scrollContent">
-          <div v-for="i in selectedSessionHistory" :key="i.time">
+          <div v-for="(i, index) in selectedSessionHistory" >
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
@@ -28,6 +28,23 @@
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
             </div>
           </div>
+          <div v-if="$store.state.temp_history.length>0" v-for="(i, index) in $store.state.temp_history" :key="i.time">
+            <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
+              <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
+              <div class="nameAndContent">
+                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                <div class="chatContent">{{i.content}}</div>
+              </div>
+            </div>
+            <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
+              <div class="nameAndContent">
+                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                <div class="chatContent">{{i.content}}</div>
+              </div>
+              <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
+            </div>
+          </div>
+
         </div>
       </div>
       <div class="sessionBottom">
@@ -67,12 +84,9 @@ export default {
   props: ["pageType", "selectedSessionHistory"], // 获取父组件的传值
   computed: mapState({
     userInfo: state => state.user,
-    cur_session: state => state.cur_session
+    cur_session: state => state.cur_session,
+    if_receive: state => state.messgaeReceive,
   }),
-  
-
-    
-  
   updated() {
     this.$nextTick(() => {
       let msg = document.getElementById("chat"); // 获取对象
@@ -83,6 +97,7 @@ export default {
   // },
   data() {
     return {
+      if_receive: false,
       textarea: "",
       msgObj:null,
     };
@@ -98,15 +113,6 @@ export default {
           type: "chat"
         })
       );
-
-      this.$store.commit("updateSessionHistory", {
-        session_id: this.cur_session.session_id,
-        last_record: this.textarea,
-        last_time: this.$moment()
-          .utcOffset(+8)
-          .format("YYYY-MM-DD HH:mm:ss")
-      });
-      this.$emit("lastText", this.textarea);
       this.textarea = "";
       console.log("success");
     }

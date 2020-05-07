@@ -67,7 +67,7 @@ var server = ws.createServer(function(conn) {
 						console.log(res.data);
 						console.log("111111111111111111");
 						session = res.data.session;
-						
+
 						let time = moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
 						//判断是否为群聊
 						let is_group = session.is_group;
@@ -103,7 +103,7 @@ var server = ws.createServer(function(conn) {
 									}
 									//发给自己
 									conns.sendText(to_str(message_between));
-									
+
 									//更新该会话的最后一条消息时间
 									axios.post("https://af8ko6.toutiao15.com/update_last_time", {
 										session_id: data['session_id'],
@@ -115,7 +115,7 @@ var server = ws.createServer(function(conn) {
 											console.log("最后一条消息时间修改失败");
 										}
 									});
-									
+
 									//存储聊天记录
 									axios.post("https://af8ko6.toutiao15.com/add_char_history", {
 										session_id: data['session_id'],
@@ -151,16 +151,30 @@ var server = ws.createServer(function(conn) {
 									session_id: data['session_id'],
 									content: data['content'],
 									transmit_time: time,
+                  sender_name: data['sender_name'],
+                  if_receive: false,
 									type: "success"
 								};
-
 								console.log(to_str(message_between));
 								//发给别人
 								conns[friend_id].sendText(to_str(message_between));
-								//发给自己
-								conns[data.user_id].sendText(to_str(message_between));
-							}
-							
+                //发给自己
+                conns[data.user_id].sendText(to_str(message_between));
+							}else{
+                //发给自己
+                message_between = {
+                  user_id: data.user_id,
+                  session_id: data['session_id'],
+                  content: data['content'],
+                  transmit_time: time,
+                  sender_name: data['sender_name'],
+                  if_receive: false,
+                  type: "success"
+                };
+                conns[data.user_id].sendText(to_str(message_between));
+              }
+
+
 							//更新该会话的最后一条消息时间
 							axios.post("https://af8ko6.toutiao15.com/update_last_time", {
 								session_id: data['session_id'],
@@ -172,7 +186,7 @@ var server = ws.createServer(function(conn) {
 									console.log("最后一条消息时间修改失败");
 								}
 							});
-							
+
 							//存储聊天记录
 							axios.post("https://af8ko6.toutiao15.com/add_char_history", {
 								session_id: data['session_id'],
@@ -216,7 +230,7 @@ var server = ws.createServer(function(conn) {
 			//删除成员信息
 			delete conns[uid];
 			console.log("close:   " + conns.hasOwnProperty(uid));
-		});	
+		});
 	});
 
 	//处理错误事件信息
