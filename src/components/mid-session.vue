@@ -32,9 +32,10 @@
               {{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}
             </div>
 
+
             <div class="sheetRecord">
               {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
-              <p v-if="!i.if_read">小红点</p>
+              <p v-if="!i.if_read && currSessId != i.session_id">小红点</p>
             </div>
           </div>
         </div>
@@ -43,6 +44,7 @@
   </el-col>
 </template>
 <script>
+
     import {mapState, mapMutations} from 'vuex'
     export default {
         name: "mid-session",
@@ -82,6 +84,7 @@
                 this.detailType = 1;
                 this.$store.commit("getCurSession", info);
                 this.currSessId = info.session_id;
+                this.$store.commit("readCurSessionMessage", this.currSessId);
                 this.getSessionsContent(this.currSessId);
             },
             groupApply: function () {

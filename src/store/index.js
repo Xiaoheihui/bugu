@@ -99,6 +99,7 @@ export default new Vuex.Store({
 			const error = function() {
 				console.log("连接错误")
 			}
+
 			const getMessage = function(msg_) {
 				let msg = JSON.parse(msg_.data);
 				// 只要是在当前会话，不管是自己发出去还是别人发过来，都先存temp
@@ -134,7 +135,6 @@ export default new Vuex.Store({
 				}
 
 				console.log(msg)
-
 			}
 			const close = function() {
 				console.log("socket已经关闭")
@@ -146,8 +146,19 @@ export default new Vuex.Store({
 			// 监听socket消息
 			state.socket_instance.onmessage = getMessage
 		},
-		clearTempHis(state, data) {
-			state.temp_history = []
+
+    
+    	clearTempHis(state, data){
+		  	state.temp_history = []
+    	},
+    	readCurSessionMessage(state, sessionId){
+      		for(let index in state.sessions.session_list){
+        		if(state.sessions.session_list[index].session_id == sessionId){
+          			state.sessions.session_list[index].if_read = true;
+        	}
+        	window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+			}
 		}
 	}
+
 })
