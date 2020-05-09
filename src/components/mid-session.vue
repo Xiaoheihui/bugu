@@ -33,9 +33,15 @@
               class="sheetRecord"
             >{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</div>
 
+<<<<<<< Updated upstream
             <div v-else-if="i.session_id==currSessId"
                  class="sheetRecord">
               {{lastText.length>20?lastText.slice(0,20)+"......":lastText}}
+=======
+            <div class="sheetRecord">
+              {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
+              <p v-if="!i.if_read && currSessId != i.session_id">小红点</p>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>
@@ -44,6 +50,7 @@
   </el-col>
 </template>
 <script>
+<<<<<<< Updated upstream
 export default {
   name: "mid-session",
     props:["lastText"],
@@ -59,6 +66,54 @@ export default {
       detailType: 0,
       selectedSessionHistory: [],
       currSessId: 0,
+=======
+    import {mapState, mapMutations} from 'vuex'
+    export default {
+        name: "mid-session",
+        watch:{
+            '$store.state.messgaeReceive'(){
+                if(this.$store.state.temp_history.length >= 8){
+                    this.sessionDetail(this.$store.state.cur_session)
+                }
+            }
+        },
+        data() {
+            return {
+                // 搜索框输入
+                searchInput: "",
+                // 判断右边的页面类型（1：单聊，2：拉群）
+                detailType: 0,
+                selectedSessionHistory: [],
+                currSessId: 0,
+            };
+        },
+        methods: {
+            getSessionsContent(s_id) {
+                this.$api.main
+                    .getSessionsContent({
+                        session_id: s_id
+                    })
+                    .then(res => {
+                        this.$emit("pageTpye_", this.detailType)
+                        this.$emit("selectSessionHis", res.data.history_list)
+                        this.$store.commit("clearTempHis", ''); // 发消息发得太快会有吞消息的现象出现
+                    })
+                    .catch(e => {
+                        this.$message.error(e);
+                    });
+            },
+            sessionDetail: function (info) {
+                this.detailType = 1;
+                this.$store.commit("getCurSession", info);
+                this.currSessId = info.session_id;
+                this.$store.commit("readCurSessionMessage", this.currSessId);
+                this.getSessionsContent(this.currSessId);
+            },
+            groupApply: function () {
+                this.detailType = 2;
+            }
+        }
+>>>>>>> Stashed changes
     };
   },
   methods: {
