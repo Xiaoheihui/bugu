@@ -8,6 +8,7 @@
         clearable
         placeholder="搜索"
         prefix-icon="el-icon-search"
+        @keyup.enter.native="searchSession"
       ></el-input>
       <el-button class="addfriend_button" title="添加好友" @click="groupApply">
         <i class="iconfont icon-addFriend_B"></i>
@@ -17,7 +18,7 @@
     <div class="sessionList">
       <div
         class="sheetList"
-        v-for="i in $store.state.sessions.session_list"
+        v-for="i in sessionList"
         :key="i.last_time"
         @click="sessionDetail(i)"
       >
@@ -32,12 +33,13 @@
               {{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}
             </div>
 
-
             <div class="sheetRecord">
-              {{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}
-              <p v-if="!i.if_read && currSessId != i.session_id">小红点</p>
+              <span>{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</span>
             </div>
           </div>
+          
+          <button v-if="!i.if_read && currSessId != i.session_id" class="redPoint" disabled></button>
+          
         </div>
       </div>
     </div>
@@ -55,10 +57,14 @@
                 }
             }
         },
+        mounted(){
+            this.sessionList=this.$store.state.sessions.session_list;
+        },
         data() {
             return {
                 // 搜索框输入
                 searchInput: "",
+                sessionList:[],
                 // 判断右边的页面类型（1：单聊，2：拉群）
                 detailType: 0,
                 selectedSessionHistory: [],
@@ -66,6 +72,23 @@
             };
         },
         methods: {
+            searchSession(){
+                if(this.searchInput!=""){
+                  let newArr=this.$store.state.sessions.session_list.filter(
+                    item=>{
+                      console.log(item["group_name"])
+                      if(item["group_name"]!==undefined)
+                        return item["group_name"].search(this.searchInput)!=-1;
+                      else if(item["friend_nickname"]!==undefined){
+                        return (item["friend_nickname"].search(this.searchInput)!=-1)?true:
+                        (item["friend_notes"]!==undefined?((item["friend_notes"].search(this.searchInput)!=-1)?true:false):false);
+                      }                      
+                  })
+                  this.sessionList=newArr;
+                }else{
+                  this.sessionList=this.$store.state.sessions.session_list;
+                }
+            },
             getSessionsContent(s_id) {
                 this.$api.main
                     .getSessionsContent({
@@ -187,7 +210,20 @@
 
   .sheetRecord {
     width: auto;
-    font-size: 1.2vh;
+    font-size: 1.5vh;
     text-align: left;
   }
+
+  .redPoint{
+    margin-left: auto;
+    margin-right: 0.5vw;
+    border-radius:100%;
+    border:none;
+    background:indianred;
+    width:1.5vh;
+    height:1.5vh;
+    min-width:1.5vh;
+    min-height:1.5vh;
+  }
+
 </style>
