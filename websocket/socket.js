@@ -41,6 +41,13 @@ var server = ws.createServer(function(conn) {
 		console.log(data);
 
 		switch (data.type) {
+			case 'heart':
+				message_between = {
+                  user_id: data.user_id,
+                  content: "Heart_Beat",
+                  type: "success"
+                };
+                conns[data.user_id].sendText(to_str(message_between));
 			case 'login':
 				uid = data.user_id;
 				if(conns.hasOwnProperty(data.user_id)){  // 该用户已登录
@@ -170,7 +177,8 @@ var server = ws.createServer(function(conn) {
                   sender_name: data['sender_name'],
                   if_receive: false,
                   type: "success"
-                };
+				};
+				console.log(conns[data.user_id].readyState);
                 conns[data.user_id].sendText(to_str(message_between));
               }
 
