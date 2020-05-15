@@ -43,14 +43,14 @@ var server = ws.createServer(function(conn) {
 		switch (data.type) {
 			case 'heart':
 				message_between = {
-                  user_id: data.user_id,
-                  content: "Heart_Beat",
-                  type: "success"
-                };
-                conns[data.user_id].sendText(to_str(message_between));
+					user_id: data.user_id,
+					content: "Heart_Beat",
+					type: "success"
+				};
+				conns[data.user_id].sendText(to_str(message_between));
 			case 'login':
 				uid = data.user_id;
-				if(conns.hasOwnProperty(data.user_id)){  // 该用户已登录
+				if (conns.hasOwnProperty(data.user_id)) { // 该用户已登录
 					console.log("已经登录了！！");
 					return;
 				}
@@ -158,29 +158,29 @@ var server = ws.createServer(function(conn) {
 									session_id: data['session_id'],
 									content: data['content'],
 									transmit_time: time,
-                  sender_name: data['sender_name'],
-                  if_receive: false,
+									sender_name: data['sender_name'],
+									if_receive: false,
 									type: "success"
 								};
 								console.log(to_str(message_between));
 								//发给别人
 								conns[friend_id].sendText(to_str(message_between));
-                //发给自己
-                conns[data.user_id].sendText(to_str(message_between));
-							}else{
-                //发给自己
-                message_between = {
-                  user_id: data.user_id,
-                  session_id: data['session_id'],
-                  content: data['content'],
-                  transmit_time: time,
-                  sender_name: data['sender_name'],
-                  if_receive: false,
-                  type: "success"
-				};
-				console.log(conns[data.user_id].readyState);
-                conns[data.user_id].sendText(to_str(message_between));
-              }
+								//发给自己
+								conns[data.user_id].sendText(to_str(message_between));
+							} else {
+								//发给自己
+								message_between = {
+									user_id: data.user_id,
+									session_id: data['session_id'],
+									content: data['content'],
+									transmit_time: time,
+									sender_name: data['sender_name'],
+									if_receive: false,
+									type: "success"
+								};
+								console.log(conns[data.user_id].readyState);
+								conns[data.user_id].sendText(to_str(message_between));
+							}
 
 
 							//更新该会话的最后一条消息时间
@@ -210,6 +210,17 @@ var server = ws.createServer(function(conn) {
 								}
 							});
 						}
+						let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');  //加1s
+						axios.post("https://af8ko6.toutiao15.com/update_leave_time", {
+							user_id: uid,
+							updatetime: time_1,
+						}).then((res) => {
+							if (res.data.state == "0") {
+								console.log("聊天中-离开时间修改成功");
+							} else {
+								console.log("聊天中-离开时间修改失败");
+							}
+						});
 					} else {
 						console.log(res.data.message);
 					}
