@@ -46,14 +46,14 @@
 				}
 			}
 		},
-		mounted() {
-			this.sessionList = this.$store.state.sessions.session_list;
-		},
+		// mounted() {
+		// 	this.sessionList = this.$store.state.sessions.session_list;
+		// },
 		data() {
 			return {
 				// 搜索框输入
 				searchInput: "",
-				sessionList: [],
+				// sessionList: [],
 				// 判断右边的页面类型（1：单聊，2：拉群）
 				detailType: 0,
 				selectedSessionHistory: [],
@@ -61,24 +61,25 @@
 			};
 		},
 		methods: {
-			searchSession() {
-				if (this.searchInput != "") {
-					let newArr = this.$store.state.sessions.session_list.filter(
-						item => {
-							console.log(item["group_name"])
-							if (item["group_name"] !== undefined)
-								return item["group_name"].search(this.searchInput) != -1;
-							else if (item["friend_nickname"] !== undefined) {
-								return (item["friend_nickname"].search(this.searchInput) != -1) ? true :
-									(item["friend_notes"] !== undefined ? ((item["friend_notes"].search(this.searchInput) != -1) ? true : false) :
-										false);
-							}
-						})
-					this.sessionList = newArr;
-				} else {
-					this.sessionList = this.$store.state.sessions.session_list;
-				}
-			},
+			/* 列表搜索功能，与即时渲染冲突，待修改 */
+			// searchSession() {
+			// 	if (this.searchInput != "") {
+			// 		let newArr = this.$store.state.sessions.session_list.filter(
+			// 			item => {
+			// 				console.log(item["group_name"])
+			// 				if (item["group_name"] !== undefined)
+			// 					return item["group_name"].search(this.searchInput) != -1;
+			// 				else if (item["friend_nickname"] !== undefined) {
+			// 					return (item["friend_nickname"].search(this.searchInput) != -1) ? true :
+			// 						(item["friend_notes"] !== undefined ? ((item["friend_notes"].search(this.searchInput) != -1) ? true : false) :
+			// 							false);
+			// 				}
+			// 			})
+			// 		this.sessionList = newArr;
+			// 	} else {
+			// 		this.sessionList = this.$store.state.sessions.session_list;
+			// 	}
+			// },
 			getSessionsContent(s_id) {
 				this.$api.main
 					.getSessionsContent({
