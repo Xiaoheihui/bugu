@@ -71,6 +71,10 @@ export default new Vuex.Store({
 			// 监听socket消息
 			state.socket_instance.onmessage = getMessage
 		},
+		logOut(state){
+			state=null;
+			window.localStorage.clear();
+		},
 		getContacts(state, contacts) {
 			state.contacts = contacts
 			window.localStorage.setItem('contacts', JSON.stringify(contacts))
