@@ -4,8 +4,6 @@
       <el-row :gutter="1" class="container">
         <!-- 侧边栏菜单 -->
         <left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
-        <!-- 中间的通讯录 -->
-        <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
         <!-- 用户信息 -->
         <user-info></user-info>
       </el-row>

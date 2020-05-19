@@ -18,7 +18,7 @@
       </el-form-item>
 
       <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.nickname" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="手机" prop="phone">
@@ -26,11 +26,11 @@
       </el-form-item>
 
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="form.email" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.email" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="所在地" prop="location">
-        <el-input v-model="form.location" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.location" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="性别" prop="gender">
@@ -39,12 +39,12 @@
       </el-form-item>
 
       <el-form-item label="生日" prop="birthday">
-        <el-date-picker type="date" placeholder="选择日期" :picker-options="pickerOptions" v-model="form.birthday"
+        <el-date-picker class="editInput" type="date" placeholder="选择日期" :picker-options="pickerOptions" v-model="form.birthday"
                         style="width:100%;" :disabled="!judge"></el-date-picker>
       </el-form-item>
 
       <el-form-item label="签名" prop="signature">
-        <el-input type="textarea" v-model="form.signature" placeholder="最长不能超过150个字符" autocomplete="off"
+        <el-input class="editInput" type="textarea" v-model="form.signature" placeholder="最长不能超过150个字符" autocomplete="off"
                   :disabled="!judge"></el-input>
       </el-form-item>
 
@@ -207,8 +207,10 @@
       border-radius: 50%;
       cursor: pointer;
       position: relative;
-      height: 80px;
-      width: 80px;
+      height: 9vh;
+      width: 9vh;
+      min-height: 60px;
+      min-width: 60px;
       overflow: hidden;
     }
 
@@ -235,14 +237,31 @@
     .form {
       background-color: #eaeaea;
       position: relative;
-      top: 90px;
-      left: 10px;
+      top: 12vh;
+      left: 0.8vw;
       height: 60%;
       width: 70%;
       padding: 40px 40px 20px 0px;
       font-weight: bolder;
       border-radius: 8px;
       font-size: 65px;
+      min-height:60%;
+      overflow:scroll;
+      overflow-x: auto;
+      overflow-y: auto;
+
+      .el-form-item{
+        margin:1.7vh auto;
+      }
+
+      .editInput{
+        height: auto;
+        .el-input__inner{
+          height:4vh;
+          min-height:30px;
+        }
+      }
+
     }
 
     .buttonGroup {
@@ -251,11 +270,16 @@
       justify-content: center;
       align-items: center;
       flex-direction: row;
-      top: 160px;
+      top:16vh;
       width: 70%;
 
       .el-button {
         margin-left: 30px;
+        height:4vh;
+        // 行高小于高，文字居中
+        font-size:1.6vh;
+        line-height:1vh;
+        min-height:30px;
         width: 30%;
         border-radius: 30px;
       }
@@ -267,12 +291,12 @@
 
     background: #f4f4f4;
     height: 100%;
-    width: 62.5%;
+    width: 87.5%;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
-
+    overflow-y: auto;
   }
 </style>
