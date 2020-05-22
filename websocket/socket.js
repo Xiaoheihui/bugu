@@ -76,6 +76,7 @@ var server = ws.createServer(function(conn) {
         		//console.log(conns[data.user_id]);
         		conn.sendText(to_str(message_bye));
 				conns[data.user_id].close();
+				break;
 			case 'chat':
 				let session = {};
 				axios.post("https://af8ko6.toutiao15.com/get_meet_info", {

@@ -72,6 +72,10 @@ export default new Vuex.Store({
 			state.socket_instance.onmessage = getMessage
 		},
 		logOut(state){
+			state.socket_instance.send(JSON.stringify({
+					user_id: state.user.user_id,
+					type: 'logout'
+				}))
 			state=null;
 			window.localStorage.clear();
 		},
