@@ -13,7 +13,10 @@
 			<div class="sheetList" v-for="i in $store.state.sessions.session_list" :key="i.last_time" @click="sessionDetail(i)">
 				<div class="access">
 					<div class="sheetImage">
-						<el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
+						<el-badge :is-dot="!i.if_read && currSessId != i.session_id" class="item">
+							<el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
+						</el-badge>
+						
 					</div>
 					<div class="sheetContent">
 						<div class="sheetName">
@@ -25,18 +28,13 @@
 						</div>
 					</div>
 
-					<button v-if="!i.if_read && currSessId != i.session_id" class="redPoint" disabled></button>
-
 				</div>
 			</div>
 		</div>
 	</el-col>
 </template>
 <script>
-	import {
-		mapState,
-		mapMutations
-	} from 'vuex'
+	var moment = require("moment");
 	export default {
 		name: "mid-session",
 		watch: {
@@ -99,6 +97,15 @@
 				this.$store.commit("getCurSession", info);
 				this.currSessId = info.session_id;
 				this.$store.commit("readCurSessionMessage", this.currSessId);
+				let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
+				this.$api.user.updateLeaveTime({
+					user_id:this.$store.state.user["user_id"],
+					updatetime:time_1
+				}).then(res=>{
+					console.log(res.data);
+				}).catch(e => {
+					this.$message.error(e);
+				});
 				this.getSessionsContent(this.currSessId);
 			},
 			groupApply: function() {

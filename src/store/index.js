@@ -58,8 +58,42 @@ export default new Vuex.Store({
 			const error = function() {
 				console.log("连接错误")
 			}
-			const getMessage = function(msg) {
-				console.log(msg.data)
+
+			const getMessage = function(msg_) {
+				let msg = JSON.parse(msg_.data);
+				// 只要是在当前会话，不管是自己发出去还是别人发过来，都先存temp
+				if (msg.session_id == state.cur_session.session_id) {
+					if (state.temp_history.length > 12) {
+						// 正常情况下，使用temp_his者会保证其长度不超过某一数量并重置它，此处兜底
+						state.temp_history = []
+					}
+					state.temp_history.push({
+						"sender_id": msg.user_id,
+						"sender_name": msg.sender_name,
+						"content": msg.content,
+						"time": moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss')
+					})
+					// 然后修改会话列表，主要是 显示最后一条消息
+					for (let index in state.sessions.session_list) {
+						if (state.sessions.session_list[index].session_id == msg.session_id) {
+							state.sessions.session_list[index].last_time = msg.transmit_time;
+							state.sessions.session_list[index].last_record = msg.content;
+							window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
+						}		
+					}
+				} else if (msg.sender_id != state.user.user_id) {
+					// 收到消息，但现在不在该会话的界面
+					for (let index in state.sessions.session_list) {
+						if (state.sessions.session_list[index].session_id == msg.session_id) {
+							state.sessions.session_list[index].last_time = msg.transmit_time;
+							state.sessions.session_list[index].last_record = msg.content;
+							state.sessions.session_list[index].if_read = false;
+							window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
+						}						
+					}
+				}
+
+				console.log(msg)
 			}
 			const close = function() {
 				console.log("socket已经关闭")
@@ -162,7 +196,7 @@ export default new Vuex.Store({
     	readCurSessionMessage(state, sessionId){
       		for(let index in state.sessions.session_list){
         		if(state.sessions.session_list[index].session_id == sessionId){
-          			state.sessions.session_list[index].if_read = true;
+					state.sessions.session_list[index].if_read = true;
         	}
         	window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
 			}

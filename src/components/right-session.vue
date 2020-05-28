@@ -46,14 +46,23 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
       <div class="sessionBottom">
         <div class="chatOption">
           <div class="chatIcon">
-            <i class="el-icon-folder-opened"></i>
-            <i class="el-icon-scissors"></i>
+            <!-- <el-popover
+            placement="right"
+            width="400"
+            trigger="click">
+              <el-table :data="gridData">
+                <el-table-column width="150" property="date" label="日期"></el-table-column>
+                <el-table-column width="100" property="name" label="姓名"></el-table-column>
+                <el-table-column width="300" property="address" label="地址"></el-table-column>
+              </el-table>
+              <el-button slot="reference">click 激活</el-button>
+            </el-popover> -->
+            <i class="el-icon-picture-outline-round"></i>
             <i class="el-icon-chat-dot-square"></i>
           </div>
           <div class="chatIcon">
@@ -71,7 +80,7 @@
         ></el-input>
 
         <div class="chatBottom">
-          <el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
+          <el-button icon="el-icon-s-promotion" class="sendButton" @click="sendInfo">发送(S)</el-button>
         </div>
       </div>
     </div>
@@ -92,7 +101,8 @@ export default {
     this.$nextTick(() => {
       let msg = document.getElementById("chat"); // 获取对象
       msg.scrollTop = msg.scrollHeight; // 滚动高度
-    });},
+    });
+  },
   // mounted(){
   //   this.msgObj = document.getElementById("chat");
   // },
@@ -100,21 +110,40 @@ export default {
     return {
       textarea: "",
       msgObj:null,
+      gridData: [{
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }]
     };
   },
   methods: {
     sendInfo() {
-      this.$store.state.socket_instance.send(
-        JSON.stringify({
-          user_id: this.$store.state.user.user_id,
-          content: this.textarea,
-          session_id: this.cur_session.session_id,
-          sender_name: this.$store.state.user.nickname,
-          type: "chat"
-        })
-      );
-      this.textarea = "";
-      console.log("success");
+      if(textarea!=""){
+        this.$store.state.socket_instance.send(
+          JSON.stringify({
+            user_id: this.$store.state.user.user_id,
+            content: this.textarea,
+            session_id: this.cur_session.session_id,
+            sender_name: this.$store.state.user.nickname,
+            type: "chat"
+          })
+        );
+        this.textarea = "";
+        // console.log("success");
+      }
     }
   }
 };
@@ -139,7 +168,8 @@ export default {
 }
 .sessionHead {
   background: #e0e0e0;
-  height: 10%;
+  height: calc(10% - 1px);
+  min-height: calc(10% - 1px);
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -172,7 +202,8 @@ export default {
 }
 /* 聊天区域展示的聊天记录 */
 .sessionArea {
-  height: 70%;
+  height: calc(65% - 1px);
+  min-height: calc(65% - 1px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -250,8 +281,11 @@ export default {
   border-radius: 5px;
   border: 1px solid #a4a6a9;
 }
+/* 底部发送框 */
 .sessionBottom {
   background: #ffffff;
+  height:25%;
+  min-height:25%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -261,7 +295,7 @@ export default {
 .chatOption {
   background: #e7e7e7;
   width: 100%;
-  height: auto;
+  min-height: 15%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -271,15 +305,19 @@ export default {
   font-size: 25px;
 }
 .chatText {
-  height: auto;
+  height: 65%;
+  min-height: 65%;
 }
 .chatText >>> .el-textarea__inner {
   border: none;
+  height: 100%;
 }
 .chatBottom {
-  height: auto;
+  height: 19%;
+  min-height: 19%;
 }
 .sendButton {
+  height: 100%;
   float: right;
 }
 </style>
