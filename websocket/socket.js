@@ -100,29 +100,46 @@ var server = ws.createServer(function(conn) {
 								user_id: data.user_id,
 								group_id: group_id
 							}).then((res) => {
+								
 								if (res.data.state == "0") {
-									console.log(res.data);
 									memberlist = res.data.memberlist;
+									// console.log(memberlist);
 
 									for (let i = 0; i < memberlist.length; i++) {
 										let member_id = memberlist[i].user_id;
+										console.log(member_id);
 										//如果群成员在线
-										if (conns.hasOwnProperty(member_id)) {
-											//********待修改********
+										
+										if (conns.hasOwnProperty(member_id)&&member_id!=data.user_id) {
+											//********施工中********
 											message_between = {
-												user_id: data['user_id'],
+												user_id: data.user_id,
 												session_id: data['session_id'],
 												content: data['content'],
 												transmit_time: time,
+												sender_name: data['sender_name'],
+												if_receive: false,
 												type: "success"
 											};
+											console.log("toOthers");
 											console.log(to_str(message_between));
-											//发送
+											//发送给别人
 											conns[member_id].sendText(to_str(message_between));
 										}
 									}
+									
 									//发给自己
-									conns.sendText(to_str(message_between));
+									message_between = {
+										user_id: data.user_id,
+										session_id: data['session_id'],
+										content: data['content'],
+										transmit_time: time,
+										sender_name: data['sender_name'],
+										if_receive: false,
+										type: "success"
+									};
+									console.log(conns[data.user_id].readyState);
+									conns[data.user_id].sendText(to_str(message_between));
 
 									//更新该会话的最后一条消息时间
 									axios.post("https://af8ko6.toutiao15.com/update_last_time", {
@@ -151,7 +168,7 @@ var server = ws.createServer(function(conn) {
 										}
 									});
 								} else {
-									console.log(res.data.message);
+									// console.log(res.data.message);
 								}
 							});
 

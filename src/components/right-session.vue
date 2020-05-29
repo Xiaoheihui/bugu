@@ -51,24 +51,22 @@
       <div class="sessionBottom">
         <div class="chatOption">
           <div class="chatIcon">
-            <!-- <el-popover
-            placement="right"
+            <el-popover
+            placement="top-start"
             width="400"
             trigger="click">
-              <el-table :data="gridData">
-                <el-table-column width="150" property="date" label="日期"></el-table-column>
-                <el-table-column width="100" property="name" label="姓名"></el-table-column>
-                <el-table-column width="300" property="address" label="地址"></el-table-column>
-              </el-table>
-              <el-button slot="reference">click 激活</el-button>
-            </el-popover> -->
-            <i class="el-icon-picture-outline-round"></i>
-            <i class="el-icon-chat-dot-square"></i>
+              <div class="emotionList">
+                <i></i>
+              </div>
+              <el-button class="emotionSelect" id="emobtn" icon="iconfont icon-biaoqing" slot="reference"></el-button>
+            </el-popover>
+            
+            <!-- <i class="el-icon-chat-dot-square"></i> -->
           </div>
-          <div class="chatIcon">
+          <!-- <div class="chatIcon">
             <i class="el-icon-phone-outline"></i>
             <i class="el-icon-video-camera"></i>
-          </div>
+          </div> -->
         </div>
         <el-input
           v-model="textarea"
@@ -86,10 +84,8 @@
     </div>
   </el-col>
 </template>
-
 <script>
 import { mapState, mapMutations } from "vuex";
-
 export default {
   name: "right-session",
   props: ["pageType", "selectedSessionHistory"], // 获取父组件的传值
@@ -103,35 +99,15 @@ export default {
       msg.scrollTop = msg.scrollHeight; // 滚动高度
     });
   },
-  // mounted(){
-  //   this.msgObj = document.getElementById("chat");
-  // },
   data() {
     return {
       textarea: "",
       msgObj:null,
-      gridData: [{
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }]
-    };
+    }
   },
   methods: {
     sendInfo() {
-      if(textarea!=""){
+      if(this.textarea!=""){
         this.$store.state.socket_instance.send(
           JSON.stringify({
             user_id: this.$store.state.user.user_id,
@@ -299,6 +275,15 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.emotionSelect{
+  background: #e7e7e7;
+  height:4vh;
+  width: 4vh;
+  text-align: center;
+  cursor:default;
+  padding: 0;
+  border: none;
 }
 .chatIcon {
   padding: 0 10px;
