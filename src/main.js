@@ -20,7 +20,7 @@ Vue.use(ElementUI)
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
-    if (store.state.user) {
+    if (localStorage.getItem("user") != undefined) {
       next()
     } else {
       next({
@@ -28,7 +28,15 @@ router.beforeEach((to, from, next) => {
         query: {redirect: to.fullPath}
       })
     }
-  } else {
+  }else{
+    if (to.name === 'login') {
+      if (localStorage.getItem("user") != undefined) {
+        next({
+          path: 'main',
+          query: {redirect: to.fullPath}
+        })
+      }
+    }
     next()
   }
 }

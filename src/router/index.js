@@ -58,7 +58,7 @@ const router = new Router({
     }
   ]
 });
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {
     // 判断该路由是否需要登录权限
     console.log(store.state);
@@ -73,6 +73,6 @@ router.beforeEach((to, from, next) => {
   } else {
     next();
   }
-});
+});*/
 
 export default router;
