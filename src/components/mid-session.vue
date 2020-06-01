@@ -4,7 +4,7 @@
 		<div class="searchNav">
 			<el-input class="searchInput" v-model="searchInput" clearable placeholder="搜索" prefix-icon="el-icon-search"
 			 @keyup.enter.native="searchSession"></el-input>
-			<el-button class="addfriend_button" title="添加好友" @click="groupApply">
+			<el-button class="addfriend_button" title="新建群聊" @click="groupApply">
 				<i class="iconfont icon-addFriend_B"></i>
 			</el-button>
 		</div>
@@ -59,32 +59,13 @@
 			};
 		},
 		methods: {
-			/* 列表搜索功能，与即时渲染冲突，待修改 */
-			// searchSession() {
-			// 	if (this.searchInput != "") {
-			// 		let newArr = this.$store.state.sessions.session_list.filter(
-			// 			item => {
-			// 				console.log(item["group_name"])
-			// 				if (item["group_name"] !== undefined)
-			// 					return item["group_name"].search(this.searchInput) != -1;
-			// 				else if (item["friend_nickname"] !== undefined) {
-			// 					return (item["friend_nickname"].search(this.searchInput) != -1) ? true :
-			// 						(item["friend_notes"] !== undefined ? ((item["friend_notes"].search(this.searchInput) != -1) ? true : false) :
-			// 							false);
-			// 				}
-			// 			})
-			// 		this.sessionList = newArr;
-			// 	} else {
-			// 		this.sessionList = this.$store.state.sessions.session_list;
-			// 	}
-			// },
 			getSessionsContent(s_id) {
 				this.$api.main
 					.getSessionsContent({
 						session_id: s_id
 					})
 					.then(res => {
-						this.$emit("pageTpye_", this.detailType)
+						this.$emit("pageTpye_", this.detailType);
 						this.$emit("selectSessionHis", res.data.history_list)
 						this.$store.commit("clearTempHis", ''); // 发消息发得太快会有吞消息的现象出现
 					})
@@ -94,6 +75,7 @@
 			},
 			sessionDetail: function(info) {
 				this.detailType = 1;
+				this.$emit("transfer",this.detailType);
 				this.$store.commit("getCurSession", info);
 				this.currSessId = info.session_id;
 				this.$store.commit("readCurSessionMessage", this.currSessId);
@@ -108,8 +90,9 @@
 				});
 				this.getSessionsContent(this.currSessId);
 			},
-			groupApply: function() {
+			groupApply: function(info) {
 				this.detailType = 2;
+				this.$emit("pageTpye_",this.detailType);
 			}
 		}
 	};

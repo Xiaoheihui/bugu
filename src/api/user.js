@@ -29,6 +29,7 @@ const user = {
   searchUser(params){
     return axios.post("/searchUser", JSON.stringify(params));
   },
+  //更新离开会话的时间
   updateLeaveTime(params){
     return axios.post("/update_leave_time", JSON.stringify(params));
   }
