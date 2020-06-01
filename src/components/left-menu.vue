@@ -10,6 +10,7 @@
         ></el-button>
       </el-row>
     </div>
+    <el-button class="logOut" @click="logOut">注销</el-button>
   </el-col>
 </template>
 <script>
@@ -22,7 +23,10 @@ export default {
   methods: {
     changeMenu(path) {
       this.$router.replace(path);
-      // console.log(this.userInfo);
+    },
+    logOut(){
+      this.$store.commit("logOut");
+      this.$router.replace('/');
     }
   }
 };
@@ -34,7 +38,6 @@ export default {
   height: 100%;
   width: 12.5%;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   z-index: 3;
   border-top-left-radius: 3px;
@@ -68,5 +71,14 @@ export default {
   border-radius: 0;
   border: 0;
   font-size: 30px;
+}
+.logOut{
+  position:absolute;
+  background:gray;
+  color:honeydew;
+  bottom:4vh;
+  padding:2vh 1vw;
+  font-size:1.6vh;
+  line-height:0;
 }
 </style>

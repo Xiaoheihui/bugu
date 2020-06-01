@@ -6,10 +6,10 @@ import main from '@/pages/main'
 import contact from '@/pages/contact'
 import socket from '@/pages/socket_demo'
 import setting from '@/pages/setting'
-
+import store from "../store";
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: "/",
@@ -58,3 +58,21 @@ export default new Router({
     }
   ]
 });
+router.beforeEach((to, from, next) => {
+  if (to.meta.requireAuth) {
+    // 判断该路由是否需要登录权限
+    console.log(store.state);
+    if (localStorage.getItem("user") != undefined) {
+      next();
+    } else {
+      next({
+        path: "/login",
+        query: { redirect: to.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+      });
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;

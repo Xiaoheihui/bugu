@@ -1,10 +1,17 @@
 {
   "id": "1760476",
-  "name": "no name",
+  "name": " bugu",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "14998507",
+      "name": "emotion",
+      "font_class": "biaoqing",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
     {
       "icon_id": "1346584",
       "name": "会话",

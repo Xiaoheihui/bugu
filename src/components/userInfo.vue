@@ -2,7 +2,6 @@
   <div class="userInfo">
 
     <el-form ref="form" :model="form" :rules="rules" label-width="80px" class="form">
-
       <el-form-item label="头像">
 
         <el-upload
@@ -12,13 +11,14 @@
           :show-file-list="false"
           :auto-upload="false"
           :on-change="changeFile">
+
           <img v-if="form.avatar_url" :src="form.avatar_url" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
 
       <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="form.nickname" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.nickname" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="手机" prop="phone">
@@ -26,11 +26,11 @@
       </el-form-item>
 
       <el-form-item label="邮箱" prop="email">
-        <el-input v-model="form.email" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.email" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="所在地" prop="location">
-        <el-input v-model="form.location" autocomplete="off" :disabled="!judge"></el-input>
+        <el-input class="editInput" v-model="form.location" autocomplete="off" :disabled="!judge"></el-input>
       </el-form-item>
 
       <el-form-item label="性别" prop="gender">
@@ -39,12 +39,12 @@
       </el-form-item>
 
       <el-form-item label="生日" prop="birthday">
-        <el-date-picker type="date" placeholder="选择日期" :picker-options="pickerOptions" v-model="form.birthday"
+        <el-date-picker class="editInput" type="date" placeholder="选择日期" :picker-options="pickerOptions" v-model="form.birthday"
                         style="width:100%;" :disabled="!judge"></el-date-picker>
       </el-form-item>
 
       <el-form-item label="签名" prop="signature">
-        <el-input type="textarea" v-model="form.signature" placeholder="最长不能超过150个字符" autocomplete="off"
+        <el-input class="editInput" type="textarea" v-model="form.signature" placeholder="最长不能超过150个字符" autocomplete="off"
                   :disabled="!judge"></el-input>
       </el-form-item>
 
@@ -62,6 +62,7 @@
 <script>
     import {mapState, mapMutations} from 'vuex';
     import store from '@/store'
+    import * as imageConversion from 'image-conversion'
 
     export default {
         name: "userinfo",
@@ -114,25 +115,58 @@
         methods: {
             changeFile(file, fileList) {
                 const isJPGORPNG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png');
-                const isLt1M = file.size / 1024 / 1024 < 1;
-
                 if (!isJPGORPNG) {
                     this.$message.info('上传头像图片只能是 JPG 或 PNG 格式!');
                     return;
                 }
-                if (!isLt1M) {
-                    this.$message.info('上传头像图片大小不能超过 1MB!');
-                    return;
-                }
+                console.log(typeof (file))
 
                 var This = this;
                 var reader = new FileReader();
                 reader.readAsDataURL(file.raw);
-                reader.onload = function(e){
-                    this.result; //base64编码
-                    This.form.avatar_url = this.result
+                reader.onload = function (e) {
+                    let result = e.target.result
+                    let img = new Image()
+                    img.src = result
+                    // 大小检测，过大则并压缩
+                    img.onload = function () {
+                        This.form.avatar_url = This.compress(img, 600)
+                    }
                 }
-
+            },
+            // 压缩图片
+            compress(img, maxWidth) {
+                // 缩放图片需要的canvas
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                // 图片原始尺寸
+                var originWidth = img.width;
+                var originHeight = img.height;
+                // 最大高由最大宽求得
+                let maxHeight = maxWidth * originHeight / originWidth;
+                // 目标尺寸
+                var targetWidth = originWidth,
+                    targetHeight = originHeight;
+                // 图片尺寸超过400x400的限制
+                if (originWidth > maxWidth || originHeight > maxHeight) {
+                    if (originWidth / originHeight > maxWidth / maxHeight) {
+                        // 更宽，按照宽度限定尺寸
+                        targetWidth = maxWidth;
+                        targetHeight = Math.round(maxWidth * (originHeight / originWidth));
+                    } else {
+                        targetHeight = maxHeight;
+                        targetWidth = Math.round(maxHeight * (originWidth / originHeight));
+                    }
+                }
+                // canvas对图片进行缩放
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                // 清除画布
+                context.clearRect(0, 0, targetWidth, targetHeight);
+                // 图片压缩
+                context.drawImage(img, 0, 0, targetWidth, targetHeight);
+                var newUrl = canvas.toDataURL('image/jpeg', 0.92);//base64 格式
+                return newUrl;
             },
             submitForm(formName) {
                 let _this = this
@@ -173,8 +207,10 @@
       border-radius: 50%;
       cursor: pointer;
       position: relative;
-      height: 80px;
-      width: 80px;
+      height: 9vh;
+      width: 9vh;
+      min-height: 60px;
+      min-width: 60px;
       overflow: hidden;
     }
 
@@ -201,14 +237,31 @@
     .form {
       background-color: #eaeaea;
       position: relative;
-      top: 90px;
-      left: 10px;
+      top: 12vh;
+      left: 0.8vw;
       height: 60%;
       width: 70%;
-      padding:40px 40px 20px 0px;
+      padding: 40px 40px 20px 0px;
       font-weight: bolder;
-      border-radius:8px;
+      border-radius: 8px;
       font-size: 65px;
+      min-height:60%;
+      overflow:scroll;
+      overflow-x: auto;
+      overflow-y: auto;
+
+      .el-form-item{
+        margin:1.7vh auto;
+      }
+
+      .editInput{
+        height: auto;
+        .el-input__inner{
+          height:4vh;
+          min-height:30px;
+        }
+      }
+
     }
 
     .buttonGroup {
@@ -217,11 +270,16 @@
       justify-content: center;
       align-items: center;
       flex-direction: row;
-      top: 160px;
+      top:16vh;
       width: 70%;
 
       .el-button {
         margin-left: 30px;
+        height:4vh;
+        // 行高小于高，文字居中
+        font-size:1.6vh;
+        line-height:1vh;
+        min-height:30px;
         width: 30%;
         border-radius: 30px;
       }
@@ -233,12 +291,12 @@
 
     background: #f4f4f4;
     height: 100%;
-    width: 62.5%;
+    width: 87.5%;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
-
+    overflow-y: auto;
   }
 </style>

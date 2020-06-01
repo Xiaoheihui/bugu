@@ -9,6 +9,9 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/icon/iconfont.css'
+import moment from 'moment'
+
+Vue.prototype.$moment = moment;//赋值使用
 
 Vue.prototype.$axios = axios
 Vue.prototype.$api = api

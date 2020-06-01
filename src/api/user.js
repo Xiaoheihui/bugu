@@ -28,6 +28,9 @@ const user = {
   //通过手机号搜索用户
   searchUser(params){
     return axios.post("/searchUser", JSON.stringify(params));
+  },
+  updateLeaveTime(params){
+    return axios.post("/update_leave_time", JSON.stringify(params));
   }
 };
 

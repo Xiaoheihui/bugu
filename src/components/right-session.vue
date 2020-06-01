@@ -6,17 +6,17 @@
           <el-image :src="cur_session.avatar_url" class="chatAvatar" alt="用户头像"></el-image>
           <span
             class="friendName"
-          >{{cur_session.group_name==undefined?(cur_session.friend_notes==''||cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
+          >{{cur_session.group_name==undefined?(cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
         </div>
         <el-button class="info" icon="el-icon-more"></el-button>
       </div>
       <div class="sessionArea" id="chat">
         <div class="scrollContent">
-          <div v-for="i in selectedSessionHistory" :key="i.time">
+          <div v-for="(i, index) in selectedSessionHistory" :key="index">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;">{{cur_session.friend_notes==''||cur_session.friend_notes==undefined?cur_session.friend_nickname:cur_session.friend_notes}}</div>
+                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
             </div>
@@ -28,39 +28,70 @@
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
             </div>
           </div>
+          <div v-if="$store.state.temp_history.length>0">
+            <div v-for="(i, index) in $store.state.temp_history" :key="index">
+              <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
+                <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
+                <div class="nameAndContent">
+                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                  <div class="chatContent">{{i.content}}</div>
+                </div>
+              </div>
+              <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
+                <div class="nameAndContent">
+                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                  <div class="chatContent">{{i.content}}</div>
+                </div>
+                <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="sessionBottom">
         <div class="chatOption">
           <div class="chatIcon">
-            <i class="el-icon-folder-opened"></i>
-            <i class="el-icon-scissors"></i>
-            <i class="el-icon-chat-dot-square"></i>
+            <el-popover
+            placement="top-start"
+            width="400"
+            trigger="click">
+              <div class="emotionList">
+                <i></i>
+              </div>
+              <el-button class="emotionSelect" id="emobtn" icon="iconfont icon-biaoqing" slot="reference"></el-button>
+            </el-popover>
+            
+            <!-- <i class="el-icon-chat-dot-square"></i> -->
           </div>
-          <div class="chatIcon">
+          <!-- <div class="chatIcon">
             <i class="el-icon-phone-outline"></i>
             <i class="el-icon-video-camera"></i>
-          </div>
+          </div> -->
         </div>
-        <el-input v-model="textarea" class="chatText" resize="none" type="textarea" rows="5" @keyup.enter.native="sendInfo"></el-input>
+        <el-input
+          v-model="textarea"
+          class="chatText"
+          resize="none"
+          type="textarea"
+          rows="5"
+          @keyup.enter.native="sendInfo"
+        ></el-input>
 
         <div class="chatBottom">
-          <el-button class="sendButton" @click="sendInfo">发送(S)</el-button>
+          <el-button icon="el-icon-s-promotion" class="sendButton" @click="sendInfo">发送(S)</el-button>
         </div>
       </div>
     </div>
   </el-col>
 </template>
-
 <script>
 import { mapState, mapMutations } from "vuex";
-
 export default {
   name: "right-session",
   props: ["pageType", "selectedSessionHistory"], // 获取父组件的传值
   computed: mapState({
     userInfo: state => state.user,
-    cur_session: state => state.cur_session
+    cur_session: state => state.cur_session,
   }),
   updated() {
     this.$nextTick(() => {
@@ -70,30 +101,33 @@ export default {
   },
   data() {
     return {
-      textarea: ""
-    };
+      textarea: "",
+      msgObj:null,
+    }
   },
   methods: {
     sendInfo() {
-      this.$store.state.socket_instance.send(
-        JSON.stringify({
-          user_id: this.$store.state.user.user_id,
-          content: this.textarea,
-          session_id: this.cur_session.session_id,
-          sender_name: this.$store.state.user.nickname,
-          type: "chat"
-        })
-      );
-      this.textarea = "";
-      console.log("success");
-    },
+      if(this.textarea!=""){
+        this.$store.state.socket_instance.send(
+          JSON.stringify({
+            user_id: this.$store.state.user.user_id,
+            content: this.textarea,
+            session_id: this.cur_session.session_id,
+            sender_name: this.$store.state.user.nickname,
+            type: "chat"
+          })
+        );
+        this.textarea = "";
+        // console.log("success");
+      }
+    }
   }
 };
 </script>
 
 <style scoped>
 /* 会话窗口样式 */
-.sessionDetail{
+.sessionDetail {
   border-left: 1px solid #a4a6a9;
   background: #e7e7e7;
   height: 100%;
@@ -110,7 +144,8 @@ export default {
 }
 .sessionHead {
   background: #e0e0e0;
-  height: 10%;
+  height: calc(10% - 1px);
+  min-height: calc(10% - 1px);
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -143,7 +178,8 @@ export default {
 }
 /* 聊天区域展示的聊天记录 */
 .sessionArea {
-  height: 70%;
+  height: calc(65% - 1px);
+  min-height: calc(65% - 1px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -160,7 +196,7 @@ export default {
 }
 .sessionContentLeft {
   margin-top: 1.2vh;
-  margin-bottom: 1vh;
+  margin-bottom: 1.5vh;
   margin-left: 10px;
   display: flex;
   flex-direction: row;
@@ -175,11 +211,16 @@ export default {
 .sessionContentLeft .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
+  min-height: 6vh;
+  min-width: 6vh;
   border-radius: 100%;
   margin-right: 15px;
 }
 .sessionContentLeft .nameAndContent .chatContent {
+  word-break: break-all;
+  text-align:left;
   margin-top: 1.2vh;
+  margin-right: 2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
@@ -187,7 +228,7 @@ export default {
 }
 .sessionContentRight {
   margin-top: 1.2vh;
-  margin-bottom: 1vh;
+  margin-bottom: 1.5vh;
   margin-right: 10px;
   display: flex;
   flex-direction: row;
@@ -201,46 +242,67 @@ export default {
 .sessionContentRight .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
+  min-height: 6vh;
+  min-width: 6vh;
   border-radius: 100%;
   margin-left: 15px;
 }
 .sessionContentRight .nameAndContent .chatContent {
+  word-break: break-all;
+  text-align:left;
   margin-top: 1.2vh;
+  margin-left: 2vh;
   padding: 1.2vh 1.8vh;
   background: #ffffff;
   border-radius: 5px;
   border: 1px solid #a4a6a9;
 }
+/* 底部发送框 */
 .sessionBottom {
   background: #ffffff;
+  height:25%;
+  min-height:25%;
   width: 100%;
   display: flex;
-  flex-direction:column;
+  flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
 }
 .chatOption {
   background: #e7e7e7;
   width: 100%;
-  height:auto;
+  min-height: 15%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.emotionSelect{
+  background: #e7e7e7;
+  height:4vh;
+  width: 4vh;
+  text-align: center;
+  cursor:default;
+  padding: 0;
+  border: none;
 }
 .chatIcon {
   padding: 0 10px;
   font-size: 25px;
 }
-.chatText{
-  height:auto;
+.chatText {
+  height: 65%;
+  min-height: 65%;
 }
 .chatText >>> .el-textarea__inner {
   border: none;
+  height: 100%;
 }
-.chatBottom{
-  height: auto;
+.chatBottom {
+  height: 19%;
+  min-height: 19%;
 }
 .sendButton {
+  height: 100%;
   float: right;
 }
 </style>

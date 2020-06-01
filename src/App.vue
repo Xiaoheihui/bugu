@@ -9,9 +9,14 @@ import store from './store'
 export default {
   name: 'App',
   mounted(){
+    console.log(store)
     if(store.state.user.user_id!=undefined && !store.state.socket_instance){
+	  console.log("我是在App.vue中登录的！！！");
       store.commit('setConnect')
       console.log(1)
+    }
+    else{
+      console.log('error')
     }
     
   }
