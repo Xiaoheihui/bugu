@@ -89,7 +89,7 @@ export default {
       this.selectedSessionHistory = res;
     },
     updateHistory(params) {
-      this.$api.main
+        this.$api.main
         .getSessionsContent({
           session_id: this.$store.state.cur_session.session_id
         })

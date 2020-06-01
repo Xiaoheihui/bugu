@@ -118,7 +118,6 @@ export default new Vuex.Store({
 			window.localStorage.setItem('contacts', JSON.stringify(contacts))
 		},
 		getSessions(state, sessions) {
-
 			state.sessions = sessions
 			window.localStorage.setItem('sessions', JSON.stringify(sessions))
 		},
