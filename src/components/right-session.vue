@@ -17,13 +17,13 @@
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}} <span class="hoverTime">{{i.time}}</span></div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
             </div>
             <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                <div style="font-size:1.6vh;font-weight:bold;"><span class="hoverTime">{{i.time}}</span> {{i.sender_name}}</div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
@@ -34,13 +34,13 @@
               <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
                 <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
                 <div class="nameAndContent">
-                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}} <span class="hoverTime">{{i.time}}</span></div>
                   <div class="chatContent">{{i.content}}</div>
                 </div>
               </div>
               <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
                 <div class="nameAndContent">
-                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}}</div>
+                  <div style="font-size:1.6vh;font-weight:bold;"><span class="hoverTime">{{i.time}}</span> {{i.sender_name}}</div>
                   <div class="chatContent">{{i.content}}</div>
                 </div>
                 <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
@@ -509,6 +509,12 @@ export default {
   border-radius: 5px;
   border: 1px solid #a4a6a9;
 }
+.hoverTime{
+  display:none;
+}
+.sessionContentLeft:hover .hoverTime{
+  display:contents;
+}
 .sessionContentRight {
   margin-top: 1.2vh;
   margin-bottom: 1.5vh;
@@ -521,6 +527,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  text-align: right;
 }
 .sessionContentRight .chatAvatarUrl {
   height: 6vh;
@@ -539,6 +546,9 @@ export default {
   background: #ffffff;
   border-radius: 5px;
   border: 1px solid #a4a6a9;
+}
+.sessionContentRight:hover .hoverTime{
+  display:contents;
 }
 /* 底部发送框 */
 .sessionBottom {
