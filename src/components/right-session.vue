@@ -17,13 +17,19 @@
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
               <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}} <span class="hoverTime">{{i.time}}</span></div>
+                <div style="font-size:1.6vh;font-weight:bold;">
+                  <span style="padding-right:10px;">{{i.sender_name}}</span>
+                  <span class="hoverTime">{{i.time}}</span>
+                </div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
             </div>
             <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
               <div class="nameAndContent">
-                <div style="font-size:1.6vh;font-weight:bold;"><span class="hoverTime">{{i.time}}</span> {{i.sender_name}}</div>
+                <div style="font-size:1.6vh;font-weight:bold;">
+                  <span class="hoverTime">{{i.time}}</span>
+                  <span style="padding-left:10px;">{{i.sender_name}}</span>
+                </div>
                 <div class="chatContent">{{i.content}}</div>
               </div>
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
@@ -34,13 +40,19 @@
               <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
                 <el-image :src="cur_session.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
                 <div class="nameAndContent">
-                  <div style="font-size:1.6vh;font-weight:bold;">{{i.sender_name}} <span class="hoverTime">{{i.time}}</span></div>
+                  <div style="font-size:1.6vh;font-weight:bold;">
+                    <span style="padding-right:10px;">{{i.sender_name}}</span>
+                    <span class="hoverTime">{{i.time}}</span>
+                  </div>
                   <div class="chatContent">{{i.content}}</div>
                 </div>
               </div>
               <div class="sessionContentRight" v-if="i.sender_id==userInfo.user_id">
                 <div class="nameAndContent">
-                  <div style="font-size:1.6vh;font-weight:bold;"><span class="hoverTime">{{i.time}}</span> {{i.sender_name}}</div>
+                  <div style="font-size:1.6vh;font-weight:bold;">
+                    <span class="hoverTime">{{i.time}}</span>
+                    <span style="padding-left:10px;">{{i.sender_name}}</span>
+                  </div>
                   <div class="chatContent">{{i.content}}</div>
                 </div>
                 <el-image :src="userInfo.avatar_url" class="chatAvatarUrl" alt="用户头像"></el-image>
@@ -52,9 +64,9 @@
       <div class="sessionBottom">
         <div class="chatOption">
           <div class="chatIcon">
-            <el-popover placement="top-start" width="400" trigger="click">
+            <el-popover placement="top-start" width="400" trigger="click" class="emoBox">
               <div class="emotionList">
-                <i></i>
+                <a href="javascript:void(0);" @click="getEmo(index)" v-for="(item,index) in faceList" :key="index" class="emotionItem">{{item}}</a>
               </div>
               <el-button
                 class="emotionSelect"
@@ -74,6 +86,7 @@
           class="chatText"
           resize="none"
           type="textarea"
+          id='textarea'
           rows="5"
           @keyup.enter.native="sendInfo"
         ></el-input>
@@ -152,6 +165,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
+const appData = require("../static/utils/emoji.json");
 export default {
   name: "right-session",
   props: ["selectedSessionHistory","pageType"], // 获取父组件的传值
@@ -170,6 +184,9 @@ export default {
           this.$message.error("获取通讯录失败");
         }
       });
+    for(let i in appData){
+      this.faceList.push(appData[i].char);
+    }
   },
   updated() {
     this.$nextTick(() => {
@@ -185,6 +202,7 @@ export default {
       applicantList: [],
       groupInfoVisible: false,
       textarea: "",
+      faceList: [],
       groupName: '',
       groupIntro: '',
       msgObj: null,
@@ -389,6 +407,26 @@ export default {
           }
         });
     },
+    getEmo(index){
+      var textArea=document.getElementById('textarea');
+      function changeSelectedText(obj, str) {
+        if (window.getSelection) {
+          // 非IE浏览器
+          textArea.setRangeText(str);
+          // 在未选中文本的情况下，重新设置光标位置
+          textArea.selectionStart += str.length;
+          textArea.focus()
+        } else if (document.selection) {
+          // IE浏览器
+          obj.focus();
+          var sel = document.selection.createRange();
+          sel.text = str;
+        }
+      }
+      changeSelectedText(textArea,this.faceList[index]);
+      // console.log(this.faceList[index]);
+      return;
+    },
     sendInfo() {
       if (this.textarea != "") {
         this.$store.state.socket_instance.send(
@@ -407,6 +445,17 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+/* el-popover是和app同级的，所以scoped的局部属性设置了无效 */
+/* 需要设置全局style */
+  .el-popover{
+    height:200px;
+    width:400px;
+    overflow: scroll;
+    overflow-x:auto;
+  }
+</style>
 
 <style scoped>
 /* 会话窗口样式 */
@@ -582,6 +631,36 @@ export default {
   padding: 0 10px;
   font-size: 25px;
 }
+.emotionList{
+  display: flex;
+  flex-wrap: wrap;
+  padding:5px;
+}
+.emotionItem{
+  width:10%;
+  font-size:20px;
+  text-align:center;
+}
+/*包含以下四种的链接*/
+.emotionItem {
+    text-decoration: none;
+}
+/*正常的未被访问过的链接*/
+.emotionItem:link {
+    text-decoration: none;
+}
+/*已经访问过的链接*/
+.emotionItem:visited {
+    text-decoration: none;
+}
+/*鼠标划过(停留)的链接*/
+.emotionItem:hover {
+    text-decoration: none;
+}
+/* 正在点击的链接*/
+.emotionItem:active {
+    text-decoration: none;
+}
 .chatText {
   height: 65%;
   min-height: 65%;
@@ -589,6 +668,7 @@ export default {
 .chatText >>> .el-textarea__inner {
   border: none;
   height: 100%;
+  font-size:16px;
 }
 .chatBottom {
   height: 19%;
