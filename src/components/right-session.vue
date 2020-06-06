@@ -92,7 +92,7 @@
         ></el-input>
 
         <div class="chatBottom">
-          <el-button icon="el-icon-s-promotion" class="sendButton" @click="sendInfo">发送(S)</el-button>
+          <el-button icon="el-icon-s-promotion" class="sendButton" @click.native="sendInfo">发送(S)</el-button>
         </div>
       </div>
     </div>
@@ -424,7 +424,7 @@ export default {
         }
       }
       changeSelectedText(textArea,this.faceList[index]);
-      // console.log(this.faceList[index]);
+      this.textarea=textArea.value;
       return;
     },
     sendInfo() {
