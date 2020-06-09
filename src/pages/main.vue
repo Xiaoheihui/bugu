@@ -5,11 +5,11 @@
         <!-- 侧边栏菜单 -->
         <left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
         <!-- 中间的会话列表 -->
-        <mid-session ref="choose" @selectSessionHis="selectSH" @pageTpye_="changePageType"></mid-session>
+        <mid-session ref="choose" @changeSess="selectSH" @pageTpye_="changePageType"></mid-session>
         <!-- 右侧的会话窗口，显示聊天记录与发送窗口 -->
         <right-session
           :pageType="pageType"
-          :selectedSessionHistory="selectedSessionHistory"
+          :debugMode="something"
           v-on:lastText="updateHistory"
         ></right-session>
       </el-row>
@@ -48,8 +48,8 @@ export default {
   },
   data() {
     return {
-      selectedSessionHistory: [],
-      lastText1: "",
+      currSessId:0,
+        something: [],
       menuList: [
         {
           name: 0,
@@ -85,8 +85,7 @@ export default {
       this.pageType = res;
     },
     selectSH(res) {
-      this.lastText1 = "";
-      this.selectedSessionHistory = res;
+      this.something = res;
     },
     updateHistory(params) {
         this.$api.main

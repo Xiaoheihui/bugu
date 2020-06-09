@@ -38,14 +38,6 @@
     var moment = require("moment");
     export default {
         name: "mid-session",
-        watch: {
-            '$store.state.messgaeReceive'() {
-                if (this.$store.state.temp_history.length >= 4) {
-                    console.log("sddsd")
-                    this.getSessionsContent(this.$store.state.cur_session)
-                }
-            }
-        },
         data() {
             return {
                 mapppp: {"1":"2", "3":"4"},
@@ -62,12 +54,14 @@
             getSessionsContent(s_id) {
                 this.$api.main
                     .getSessionsContent({
-                        session_id: s_id
+                        session_id: s_id,
+                        start: 0,
+                        end: 20
                     })
                     .then(res => {
                         this.$emit("pageTpye_", this.detailType);
-                        this.$emit("selectSessionHis", res.data.history_list)
-                        this.$store.commit("clearTempHis", ''); // 发消息发得太快会有吞消息的现象出现
+                        let historyAndSid = [res.data.history_list, s_id];
+                        this.$store.commit("setTempHistory", historyAndSid)
                     })
                     .catch(e => {
                         this.$message.error(e);
@@ -75,7 +69,9 @@
             },
             sessionDetail: function (info) {
                 this.detailType = 1;
+                let lastSessId = this.currSessId;
                 this.$emit("transfer", this.detailType);
+                this.$emit("changeSess", true);
                 this.$store.commit("getCurSession", info);
                 this.currSessId = info.session_id;
                 this.$store.commit("readCurSessionMessage", this.currSessId);
@@ -88,7 +84,12 @@
                 }).catch(e => {
                     this.$message.error(e);
                 });
-                this.getSessionsContent(this.currSessId);
+                if(!this.$store.state.temp_history[info.session_id]){
+                    this.getSessionsContent(this.currSessId);
+                }
+                if(this.$store.state.temp_history[lastSessId]){
+                    this.$store.commit("cleanTempHistory", lastSessId);
+                }
             },
             groupApply: function (info) {
                 this.detailType = 2;

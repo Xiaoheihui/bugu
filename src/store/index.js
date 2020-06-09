@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 
 const moment = require('moment');
 
+const maxTempHistoryCount = 20;
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -42,7 +44,7 @@ export default new Vuex.Store({
     socket_instance: null,
     path: "ws://localhost:8001",
     // 为使响应快速，暂存若干条消息并从本地渲染，本地消息达到一定数量再一起从服务器获取并渲染
-    temp_history: []
+    temp_history: {}
   },
   mutations: {
     login(state, user) {
@@ -62,37 +64,28 @@ export default new Vuex.Store({
       const getMessage = function (msg_) {
         let msg = JSON.parse(msg_.data);
         // 只要是在当前会话，不管是自己发出去还是别人发过来，都先存temp
-        if (msg.session_id == state.cur_session.session_id) {
-          if (state.temp_history.length > 7) {
-            // 正常情况下，使用temp_his者会保证其长度不超过某一数量并重置它，此处兜底
-            state.temp_history = []
-          }
-          state.temp_history.push({
+        if(state.temp_history[msg.session_id]){
+          state.temp_history[msg.session_id].push({
             "sender_id": msg.user_id,
             "sender_name": msg.sender_name,
             "content": msg.content,
             "time": moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss')
           })
-          // 然后修改会话列表，主要是 显示最后一条消息
-          for (let index in state.sessions.session_list) {
-            if (state.sessions.session_list[index].session_id == msg.session_id) {
-              state.sessions.session_list[index].last_time = msg.transmit_time;
-              state.sessions.session_list[index].last_record = msg.content;
-              state.sessions.session_list[index].if_read = true;
-              window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
-              break;
-            }
+          // 保证temp数据不会过于多
+          let count = state.temp_history[msg.session_id].length - maxTempHistoryCount;
+          if(count > 0){
+            state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);
           }
-        } else if (msg.sender_id != state.user.user_id) {
-          // 收到消息，但现在不在该会话的界面
-          for (let index in state.sessions.session_list) {
-            if (state.sessions.session_list[index].session_id == msg.session_id) {
-              state.sessions.session_list[index].last_time = msg.transmit_time;
-              state.sessions.session_list[index].last_record = msg.content;
-              state.sessions.session_list[index].if_read = false;
-              window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
-              break;
-            }
+        }
+        // 然后修改会话列表，主要是 显示最后一条消息
+        for (let index in state.sessions.session_list) {
+          if (state.sessions.session_list[index].session_id == msg.session_id) {
+            state.sessions.session_list[index].last_time = msg.transmit_time;
+            state.sessions.session_list[index].last_record = msg.content;
+            state.sessions.session_list[index].if_read = (msg.session_id == state.cur_session.session_id);
+            window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
+            window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
+            break;
           }
         }
       }
@@ -124,6 +117,7 @@ export default new Vuex.Store({
     getSessions(state, sessions) {
       state.sessions = sessions;
       window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+      window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
     },
 
     getCurSession(state, cur_session) {
@@ -151,38 +145,30 @@ export default new Vuex.Store({
       const getMessage = function (msg_) {
         let msg = JSON.parse(msg_.data);
         // 只要是在当前会话，不管是自己发出去还是别人发过来，都先存temp
-        if (msg.session_id == state.cur_session.session_id) {
-          if (state.temp_history.length > 12) {
-            // 正常情况下，使用temp_his者会保证其长度不超过某一数量并重置它，此处兜底
-            state.temp_history = []
-          }
-          state.temp_history.push({
+        if(state.temp_history[msg.session_id]){
+          state.temp_history[msg.session_id].push({
             "sender_id": msg.user_id,
             "sender_name": msg.sender_name,
             "content": msg.content,
             "time": moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss')
           })
-          // 然后修改会话列表，主要是 显示最后一条消息
-          for (let index in state.sessions.session_list) {
-            if (state.sessions.session_list[index].session_id == msg.session_id) {
-              state.sessions.session_list[index].last_time = msg.transmit_time;
-              state.sessions.session_list[index].last_record = msg.content;
-              window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
-            }
-          }
-        } else if (msg.sender_id != state.user.user_id) {
-          // 收到消息，但现在不在该会话的界面
-          for (let index in state.sessions.session_list) {
-            if (state.sessions.session_list[index].session_id == msg.session_id) {
-              state.sessions.session_list[index].last_time = msg.transmit_time;
-              state.sessions.session_list[index].last_record = msg.content;
-              state.sessions.session_list[index].if_read = false;
-              window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
-            }
+          // 保证temp数据不会过于多
+          let count = state.temp_history[msg.session_id].length - maxTempHistoryCount;
+          if(count > 0){
+            state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);
           }
         }
-
-        console.log(msg)
+        // 然后修改会话列表，主要是 显示最后一条消息
+        for (let index in state.sessions.session_list) {
+          if (state.sessions.session_list[index].session_id == msg.session_id) {
+            state.sessions.session_list[index].last_time = msg.transmit_time;
+            state.sessions.session_list[index].last_record = msg.content;
+            state.sessions.session_list[index].if_read = (msg.session_id == state.cur_session.session_id);
+            window.localStorage.setItem('sessions', JSON.stringify(state.sessions));
+            window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
+            break;
+          }
+        }
       }
       const close = function () {
         console.log("socket已经关闭")
@@ -209,20 +195,33 @@ export default new Vuex.Store({
       }
     },
 
-    changeFirstSession(state, sessionId){
-      let curSess, sessIndex=0;
-      for(let index in state.sessions.session_list){
-        if(state.sessions.session_list[index].session_id == sessionId){
-          if(index == 0) return;
+    changeFirstSession(state, sessionId) {
+      let curSess, sessIndex = 0;
+      for (let index in state.sessions.session_list) {
+        if (state.sessions.session_list[index].session_id == sessionId) {
+          if (index == 0) return;
           curSess = state.sessions.session_list[index];
           sessIndex = index;
         }
       }
-      for(let index=sessIndex; index > 0; index--){
-        state.sessions.session_list[index] = state.sessions.session_list[index-1];
+      for (let index = sessIndex; index > 0; index--) {
+        state.sessions.session_list[index] = state.sessions.session_list[index - 1];
       }
       state.sessions.session_list[0] = curSess;
       window.localStorage.setItem('sessions', JSON.stringify(state.sessions))
+    },
+
+    setTempHistory(state, historyAndSid) {
+      Vue.set(state.temp_history, historyAndSid[1], historyAndSid[0]); // 精彩
+      window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
+    },
+
+    cleanTempHistory(state, sessionId){
+      let count = state.temp_history[sessionId].length - maxTempHistoryCount;
+      if(count > 0){
+        state.temp_history[sessionId] = state.temp_history[sessionId].slice(count);
+        window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
+      }
     }
   }
 
