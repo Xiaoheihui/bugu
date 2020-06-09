@@ -45,7 +45,7 @@
             <div class="sheetImage">
               <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
             </div>
-            <span class="sheetContent">{{i.friend_note==undefined?i.friend_name:i.friend_note}}</span>
+            <span class="sheetContent">{{(i.friend_note==undefined||i.friend_note=='')?i.friend_name:i.friend_note}}</span>
           </div>
         </div>
       </div>
