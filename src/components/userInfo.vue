@@ -147,7 +147,7 @@
                 // 目标尺寸
                 var targetWidth = originWidth,
                     targetHeight = originHeight;
-                // 图片尺寸超过400x400的限制
+                // 图片尺寸超过600x600的限制
                 if (originWidth > maxWidth || originHeight > maxHeight) {
                     if (originWidth / originHeight > maxWidth / maxHeight) {
                         // 更宽，按照宽度限定尺寸
