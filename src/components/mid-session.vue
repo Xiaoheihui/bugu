@@ -5,7 +5,7 @@
 			<el-input class="searchInput" v-model="searchInput" clearable placeholder="搜索" prefix-icon="el-icon-search"
 			 @keyup.enter.native="searchSession"></el-input>
 			<el-button class="addfriend_button" title="新建群聊" @click="groupApply">
-				<i class="iconfont icon-addFriend_B"></i>
+				<i class="iconfont icon-jiaoyou_B"></i>
 			</el-button>
 		</div>
 		<!-- 会话列表 -->
@@ -24,7 +24,9 @@
 						</div>
 
 						<div class="sheetRecord">
-							<span>{{i.last_record?(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record):""}}</span>
+							<span>{{i.last_record?
+								(!i.last_record.indexOf('data:image')?"[图片]":(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record))
+								:""}}</span>
 						</div>
 					</div>
 
@@ -131,6 +133,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		overflow: scroll;
+		overflow-x: auto;
+		overflow-y: auto;
 	}
 
 	.sessionList .header {
