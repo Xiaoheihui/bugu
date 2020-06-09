@@ -141,7 +141,7 @@
           <el-button style="margin-top:10px;background: yellowgreen;font-weight: bold;" size="middle" @click="toGroupInfo">创建聊天室</el-button>
         </div>
       </div>
-    
+
       <div v-if="navSelected==2" class="applyList">
         <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
@@ -339,7 +339,7 @@ export default {
           type: 'warning'
         });
       }
-      
+
     },
     toApply() {
       this.navSelected = 2;
@@ -382,7 +382,7 @@ export default {
               } else {
                 this.$message.error("获取通讯录失败");
               }
-            }); 
+            });
             this.toApply(); // 刷新被申请表
           } else if (res.data.state == 1) {
             this.$message.error("对方已经是聊天室的成员");
@@ -424,10 +424,11 @@ export default {
         }
       }
       changeSelectedText(textArea,this.faceList[index]);
-      // console.log(this.faceList[index]);
+      this.textarea = textArea.value
       return;
     },
     sendInfo() {
+        console.log(this.textarea.length)
       if (this.textarea != "") {
         this.$store.state.socket_instance.send(
           JSON.stringify({
@@ -440,10 +441,12 @@ export default {
         );
         this.textarea = "";
         // console.log("success");
+      }else{
+          console.log("!!");
       }
     }
-  }
-};
+    }
+ };
 </script>
 
 <style lang="scss">
@@ -706,7 +709,7 @@ export default {
   overflow-y: auto;
 }
 .mytransfer{
-  text-align: left; 
+  text-align: left;
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{
