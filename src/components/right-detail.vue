@@ -2,7 +2,7 @@
   <el-col :span="15" class="detailPage">
     <!-- pageType代表右边展示页面的类型 -->
     <!-- 0表示无内容 -->
-    <div v-if="pageType==0" class="emptyPage">暂无内容</div>
+    <div v-if="pageType==0" class="emptyPage"></div>
     <!-- 1表示好友信息的详情页 -->
     <div v-if="pageType==1" class="friendDetail">
       <div class="friendIcon">
@@ -51,7 +51,11 @@
       <!-- 两个按钮，一个是搜索并添加好友，另一个是查看被申请列表 -->
       <div class="navTab">
         <el-button class="navBut" @click="toAdd">添加好友</el-button>
-        <el-button class="navBut" @click="toApply">新的朋友</el-button>
+        <el-button class="navBut" @click="toApply">
+          <el-badge :is-dot="hasNewApplication" class="item">
+          <div style="padding-right:5px;">新的朋友</div>
+          </el-badge>
+        </el-button>
       </div>
       <div v-if="!navSelected" class="addFriend">
         <el-input
@@ -136,7 +140,7 @@
 <script>
 export default {
   name: "right-detail",
-  props: ["pageType", "selectedFriendInfo", "selectedGroupInfo"], // 获取父组件的传值
+  props: ["pageType", "selectedFriendInfo", "selectedGroupInfo","hasNewApplication"], // 获取父组件的传值
   data() {
     return {
       navSelected: 0,
@@ -145,6 +149,7 @@ export default {
       acceptApplyVisible: false,
       searchFriendResult: null,
       applicantList: [],
+      applicantLen: 0,
       applicant_id_selected: 0,
       applyForm: {
         verify: "",
@@ -184,6 +189,7 @@ export default {
         .then(res => {
           if (res.data.state == "0") {
             this.applicantList = res.data.applicant_list;
+            this.applicantLen = res.data.applicant_list.length;
           } else {
             this.$message.error("获取好友申请列表失败");
           }
@@ -257,6 +263,9 @@ export default {
             this.getContacts(); // 更新通讯录
             this.toApply(); // 刷新被申请表
             this.acceptApplyVisible = false;
+            if(--this.applicantLen==0){
+              this.$emit("redPointCancel");
+            }
           } else if (res.data.state == 1) {
             this.$message.success("好友关系已存在");
           }
@@ -274,6 +283,9 @@ export default {
           if (res.data.state == 0) {
             this.$message.success("已拒绝对方的请求");
             this.toApply(); // 刷新被申请表
+            if(--this.applicantLen==0){
+              this.$emit("redPointCancel");
+            }
           }
         });
     }

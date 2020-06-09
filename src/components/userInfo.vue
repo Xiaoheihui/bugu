@@ -229,8 +229,10 @@
     }
 
     .avatar {
-      width: 80px;
-      height: 80px;
+      width: 9vh;
+      height: 9vh;
+      min-height: 60px;
+      min-width: 60px;
       display: block;
     }
 

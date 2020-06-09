@@ -210,7 +210,7 @@ export default {
       value: [this.$store.state.user.user_id],
       renderFunc(h, option) {
           return <div style="display: flex;align-items: center;"><el-image style="min-height:20px;min-width: 20px;height: 20px;width: 20px;margin-right: 5px;border-radius: 100%;"
-           src={option.avatar_url}></el-image><span>{ option.key } - { option.label }</span></div>;
+           src={option.avatar_url}></el-image><span>{ option.label }</span></div>;
       }
     };
   },
@@ -234,7 +234,7 @@ export default {
             for (let i = 1; i <= Data.length; i++) {
               data.push({
                 key: Data[i-1].friend_id,
-                label: Data[i-1].friend_note==undefined?Data[i-1].friend_name:Data[i-1].friend_note,
+                label: (Data[i-1].friend_note==undefined||Data[i-1].friend_note=='')?Data[i-1].friend_name:Data[i-1].friend_note,
                 disabled: false,
                 avatar_url: Data[i-1].avatar_url
               });
@@ -252,7 +252,7 @@ export default {
         for (let i = 1; i <= Data.length; i++) {
           data.push({
             key: Data[i-1].friend_id,
-            label: Data[i-1].friend_note==undefined?Data[i-1].friend_name:Data[i-1].friend_note,
+            label: (Data[i-1].friend_note==undefined||Data[i-1].friend_note=='')?Data[i-1].friend_name:Data[i-1].friend_note,
             disabled: false,
             avatar_url: Data[i-1].avatar_url
           });

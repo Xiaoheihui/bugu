@@ -10,7 +10,9 @@
         prefix-icon="el-icon-search"
       ></el-input>
       <el-button class="addfriend_button" title="添加好友" @click="friendApply">
-        <i class="iconfont icon-addFriend_B"></i>
+        <el-badge :is-dot="hasNewApplication" class="item">
+          <i class="iconfont icon-addFriend_B"></i>
+        </el-badge>
       </el-button>
     </div>
     <div class="contactList">
@@ -45,7 +47,7 @@
             <div class="sheetImage">
               <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
             </div>
-            <span class="sheetContent">{{i.friend_note==undefined?i.friend_name:i.friend_note}}</span>
+            <span class="sheetContent">{{(i.friend_note==undefined||i.friend_note=='')?i.friend_name:i.friend_note}}</span>
           </div>
         </div>
       </div>
@@ -56,7 +58,7 @@
 <script>
 export default {
   name: "mid-contact",
-  props: ["contacts"], // 获取父组件的传值
+  props: ["contacts","hasNewApplication"], // 获取父组件的传值
   data() {
     return {
       // 搜索框输入
@@ -64,9 +66,10 @@ export default {
       // 是否显示群聊和好友列表
       showSheets1: false,
       showSheets2: false,
+      // 页面类型
       detailType:0,
       selectedFriendInfo:{},
-      selectedGroupInfo:{}
+      selectedGroupInfo:{},
     };
   },
   methods: {
@@ -94,8 +97,7 @@ export default {
     friendApply:function(){
       this.detailType=3;
     }
-    
-}
+  }
 };
 </script>
 <style scoped>
