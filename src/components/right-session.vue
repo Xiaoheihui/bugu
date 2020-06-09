@@ -428,7 +428,6 @@ export default {
       return;
     },
     sendInfo() {
-        console.log(this.textarea.length)
       if (this.textarea != "") {
         this.$store.state.socket_instance.send(
           JSON.stringify({
@@ -440,6 +439,7 @@ export default {
           })
         );
         this.textarea = "";
+        this.$store.commit("changeFirstSession", this.cur_session.session_id);
         // console.log("success");
       }
     }

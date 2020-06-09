@@ -79,7 +79,6 @@
         })
         .then((res) => {
           if (res.data.state == "0") {
-
             this.$store.commit("getSessions", res.data);
             var path = this.$route.query.redirect;
             this.$router.replace({path: path === '/' || path === undefined ? '/main' : path})
