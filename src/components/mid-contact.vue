@@ -13,6 +13,7 @@
         <i class="iconfont icon-addFriend_B"></i>
       </el-button>
     </div>
+    <div class="contactList">
     <!-- 聊天室列表 -->
     <div class="groupList">
       <div class="header" @click="toggleSheet1">
@@ -48,6 +49,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </el-col>
 </template>
@@ -118,6 +120,13 @@ export default {
 .searchNav .addfriend_button {
   margin-left: 2px;
   padding: 10px;
+}
+.contactList{
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 /* 聊天室收拉菜单 */
 .groupList {
