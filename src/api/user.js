@@ -29,10 +29,22 @@ const user = {
   searchUser(params){
     return axios.post("/searchUser", JSON.stringify(params));
   },
+  //更新会话最后一条消息的时间
+  updateLastTime(params){
+    return axios.post("/update_last_time", JSON.stringify(params));
+  },
   //更新离开会话的时间
   updateLeaveTime(params){
     return axios.post("/update_leave_time", JSON.stringify(params));
-  }
+  },
+  //检测聊天消息是否涉嫌黄色暴力，涉及政治
+  checkContent(params){
+    return axios.post("/checkContent", JSON.stringify(params));
+  },
+  //检测聊天图片是否涉嫌黄色暴力，涉及政治
+  checkPicture(params){
+    return axios.post("/checkPicture", JSON.stringify(params));
+  },
 };
 
 export default user;

@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       currSessId:0,
-        something: [],
+      something: true,
       menuList: [
         {
           name: 0,
@@ -88,16 +88,16 @@ export default {
       this.something = res;
     },
     updateHistory(params) {
-        this.$api.main
-        .getSessionsContent({
-          session_id: this.$store.state.cur_session.session_id
-        })
-        .then(res => {
-          this.selectedSessionHistory = res.data.history_list;
-        })
-        .catch(e => {
-          this.$message.error(e);
-        });
+      this.$api.main
+      .getSessionsContent({
+        session_id: this.$store.state.cur_session.session_id
+      })
+      .then(res => {
+        this.selectedSessionHistory = res.data.history_list;
+      })
+      .catch(e => {
+        this.$message.error(e);
+      });
     }
   }
 };

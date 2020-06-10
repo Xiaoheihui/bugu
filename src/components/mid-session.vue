@@ -10,7 +10,7 @@
 		</div>
 		<!-- 会话列表 -->
 		<div class="sessionList">
-			<div class="sheetList" v-for="i in $store.state.sessions.session_list" :key="i.last_time" @click="sessionDetail(i)">
+			<div class="sheetList" v-for="i in $store.state.sessions.session_list" :key="i.session_id" @click="sessionDetail(i)">
 				<div class="access">
 					<div class="sheetImage">
 						<el-badge :is-dot="!i.if_read && currSessId != i.session_id" class="item">
@@ -35,68 +35,67 @@
 	</el-col>
 </template>
 <script>
-    var moment = require("moment");
-    export default {
-        name: "mid-session",
-        data() {
-            return {
-                mapppp: {"1":"2", "3":"4"},
-                // 搜索框输入
-                searchInput: "",
-                // sessionList: [],
-                // 判断右边的页面类型（1：单聊，2：拉群）
-                detailType: 0,
-                selectedSessionHistory: [],
-                currSessId: 0,
-            };
-        },
-        methods: {
-            getSessionsContent(s_id) {
-                this.$api.main
-                    .getSessionsContent({
-                        session_id: s_id,
+	var moment = require("moment");
+	export default {
+		name: "mid-session",
+		data() {
+			return {
+				// 搜索框输入
+				searchInput: "",
+				// 判断右边的页面类型（1：单聊，2：拉群）
+				detailType: 0,
+				selectedSessionHistory: [],
+				currSessId: 0,
+			};
+		},
+		methods: {
+			getSessionsContent(s_id) {
+				this.$api.main
+					.getSessionsContent({
+						session_id: s_id,
                         start: 0,
                         end: 20
-                    })
-                    .then(res => {
-                        this.$emit("pageTpye_", this.detailType);
-                        let historyAndSid = [res.data.history_list, s_id];
+					})
+					.then(res => {
+						this.$emit("pageTpye_", this.detailType);
+						let historyAndSid = [res.data.history_list, s_id];
                         this.$store.commit("setTempHistory", historyAndSid)
-                    })
-                    .catch(e => {
-                        this.$message.error(e);
-                    });
-            },
-            sessionDetail: function (info) {
-                this.detailType = 1;
-                let lastSessId = this.currSessId;
-                this.$emit("transfer", this.detailType);
-                this.$emit("changeSess", true);
-                this.$store.commit("getCurSession", info);
-                this.currSessId = info.session_id;
-                this.$store.commit("readCurSessionMessage", this.currSessId);
-                let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
-                this.$api.user.updateLeaveTime({
-                    user_id: this.$store.state.user["user_id"],
-                    updatetime: time_1
-                }).then(res => {
-                    console.log(res.data);
-                }).catch(e => {
-                    this.$message.error(e);
-                });
-                if(!this.$store.state.temp_history[info.session_id]){
+					})
+					.catch(e => {
+						this.$message.error(e);
+					});
+			},
+			sessionDetail: function(info) {
+				this.detailType = 1;
+				console.log(info)
+				let lastSessId = this.currSessId;
+				this.$emit("transfer",this.detailType);
+				this.$emit("changeSess", true);
+				this.$store.commit("getCurSession", info);
+				this.currSessId = info.session_id;
+				this.$store.commit("readCurSessionMessage", this.currSessId);
+				let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
+				this.$api.user.updateLastTime({
+					session_id:info.session_id,
+					updatetime:time_1
+				}).then(res=>{
+					console.log(res.data);
+				}).catch(e => {
+					this.$message.error(e);
+				});
+				if(!this.$store.state.temp_history[info.session_id]){
                     this.getSessionsContent(this.currSessId);
                 }
                 if(this.$store.state.temp_history[lastSessId]){
                     this.$store.commit("cleanTempHistory", lastSessId);
                 }
-            },
-            groupApply: function (info) {
-                this.detailType = 2;
-                this.$emit("pageTpye_", this.detailType);
-            },
-        }
-    };
+			},
+			groupApply: function(info) {
+				this.detailType = 2;
+				this.$emit("pageTpye_",this.detailType);
+			}
+		}
+	};
 </script>
 <style scoped>
 	/* 主菜单 */

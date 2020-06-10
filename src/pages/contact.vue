@@ -5,10 +5,10 @@
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
             <!-- 中间的通讯录 -->
-            <mid-contact :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+            <mid-contact :hasNewApplication="hasNewApplication" :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
 			<!-- 好友申请主页/详情页面 -->
-			<right-detail :pageType="pageType" :selectedFriendInfo="selectedFriendInfo" 
-			:selectedGroupInfo="selectedGroupInfo"></right-detail>
+			<right-detail @redPointCancel="changeRedPoint" :pageType="pageType" :selectedFriendInfo="selectedFriendInfo" 
+			:selectedGroupInfo="selectedGroupInfo" :hasNewApplication="hasNewApplication"></right-detail>
 		  </el-row>
 	  </div>
   </div>
@@ -35,7 +35,26 @@
           } else {
             this.$message.error("获取通讯录失败");
           }
-        });
+		});
+	  let result=false;
+		this.$api.user
+		.getFriendApplication({
+			user_id: this.$store.state.user["user_id"]
+		})
+		.then(res => {
+			if (res.data.state == "0") {
+			for(let i=0;i<res.data.applicant_list.length;i++){
+				if(res.data.applicant_list[i].flag==1){
+				result=true;
+				break;
+				}
+			}
+			this.hasNewApplication=result;
+			} else {
+			result=false;
+			this.hasNewApplication=result;
+			}
+		});
 	},
     components:{
         'left-menu':menu,
@@ -76,7 +95,9 @@
 		// 展示好友信息
 		selectedFriendInfo:{},
 		// 展示聊天室信息
-		selectedGroupInfo:{}
+		selectedGroupInfo:{},
+		// 是否有新好友申请
+		hasNewApplication: false
 		}
 	},
     methods:{
@@ -85,7 +106,10 @@
 			// 将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
 			this.selectedFriendInfo=this.$refs.choose.selectedFriendInfo;
 			this.selectedGroupInfo=this.$refs.choose.selectedGroupInfo;
-        }
+		},
+		changeRedPoint(){
+			this.hasNewApplication=false;
+		}
     }
   }
 </script>
