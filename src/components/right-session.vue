@@ -282,7 +282,7 @@ export default {
       textarea: "",
       faceList: [],
       form:{
-        groupImg: 'https://pic.baike.soso.com/p/20130701/20130701155242-1344008658.jpg',
+        groupImg: 'https://bugu-1300789911.cos.ap-guangzhou.myqcloud.com/1591804661000.jpeg',
         groupName: '',
         groupIntro: '',
       },
