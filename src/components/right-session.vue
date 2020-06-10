@@ -192,12 +192,6 @@
 import { mapState, mapMutations } from "vuex";
 import COS from 'cos-js-sdk-v5';
 const appData = require("../static/utils/emoji.json");
-const s_id = "AKIDIkwFsiqbv3Wpyxm1qmbBbnQjmZO2bpFZ";
-const s_key = "nMfnndDqGTeYr22peFfKoBMPUHqWG7mC";
-const cos = new COS({
-    SecretId: s_id,
-    SecretKey: s_key
-  });
 export default {
   name: "right-session",
   props: ["debugMode","pageType"], // 获取父组件的传值
