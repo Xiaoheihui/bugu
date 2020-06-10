@@ -57,7 +57,6 @@
                         end: 20
 					})
 					.then(res => {
-						this.$emit("pageTpye_", this.detailType);
 						let historyAndSid = [res.data.history_list, s_id];
                         this.$store.commit("setTempHistory", historyAndSid)
 					})
@@ -67,7 +66,6 @@
 			},
 			sessionDetail: function(info) {
 				this.detailType = 1;
-				console.log(info)
 				let lastSessId = this.currSessId;
 				this.$emit("transfer",this.detailType);
 				this.$emit("changeSess", true);
@@ -83,6 +81,7 @@
 				}).catch(e => {
 					this.$message.error(e);
 				});
+				this.$emit("pageTpye_", this.detailType);
 				if(!this.$store.state.temp_history[info.session_id]){
                     this.getSessionsContent(this.currSessId);
                 }

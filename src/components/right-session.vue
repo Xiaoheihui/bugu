@@ -11,7 +11,7 @@
         </div>
         <el-button class="info" icon="el-icon-more"></el-button>
       </div>
-      <div class="sessionArea" id="chat" ref='rightContent' @mousewheel="scrool">
+      <div class="sessionArea" id="chat" ref='rightContent'>
         <!-- 当聊天记录长度为0或者聊天记录长度（大于）等于总长度时消除加载组件 -->
         <div v-if="$store.state.cur_session['history_len']||
         $store.state.temp_history[cur_session.session_id].length>=$store.state.cur_session['history_len']">上拉加载消息</div>
@@ -215,21 +215,35 @@ export default {
     }
   },
   updated() {
-    if (this.pageType == 1 && this.firstChangeScro && this.$store.state.temp_history[this.cur_session.session_id].length) {    
-      this.$refs.rightContent.addEventListener('scroll', this.scrool,false);
+    console.log(this.debugMode)
+    // 首次进入会话，条件为真
+    if (this.pageType == 1 && this.debugMode) {
+      // 开始注册监听器
       console.log("注册");
+      this.$refs.rightContent.addEventListener('scroll', this.scrool,false);// 注册，冒泡模式
+      this.debugMode=false;//注册过了，置假
       let msg = document.getElementById("chat"); // 获取对象
-      msg.scrollTop = msg.scrollHeight; // 滚动高度 到底部
+      console.log("必须的", msg.scrollHeight)
+      msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
     }
-    if(this.$store.state.temp_history[this.cur_session.session_id].length>=this.$store.state.cur_session['history_len']){
+    // 聊天记录全部获取完了，开始注销监听器（&&第二个表达式可能可以再简短一些，主要是怕temp_history没内容）
+    if(this.pageType == 1 &&  this.$store.state.temp_history[this.cur_session.session_id]?
+    (this.$store.state.temp_history[this.cur_session.session_id].length>=this.$store.state.cur_session['history_len']):false){
       console.log("注销");
-      this.$refs.rightContent.removeEventListener('scroll', this.scrool,false);
-      // 注销失败,这里要研究一下
+      this.$refs.rightContent.removeEventListener('scroll', this.scrool,false);// 注销，参数一致
     }
+  },
+  watch:{
+      cur_session(newValue, oldValue) {
+        // 早于updated，先设置进入注册代码块的条件为真
+        this.debugMode=true;
+      }
+  },
+  beforeDestroy() {
+    this.$refs.rightContent.removeEventListener('scroll', this.scrool,false);
   },
   data() {
     return {
-      firstChangeScro: this.debugMode,
       // 当前会话历史记录条数
       curHisCount: 0,
       ifGetExtra: true,
@@ -256,8 +270,6 @@ export default {
   },
   methods: {
     scrool() {
-        // console.log(this.$store.state.temp_history[this.cur_session.session_id].length)
-        // console.log(this.$store.state.cur_session['history_len'])
         let scrolled = this.$refs.rightContent.scrollTop;
         let temp = this.$store.state.temp_history[this.$store.state.cur_session.session_id]
         if(!temp||!temp.length) {
@@ -286,7 +298,6 @@ export default {
                       that.ifGetExtra = !that.ifGetExtra;
                   }, 1000)  // 避免重复刷新
                 })
-            this.firstChangeScro=false;
         }
 
     },
