@@ -69,7 +69,7 @@
                 ref="uploadAvatar"
                 :show-file-list="false"
                 :auto-upload="false"
-                :on-change="toChangeImage">                
+                :on-change="toChangeImage">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
@@ -146,7 +146,7 @@
             ref="uploadAvatar"
             :show-file-list="false"
             :auto-upload="false"
-            :on-change="toChangeImage">                
+            :on-change="toChangeImage">
             <img v-if="form.groupImg" :src="form.groupImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -166,7 +166,7 @@
           <el-button style="margin-top:10px;background: yellowgreen;font-weight: bold;" size="middle" @click="toGroupInfo">创建聊天室</el-button>
         </div>
       </div>
-    
+
       <div v-if="navSelected==2" class="applyList">
         <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
@@ -215,16 +215,18 @@ export default {
     }
   },
   updated() {
-    console.log(this.debugMode)
+    console.log("11111", this.if_register)
     // 首次进入会话，条件为真
-    if (this.pageType == 1 && this.debugMode) {
+    if (this.pageType == 1 && this.if_register<3) {
       // 开始注册监听器
       console.log("注册");
       this.$refs.rightContent.addEventListener('scroll', this.scrool,false);// 注册，冒泡模式
-      this.debugMode=false;//注册过了，置假
-      let msg = document.getElementById("chat"); // 获取对象
-      console.log("必须的", msg.scrollHeight)
-      msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
+      this.if_register+=1;//注册过了，置假
+        this.$nextTick(function () {
+            let msg = document.getElementById("chat"); // 获取对象
+            console.log("22222");
+            msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
+        })
     }
     // 聊天记录全部获取完了，开始注销监听器（&&第二个表达式可能可以再简短一些，主要是怕temp_history没内容）
     if(this.pageType == 1 &&  this.$store.state.temp_history[this.cur_session.session_id]?
@@ -236,7 +238,7 @@ export default {
   watch:{
       cur_session(newValue, oldValue) {
         // 早于updated，先设置进入注册代码块的条件为真
-        this.debugMode=true;
+        this.if_register=1;
       }
   },
   beforeDestroy() {
@@ -244,7 +246,8 @@ export default {
   },
   data() {
     return {
-      // 当前会话历史记录条数
+        if_register: 1,
+        // 当前会话历史记录条数
       curHisCount: 0,
       ifGetExtra: true,
       navSelected: 0,
@@ -284,19 +287,22 @@ export default {
                     start: this.curHisCount,
                     end: this.curHisCount + 10
                 }).then(res => {
+                    let resLen = res.data.history_list.length;
                     console.log(res)
                         // 将获得的新数据连接到temp前端
                         res.data.history_list.push.apply(
                           res.data.history_list,
                           that.$store.state.temp_history[this.cur_session.session_id]
-                    );
-                  that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
-                  that.curHisCount += 10;
-                  let msg = document.getElementById("chat");
-                  msg.scrollTop = msg.scrollHeight * 10/this.curHisCount;
-                  setTimeout(function () {
-                      that.ifGetExtra = !that.ifGetExtra;
-                  }, 1000)  // 避免重复刷新
+                        );
+                    that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
+                    that.curHisCount += resLen;
+                    let msg = document.getElementById("chat");
+                    msg.scrollTop = msg.scrollHeight * resLen/that.curHisCount;
+                    console.log(resLen)
+                    console.log(that.curHisCount)
+                    setTimeout(function () {
+                        that.ifGetExtra = !that.ifGetExtra;
+                    }, 1000)  // 避免重复刷新
                 })
         }
 
@@ -425,7 +431,7 @@ export default {
           type: 'warning'
         });
       }
-      
+
     },
     toApply() {
       this.navSelected = 2;
@@ -468,7 +474,7 @@ export default {
               } else {
                 this.$message.error("获取通讯录失败");
               }
-            }); 
+            });
             this.toApply(); // 刷新被申请表
           } else if (res.data.state == 1) {
             this.$message.error("对方已经是聊天室的成员");
@@ -579,7 +585,7 @@ export default {
             title: '警告',
             center: true,
             type: 'warning',
-            message: 
+            message:
             h('div', null, [
               h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的聊天文本'),
               h('p', null, '敏感词为：'+res.data.Keywords.toString()),
@@ -608,16 +614,13 @@ export default {
               })
             );
             this.textarea = "";
-            this.scrollToBottom();
+              if (this.pageType == 1) {
+                  let msg = document.getElementById("chat"); // 获取对象
+                  msg.scrollTop = msg.scrollHeight; // 滚动高度
+              }
             this.$store.commit("changeFirstSession", this.cur_session.session_id);
           }
         });
-      }
-    },
-    scrollToBottom(){
-      if (this.pageType == 1) {
-        let msg = document.getElementById("chat"); // 获取对象
-        msg.scrollTop = msg.scrollHeight; // 滚动高度
       }
     }
   }
@@ -919,7 +922,7 @@ export default {
   overflow-y: auto;
 }
 .mytransfer{
-  text-align: left; 
+  text-align: left;
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{

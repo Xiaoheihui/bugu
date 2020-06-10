@@ -58,7 +58,7 @@
 					})
 					.then(res => {
 						let historyAndSid = [res.data.history_list, s_id];
-                        this.$store.commit("setTempHistory", historyAndSid)
+            this.$store.commit("setTempHistory", historyAndSid)
 					})
 					.catch(e => {
 						this.$message.error(e);
@@ -82,12 +82,10 @@
 					this.$message.error(e);
 				});
 				this.$emit("pageTpye_", this.detailType);
-				if(!this.$store.state.temp_history[info.session_id]){
-                    this.getSessionsContent(this.currSessId);
-                }
-                if(this.$store.state.temp_history[lastSessId]){
-                    this.$store.commit("cleanTempHistory", lastSessId);
-                }
+        this.getSessionsContent(this.currSessId);
+        if(this.$store.state.temp_history[lastSessId]){
+            this.$store.commit("cleanTempHistory", lastSessId);
+        }
 			},
 			groupApply: function(info) {
 				this.detailType = 2;
