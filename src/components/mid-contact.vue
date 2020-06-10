@@ -2,13 +2,25 @@
   <el-col :span="6" class="list">
     <!-- 搜索框 -->
     <div class="searchNav">
-      <el-input
-        class="searchInput"
-        v-model="searchInput"
-        clearable
-        placeholder="搜索"
-        prefix-icon="el-icon-search"
-      ></el-input>
+      <el-select v-model="searchInput" filterable placeholder="请搜索" style="width:11.5vw;">
+				<el-option-group
+				v-for="group in options"
+				:key="group.label"
+				:label="group.label">
+					<el-option
+						v-for="item in group.options"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"
+						@click.native="chooseOptions(item)">
+						<div style="display: flex;align-items: center;">
+							<el-image style="min-height:20px;min-width: 20px;height: 20px;width: 20px;margin-right: 5px;border-radius: 100%;"
+           :src="item.avatar"></el-image>
+		   					<span style="float: right; color: #8492a6; font-size: 13px">{{ item.label }}</span>
+						</div>
+					</el-option>
+				</el-option-group>
+			</el-select>
       <el-button class="addfriend_button" title="添加好友" @click="friendApply">
         <el-badge :is-dot="hasNewApplication" class="item">
           <i class="iconfont icon-addFriend_B"></i>
@@ -61,6 +73,8 @@ export default {
   props: ["contacts","hasNewApplication"], // 获取父组件的传值
   data() {
     return {
+      //搜索项
+      options:[],
       // 搜索框输入
       searchInput: "",
       // 是否显示群聊和好友列表
@@ -72,30 +86,80 @@ export default {
       selectedGroupInfo:{},
     };
   },
+  mounted(){
+    let group_arr=[];
+    let friend_arr=[];
+    let friend_source=JSON.parse(JSON.stringify(this.contacts.friend_list));
+    let group_source=JSON.parse(JSON.stringify(this.contacts.group_list));
+    for(let i=0;i<friend_source.length;i++){
+      friend_arr.push({
+        value:friend_source[i]["friend_id"],
+        id:friend_source[i]["friend_id"],
+        label:(friend_source[i].friend_note==""||friend_source[i].friend_note==undefined)?friend_source[i].friend_name:friend_source[i].friend_note,
+        avatar:friend_source[i].avatar_url
+      })
+    }
+    for(let j=0;j<group_source.length;j++){
+      group_arr.push({
+        value:"group"+group_source[j]["group_id"],
+        id:group_source[j]["group_id"],
+        label:group_source[j].group_name,
+        avatar:group_source[j].group_avatar
+      })
+    }
+    this.options=[{
+      label:'聊天室',
+      options:group_arr
+      },{
+        label:'好友',
+        options:friend_arr
+      }];
+  },
   methods: {
-    toggleSheet1: function(index) {
+    chooseOptions(info){
+      let friend_source=JSON.parse(JSON.stringify(this.contacts.friend_list));
+      let group_source=JSON.parse(JSON.stringify(this.contacts.group_list));
+      for(let i=0;i<friend_source.length;i++){
+        if(friend_source[i]["friend_id"]==info.id){
+          this.friendDetail(friend_source[i]);
+          break;
+        }
+      }
+      for(let j=0;j<group_source.length;j++){
+        if(group_source[j]["group_id"]==info.id){
+          this.groupDetail(group_source[j]);
+          break;
+        }
+      }
+    },
+    toggleSheet1(index) {
       this.$refs.toggleicon1.style.transform = !this.showSheets1
         ? "rotate(90deg)"
         : "rotate(0)";
       this.showSheets1 = !this.showSheets1;
     },
-    toggleSheet2: function(index) {
+    toggleSheet2(index) {
       this.$refs.toggleicon2.style.transform = !this.showSheets2
         ? "rotate(90deg)"
         : "rotate(0)";
       this.showSheets2 = !this.showSheets2;
     },
-    friendDetail:function(info){
+    friendDetail(info){
       this.detailType=1;
+      this.$emit("pageType_",this.detailType);
       this.selectedFriendInfo=JSON.parse(JSON.stringify(info));
+      this.$emit("selectedFriendInfo_",this.selectedFriendInfo);
+      
     },
-    groupDetail:function(info){
+    groupDetail(info){
       this.detailType=2;
+      this.$emit("pageType_",this.detailType);
       this.selectedGroupInfo=JSON.parse(JSON.stringify(info));
-      console.log(JSON.parse(JSON.stringify(info)));
+      this.$emit("selectedGroupInfo_",this.selectedGroupInfo);
     },
-    friendApply:function(){
+    friendApply(){
       this.detailType=3;
+      this.$emit("pageType_",this.detailType);
     }
   }
 };
@@ -120,7 +184,8 @@ export default {
   height: auto;
 }
 .searchNav .addfriend_button {
-  margin-left: 2px;
+  width:3vw;
+  min-width:40px;
   padding: 10px;
 }
 .contactList{

@@ -103,11 +103,9 @@ var server = ws.createServer(function(conn) {
 								
 								if (res.data.state == "0") {
 									memberlist = res.data.memberlist;
-									// console.log(memberlist);
 
 									for (let i = 0; i < memberlist.length; i++) {
 										let member_id = memberlist[i].user_id;
-										console.log(member_id);
 										//如果群成员在线
 										
 										if (conns.hasOwnProperty(member_id)&&member_id!=data.user_id) {
@@ -243,6 +241,7 @@ var server = ws.createServer(function(conn) {
 						let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');  //加1s
 						axios.post("https://af8ko6.toutiao15.com/update_leave_time", {
 							user_id: uid,
+							session_id: data['session_id'],
 							updatetime: time_1,
 						}).then((res) => {
 							if (res.data.state == "0") {
@@ -264,23 +263,9 @@ var server = ws.createServer(function(conn) {
 
 	//断开连接的回调
 	conn.on('close', function() {
-		//更新该用户所有会话的离开时间
-		//console.log("close:   " + conns.hasOwnProperty(uid));
 		delete conns[uid];
 		//删除成员信息
 		console.log("close:   " + conns.hasOwnProperty(uid));
-		let time = moment().utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
-		axios.post("https://af8ko6.toutiao15.com/update_leave_time", {
-			user_id: uid,
-			updatetime:   time,
-		}).then((res) => {
-			if (res.data.state == "0") {
-				console.log("离开时间修改成功");
-			} else {
-				console.log("离开时间修改失败");
-			}
-			
-		});
 	});
 
 	//处理错误事件信息

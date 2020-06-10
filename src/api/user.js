@@ -33,7 +33,7 @@ const user = {
   updateLastTime(params){
     return axios.post("/update_last_time", JSON.stringify(params));
   },
-  //更新离开会话的时间
+  //更新用户离开会话的时间
   updateLeaveTime(params){
     return axios.post("/update_leave_time", JSON.stringify(params));
   },

@@ -2,8 +2,25 @@
 	<el-col :span="6" class="list">
 		<!-- 搜索框 -->
 		<div class="searchNav">
-			<el-input class="searchInput" v-model="searchInput" clearable placeholder="搜索" prefix-icon="el-icon-search"
-			 @keyup.enter.native="searchSession"></el-input>
+			<el-select v-model="searchInput" filterable placeholder="请搜索" style="width:11.5vw;">
+				<el-option-group
+				v-for="group in options"
+				:key="group.label"
+				:label="group.label">
+					<el-option
+						v-for="item in group.options"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"
+						@click.native="chooseOptions(item)">
+						<div style="display: flex;align-items: center;">
+							<el-image style="min-height:20px;min-width: 20px;height: 20px;width: 20px;margin-right: 5px;border-radius: 100%;"
+           :src="item.avatar"></el-image>
+		   					<span style="float: right; color: #8492a6; font-size: 13px">{{ item.label }}</span>
+						</div>
+					</el-option>
+				</el-option-group>
+			</el-select>
 			<el-button class="addfriend_button" title="新建群聊" @click="groupApply">
 				<i class="iconfont icon-jiaoyou_B"></i>
 			</el-button>
@@ -12,24 +29,32 @@
 		<div class="sessionList">
 			<div class="sheetList" v-for="i in $store.state.sessions.session_list" :key="i.session_id" @click="sessionDetail(i)">
 				<div class="access">
-					<div class="sheetImage">
-						<el-badge :is-dot="!i.if_read && currSessId != i.session_id" class="item">
-							<el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
-						</el-badge>
-					</div>
-					<div class="sheetContent">
-						<div class="sheetName">
-							{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}
+					<div class="sheetLeft">
+						<div class="sheetImage">
+							<el-badge :is-dot="!i.if_read && currSessId != i.session_id" class="item">
+								<el-image :src="i.avatar_url" class="myAvatar" alt="用户头像或群头像"></el-image>
+							</el-badge>
 						</div>
+						<div class="sheetContent">
+							<div class="sheetName">
+								{{i.group_name==undefined?((i.friend_notes==""||i.friend_notes==undefined)?i.friend_nickname:i.friend_notes):i.group_name}}
+							</div>
 
-						<div class="sheetRecord">
-							<span>{{i.last_record?
-								(!i.last_record.indexOf('http')&&
-                  ((i.last_record.length-i.last_record.lastIndexOf('.gif')==4)||
-                  (i.last_record.length-i.last_record.lastIndexOf('.jpeg')==5)||
-                  (i.last_record.length-i.last_record.lastIndexOf('.png')==4))?"[图片]":(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record))
-								:""}}</span>
+							<div class="sheetRecord">
+								<span>{{i.last_record?
+									(!i.last_record.indexOf('http')&&
+					((i.last_record.length-i.last_record.lastIndexOf('.gif')==4)||
+					(i.last_record.length-i.last_record.lastIndexOf('.jpeg')==5)||
+					(i.last_record.length-i.last_record.lastIndexOf('.png')==4))?"[图片]":(i.last_record.length>9?i.last_record.slice(0,9)+"...":i.last_record))
+									:""}}</span>
+							</div>
 						</div>
+					</div>
+					<div class="sheetTime">
+						{{new Date().toLocaleDateString()==new Date(i.last_time).toLocaleDateString()?
+						'今天 '+new Date(i.last_time).getHours()+':'+new Date(i.last_time).getMinutes():
+						new Date().toLocaleDateString()==new Date(new Date(i.last_time).getTime()+24*60*60*1000).toLocaleDateString()?
+						'昨天 '+new Date(i.last_time).getHours()+':'+(!new Date(i.last_time).getMinutes()?'00':new Date(i.last_time).getMinutes()):(new Date(i.last_time).getMonth()+1)+'月'+(new Date(i.last_time).getDate()+'日')}}
 					</div>
 
 				</div>
@@ -43,6 +68,7 @@
 		name: "mid-session",
 		data() {
 			return {
+				options:[],
 				// 搜索框输入
 				searchInput: "",
 				// 判断右边的页面类型（1：单聊，2：拉群）
@@ -51,7 +77,43 @@
 				currSessId: 0,
 			};
 		},
+		mounted(){
+			let group_arr=[];
+			let friend_arr=[];
+			let source=JSON.parse(JSON.stringify(this.$store.state.sessions.session_list));
+			for(let i=0;i<source.length;i++){
+				if(source[i]["is_group"]){
+					group_arr.push({
+						value:source[i]["session_id"],
+						label:source[i].group_name,
+						avatar:source[i].avatar_url
+					})
+				}else{
+					friend_arr.push({
+						value:source[i]["session_id"],
+						label:(source[i].friend_notes==""||source[i].friend_notes==undefined)?source[i].friend_nickname:source[i].friend_notes,
+						avatar:source[i].avatar_url
+					})
+				}
+			}
+			this.options=[{
+				label:'聊天室',
+				options:group_arr
+				},{
+					label:'好友',
+					options:friend_arr
+				}];
+		},
 		methods: {
+			chooseOptions(info){
+				let source=JSON.parse(JSON.stringify(this.$store.state.sessions.session_list));
+				for(let i=0;i<source.length;i++){
+					if(source[i]["session_id"]==info.value){
+						this.sessionDetail(source[i]);
+						break;
+					}
+				}
+			},
 			getSessionsContent(s_id) {
 				this.$api.main
 					.getSessionsContent({
@@ -76,11 +138,12 @@
 				this.currSessId = info.session_id;
 				this.$store.commit("readCurSessionMessage", this.currSessId);
 				let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
-				this.$api.user.updateLastTime({
+				this.$api.user.updateLeaveTime({
+					user_id:this.$store.state.user.user_id,
 					session_id:info.session_id,
 					updatetime:time_1
 				}).then(res=>{
-					// console.log(res.data);
+					console.log(res.data);
 				}).catch(e => {
 					this.$message.error(e);
 				});
@@ -120,7 +183,8 @@
 	}
 
 	.searchNav .addfriend_button {
-		margin-left: 2px;
+		width:3vw;
+		min-width:40px;
 		padding: 10px;
 	}
 
@@ -164,22 +228,32 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+		justify-content: space-between;
+	}
+
+	.sheetLeft{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
 		justify-content: flex-start;
 	}
 
-	.sessionList .sheetList .access .sheetImage {
+	.sheetImage {
 		height: auto;
 		width: auto;
-		margin-right: 20px;
+		margin-right:10px;
 	}
 
-	.sessionList .sheetList .access .sheetImage .myAvatar {
-		height: 4vw;
-		width: 4vw;
+	.sheetImage .myAvatar {
+		height: 6.3vh;
+		width: 6.3vh;
+		min-height:54px;
+		min-width:54px;
 		border-radius: 100%;
 	}
 
 	.sheetContent {
+		width:auto;
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
@@ -188,14 +262,23 @@
 	.sheetName {
 		width: auto;
 		font-size: 1.8vh;
-		font-weight: bold;
+		font-weight: bolder;
 		margin-bottom: 0.6vh;
 	}
 
 	.sheetRecord {
+		height: auto;
 		width: auto;
-		font-size: 1.5vh;
+		font-size: 1.4vh;
 		text-align: left;
+	}
+
+	.sheetTime{
+		width:4.8vw;
+		text-align: right;
+		font-size:13px;
+		font-weight: bold;
+		align-self: flex-start;
 	}
 
 	.redPoint {

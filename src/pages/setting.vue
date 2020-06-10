@@ -14,7 +14,6 @@
 <script>
     import { mapState, mapMutations } from 'vuex';
     import menu from '../components/left-menu'
-    import midContact from '../components/mid-contact'
     import userInfo  from "../components/userInfo";
     export default {
         computed: mapState({
@@ -24,7 +23,6 @@
         name: 'contact',
         components:{
             'left-menu':menu,
-            'mid-contact':midContact,
             'user-info': userInfo
         },
         data () {

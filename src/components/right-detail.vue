@@ -5,6 +5,8 @@
     <div v-if="pageType==0" class="emptyPage"></div>
     <!-- 1表示好友信息的详情页 -->
     <div v-if="pageType==1" class="friendDetail">
+      <el-button class="info" icon="el-icon-more"></el-button>
+       <!-- @click="toDelete" -->
       <div class="friendIcon">
         <el-image :src="selectedFriendInfo.avatar_url" class="head" alt="好友头像"></el-image>
         <span class="name">{{selectedFriendInfo.friend_name}}</span>
@@ -220,7 +222,6 @@ export default {
                 }
                 this.$message.success("找到目标好友");
                 this.searchFriendResult = result;
-                // console.log(this.searchFriendResult);
               } else if (res.data.state == "1") {
                 this.$message.error("没找到目标好友");
               } else {
@@ -239,7 +240,6 @@ export default {
           friend_notes: this.applyForm.notes
         })
         .then(res => {
-          // console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("已发出申请");
             this.applyFormVisible = false;
@@ -279,7 +279,6 @@ export default {
           if_accept: false
         })
         .then(res => {
-          // console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("已拒绝对方的请求");
             this.toApply(); // 刷新被申请表
@@ -313,6 +312,14 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+}
+.info{
+  font-size:3vh;
+  border:none;
+  background: #f4f4f4;
+  position: absolute;
+  right:0;
+  top:0;
 }
 .friendIcon {
   display: flex;

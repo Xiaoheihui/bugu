@@ -5,10 +5,11 @@
 			<!-- 侧边栏菜单 -->
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
             <!-- 中间的通讯录 -->
-            <mid-contact :hasNewApplication="hasNewApplication" :contacts="contacts" ref="choose" @click.native="change"></mid-contact>
+            <mid-contact :hasNewApplication="hasNewApplication_" :contacts="contacts" @pageType_="changePageType" 
+			@selectedFriendInfo_="changeSelectedFriendInfo" @selectedGroupInfo_="changeSelectedGroupInfo"></mid-contact>
 			<!-- 好友申请主页/详情页面 -->
-			<right-detail @redPointCancel="changeRedPoint" :pageType="pageType" :selectedFriendInfo="selectedFriendInfo" 
-			:selectedGroupInfo="selectedGroupInfo" :hasNewApplication="hasNewApplication"></right-detail>
+			<right-detail @redPointCancel="changeRedPoint" :pageType="pageType_" :selectedFriendInfo="selectedFriendInfo_" 
+			:selectedGroupInfo="selectedGroupInfo_" :hasNewApplication="hasNewApplication_"></right-detail>
 		  </el-row>
 	  </div>
   </div>
@@ -49,10 +50,10 @@
 				break;
 				}
 			}
-			this.hasNewApplication=result;
+			this.hasNewApplication_=result;
 			} else {
 			result=false;
-			this.hasNewApplication=result;
+			this.hasNewApplication_=result;
 			}
 		});
 	},
@@ -91,24 +92,28 @@
 		],
 		
 		// 详情页的类型
-		pageType:0,
+		pageType_:0,
 		// 展示好友信息
-		selectedFriendInfo:{},
+		selectedFriendInfo_:{},
 		// 展示聊天室信息
-		selectedGroupInfo:{},
+		selectedGroupInfo_:{},
 		// 是否有新好友申请
-		hasNewApplication: false
+		hasNewApplication_: false
 		}
 	},
     methods:{
-        change(){
-        	this.pageType = this.$refs.choose.detailType;
-			// 将组件mid-contact传来的detailType赋予this.pageType,从而改变right-detail的页面类型
-			this.selectedFriendInfo=this.$refs.choose.selectedFriendInfo;
-			this.selectedGroupInfo=this.$refs.choose.selectedGroupInfo;
-		},
 		changeRedPoint(){
-			this.hasNewApplication=false;
+			this.hasNewApplication_=false;
+		},
+		changePageType(res){
+			this.pageType_ = res;
+			console.log(this.pageType_)
+		},
+		changeSelectedFriendInfo(res){
+        	this.selectedFriendInfo_ = res;
+		},
+		changeSelectedGroupInfo(res){
+        	this.selectedGroupInfo_ = res;
 		}
     }
   }

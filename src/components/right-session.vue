@@ -9,7 +9,6 @@
             class="friendName"
           >{{cur_session.group_name==undefined?((cur_session.friend_notes==undefined||cur_session.friend_notes=='')?cur_session.friend_nickname:cur_session.friend_notes):cur_session.group_name}}</span>
         </div>
-        <el-button class="info" icon="el-icon-more"></el-button>
       </div>
       <div class="sessionArea" id="chat" ref='rightContent'>
         <!-- 当聊天记录长度为0或者聊天记录长度（大于）等于总长度时消除加载组件 -->
@@ -795,8 +794,10 @@ export default {
   align-items: center;
 }
 .chatAvatar {
-  height: 7vh;
-  width: 7vh;
+  height: 6.3vh;
+  width: 6.3vh;
+  min-height:48px;
+  min-width:48px;
   border-radius: 100%;
   margin-right: 30px;
 }
@@ -854,8 +855,8 @@ export default {
 .sessionContentLeft .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
-  min-height: 6vh;
-  min-width: 6vh;
+  min-height:48px;
+  min-width:48px;
   border-radius: 100%;
   margin-right: 15px;
 }
@@ -898,8 +899,8 @@ export default {
 .sessionContentRight .chatAvatarUrl {
   height: 6vh;
   width: 6vh;
-  min-height: 6vh;
-  min-width: 6vh;
+  min-height:48px;
+  min-width:48px;
   border-radius: 100%;
   margin-left: 15px;
 }
