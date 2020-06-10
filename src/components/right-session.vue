@@ -173,24 +173,22 @@
         },
         updated() {
             this.$refs.rightContent.addEventListener('scroll', this.scrool);
-                if (this.pageType == 1 && this.debugMode) {
-                    // this.debugMode = false;
+            this.$nextTick(function() {
+                if (this.pageType == 1 ) {
+                    console.log("sdsd````")
                     let msg = document.getElementById("chat"); // 获取对象
                     msg.scrollTop = msg.scrollHeight; // 滚动高度
                 }
+            })
+
         },
         watch:{
             cur_session(newValue, oldValue) {
-                if (this.pageType == 1) {
-                    let msg = document.getElementById("chat"); // 获取对象
-                    console.log("必须的", msg.scrollHeight)
-                    msg.scrollTop = msg.scrollHeight; // 滚动高度
-                }
             }
         },
         data() {
             return {
-                firstChangeScro: 0,
+                firstChangeScro: 1,
                 // 当前会话历史记录条数
                 curHisCount: 0,
                 ifGetExtra: true,
@@ -477,17 +475,14 @@
                         })
                     );
                     this.textarea = "";
-                    this.scrollToBottom();
+                    if (this.pageType == 1) {
+                        let msg = document.getElementById("chat"); // 获取对象
+                        msg.scrollTop = msg.scrollHeight; // 滚动高度
+                    }
                     this.$store.commit("changeFirstSession", this.cur_session.session_id);
                     // console.log("success");
                 }
             },
-            scrollToBottom(){
-              if (this.pageType == 1) {
-                let msg = document.getElementById("chat"); // 获取对象
-                msg.scrollTop = msg.scrollHeight; // 滚动高度
-              }
-            }
         }
 
     };

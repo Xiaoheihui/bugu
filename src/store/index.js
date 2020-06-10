@@ -39,8 +39,7 @@ export default new Vuex.Store({
       session_list: window.localStorage.getItem('sessions' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem(
         'sessions' || '[]')).session_list,
     },
-    cur_session: window.localStorage.getItem('cur_session' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem(
-      'cur_session' || '[]')),
+    cur_session: [],
     socket_instance: null,
     path: "ws://localhost:8001",
     // 为使响应快速，暂存若干条消息并从本地渲染，本地消息达到一定数量再一起从服务器获取并渲染
