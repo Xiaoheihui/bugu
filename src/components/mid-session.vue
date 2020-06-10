@@ -24,7 +24,10 @@
 
 						<div class="sheetRecord">
 							<span>{{i.last_record?
-								(!i.last_record.indexOf('data:image')?"[图片]":(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record))
+								(!i.last_record.indexOf('http')&&
+                  ((i.last_record.length-i.last_record.lastIndexOf('.gif')==4)||
+                  (i.last_record.length-i.last_record.lastIndexOf('.jpeg')==5)||
+                  (i.last_record.length-i.last_record.lastIndexOf('.png')==4))?"[图片]":(i.last_record.length>20?i.last_record.slice(0,20)+"......":i.last_record))
 								:""}}</span>
 						</div>
 					</div>
@@ -58,7 +61,7 @@
 					})
 					.then(res => {
 						let historyAndSid = [res.data.history_list, s_id];
-            this.$store.commit("setTempHistory", historyAndSid)
+                        this.$store.commit("setTempHistory", historyAndSid)
 					})
 					.catch(e => {
 						this.$message.error(e);
@@ -77,15 +80,15 @@
 					session_id:info.session_id,
 					updatetime:time_1
 				}).then(res=>{
-					console.log(res.data);
+					// console.log(res.data);
 				}).catch(e => {
 					this.$message.error(e);
 				});
 				this.$emit("pageTpye_", this.detailType);
-        this.getSessionsContent(this.currSessId);
-        if(this.$store.state.temp_history[lastSessId]){
-            this.$store.commit("cleanTempHistory", lastSessId);
-        }
+                this.getSessionsContent(this.currSessId);
+                if(this.$store.state.temp_history[lastSessId]){
+                    this.$store.commit("cleanTempHistory", lastSessId);
+                }
 			},
 			groupApply: function(info) {
 				this.detailType = 2;

@@ -13,8 +13,10 @@
       </div>
       <div class="sessionArea" id="chat" ref='rightContent'>
         <!-- 当聊天记录长度为0或者聊天记录长度（大于）等于总长度时消除加载组件 -->
-        <div v-if="$store.state.cur_session['history_len']||
-        $store.state.temp_history[cur_session.session_id].length>=$store.state.cur_session['history_len']">上拉加载消息</div>
+        <div class="loadingIcon" v-if="$store.state.temp_history[cur_session.session_id]?
+        ($store.state.temp_history[cur_session.session_id].length<$store.state.cur_session['history_len']):false">
+          上拉加载消息
+        </div>
         <div class="scrollContent">
           <div v-for="(i, index) in $store.state.temp_history[cur_session.session_id]" :key="index">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
@@ -25,8 +27,14 @@
                   <span class="hoverTime">{{i.time}}</span>
                 </div>
                 <div class="chatContent">
-                  <div v-if="i.content.indexOf('data:image')">{{i.content}}</div>
-                  <el-image class="chatContentImg" v-if="!i.content.indexOf('data:image')" :src="i.content"></el-image>
+                  <div v-if="!(!i.content.indexOf('http')&&
+                  ((i.content.length-i.content.lastIndexOf('.gif')==4)||
+                  (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
+                  (i.content.length-i.content.lastIndexOf('.png')==4)))">{{i.content}}</div>
+                  <el-image class="chatContentImg" v-if="!i.content.indexOf('http')&&
+                  ((i.content.length-i.content.lastIndexOf('.gif')==4)||
+                  (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
+                  (i.content.length-i.content.lastIndexOf('.png')==4))" :src="i.content"></el-image>
                 </div>
               </div>
             </div>
@@ -37,8 +45,14 @@
                   <span style="padding-left:10px;">{{i.sender_name}}</span>
                 </div>
                 <div class="chatContent">
-                  <div v-if="i.content.indexOf('data:image')">{{i.content}}</div>
-                  <el-image class="chatContentImg" v-if="!i.content.indexOf('data:image')" :src="i.content"></el-image>
+                  <div v-if="!(!i.content.indexOf('http')&&
+                  ((i.content.length-i.content.lastIndexOf('.gif')==4)||
+                  (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
+                  (i.content.length-i.content.lastIndexOf('.png')==4)))">{{i.content}}</div>
+                  <el-image class="chatContentImg" v-if="!i.content.indexOf('http')&&
+                  ((i.content.length-i.content.lastIndexOf('.gif')==4)||
+                  (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
+                  (i.content.length-i.content.lastIndexOf('.png')==4))" :src="i.content"></el-image>
                 </div>
               </div>
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl"></el-image>
@@ -69,14 +83,15 @@
                 ref="uploadAvatar"
                 :show-file-list="false"
                 :auto-upload="false"
-                :on-change="toChangeImage">
+                :on-change="checkImage">                
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div slot="footer" class="dialog-footer">
-                <el-button @click="uploadImageVisible = false">取 消</el-button>
-                <!-- <el-button type="primary" @click="toSendImage">确 定</el-button> -->
+                <el-button @click="uploadImageVisible = false;imageUrl='';percentage=0;">取 消</el-button>
+                <el-button type="primary" @click="sendImage">确 定</el-button>
               </div>
+              <el-progress style="margin-top:20px;" :text-inside="true" :stroke-width="26" :percentage="percentage" :color="colors"></el-progress>
             </el-dialog>
             <el-button
               class="emotionSelect"
@@ -131,7 +146,6 @@
         noChecked: '${total}',
         hasChecked: '${checked}/${total}'
       }"
-          @change="handleChange"
           :data="transferData"
         >
         </el-transfer>
@@ -142,11 +156,10 @@
             </el-form-item>
             <el-upload
             class="avatar-uploader"
-            action=""
             ref="uploadAvatar"
             :show-file-list="false"
             :auto-upload="false"
-            :on-change="toChangeImage">
+            :on-change="toChangeImage">                
             <img v-if="form.groupImg" :src="form.groupImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -166,7 +179,7 @@
           <el-button style="margin-top:10px;background: yellowgreen;font-weight: bold;" size="middle" @click="toGroupInfo">创建聊天室</el-button>
         </div>
       </div>
-
+    
       <div v-if="navSelected==2" class="applyList">
         <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
@@ -191,7 +204,14 @@
 <script>
 import { mapState, mapMutations } from "vuex";
 import COS from 'cos-js-sdk-v5';
+
 const appData = require("../static/utils/emoji.json");
+const cosKey = require("../static/utils/cosKey.json");
+const cos = new COS({
+    SecretId: atob(cosKey.s_id),
+    SecretKey: atob(cosKey.s_key)
+});
+
 export default {
   name: "right-session",
   props: ["debugMode","pageType"], // 获取父组件的传值
@@ -215,23 +235,20 @@ export default {
     }
   },
   updated() {
-    console.log("11111", this.if_register)
     // 首次进入会话，条件为真
     if (this.pageType == 1 && this.if_register<3) {
+      // 延迟置底
+      this.$nextTick(function(){
+        let msg = document.getElementById("chat"); // 获取对象
+        msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
+      })
       // 开始注册监听器
-      console.log("注册");
       this.$refs.rightContent.addEventListener('scroll', this.scrool,false);// 注册，冒泡模式
       this.if_register+=1;//注册过了，置假
-        this.$nextTick(function () {
-            let msg = document.getElementById("chat"); // 获取对象
-            console.log("22222");
-            msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
-        })
     }
     // 聊天记录全部获取完了，开始注销监听器（&&第二个表达式可能可以再简短一些，主要是怕temp_history没内容）
     if(this.pageType == 1 &&  this.$store.state.temp_history[this.cur_session.session_id]?
     (this.$store.state.temp_history[this.cur_session.session_id].length>=this.$store.state.cur_session['history_len']):false){
-      console.log("注销");
       this.$refs.rightContent.removeEventListener('scroll', this.scrool,false);// 注销，参数一致
     }
   },
@@ -246,8 +263,8 @@ export default {
   },
   data() {
     return {
-        if_register: 1,
-        // 当前会话历史记录条数
+      if_register:1,
+      // 当前会话历史记录条数
       curHisCount: 0,
       ifGetExtra: true,
       navSelected: 0,
@@ -255,6 +272,13 @@ export default {
       groupInfoVisible: false,
       uploadImageVisible: false,
       imageUrl:'',
+      percentage:0,
+      colors:[
+          {color: '#1989fa', percentage: 25},
+          {color: '#6f7ad3', percentage: 50},
+          {color: '#f56c6c', percentage: 75},
+          {color: '#e6a23c', percentage: 100}
+        ],
       textarea: "",
       faceList: [],
       form:{
@@ -287,29 +311,22 @@ export default {
                     start: this.curHisCount,
                     end: this.curHisCount + 10
                 }).then(res => {
-                    let resLen = res.data.history_list.length;
-                    console.log(res)
-                        // 将获得的新数据连接到temp前端
-                        res.data.history_list.push.apply(
-                          res.data.history_list,
-                          that.$store.state.temp_history[this.cur_session.session_id]
-                        );
-                    that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
-                    that.curHisCount += resLen;
-                    let msg = document.getElementById("chat");
-                    msg.scrollTop = msg.scrollHeight * resLen/that.curHisCount;
-                    console.log(resLen)
-                    console.log(that.curHisCount)
-                    setTimeout(function () {
-                        that.ifGetExtra = !that.ifGetExtra;
-                    }, 1000)  // 避免重复刷新
+                  let resLen = res.data.history_list.length;
+                      // 将获得的新数据连接到temp前端
+                      res.data.history_list.push.apply(
+                        res.data.history_list,
+                        that.$store.state.temp_history[this.cur_session.session_id]
+                      );
+                  that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
+                  that.curHisCount += resLen;
+                  let msg = document.getElementById("chat");
+                  msg.scrollTop = msg.scrollHeight * resLen/this.curHisCount;
+                  setTimeout(function () {
+                      that.ifGetExtra = !that.ifGetExtra;
+                  }, 1000)  // 避免重复刷新
                 })
         }
 
-    },
-    handleChange(value, direction, movedKeys) {
-        console.log(value, direction, movedKeys);
-        console.log(this.value);
     },
     toCreate() {
       this.navSelected = 1;
@@ -388,7 +405,6 @@ export default {
           group_introduction: this.form.groupIntro
         })
         .then(res => {
-          console.log(res.data)
           if (res.data.state == "0") {
             this.$message({
               type: 'success',
@@ -431,7 +447,7 @@ export default {
           type: 'warning'
         });
       }
-
+      
     },
     toApply() {
       this.navSelected = 2;
@@ -440,7 +456,6 @@ export default {
           user_id: this.$store.state.user["user_id"]
         })
         .then(res => {
-          console.log(res.data)
           if (res.data.state == "0") {
             this.applicantList = res.data.applicant_list;
           } else {
@@ -461,7 +476,6 @@ export default {
           if_accept: true
         })
         .then(res => {
-          console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("已接受对方申请");
             // 更新通讯录
@@ -474,7 +488,7 @@ export default {
               } else {
                 this.$message.error("获取通讯录失败");
               }
-            });
+            }); 
             this.toApply(); // 刷新被申请表
           } else if (res.data.state == 1) {
             this.$message.error("对方已经是聊天室的成员");
@@ -490,7 +504,6 @@ export default {
           if_accept: false
         })
         .then(res => {
-          console.log(res.data);
           if (res.data.state == 0) {
             this.$message.success("已拒绝对方的请求");
             this.toApply(); // 刷新被申请表
@@ -573,19 +586,115 @@ export default {
         var newUrl = canvas.toDataURL('image/jpeg', 0.92);//base64 格式
         return newUrl;
     },
+    checkImage(file){
+        const isJPGORPNG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/gif' || file.raw.type === 'image/png');
+        const isLt5M = file.size / 1024 / 1024 < 5;
+        if (!isJPGORPNG) {
+            this.$message.info('发送图片只能是 JPG 或 GIF 或 PNG 格式!');
+            return;
+        }
+        if (!isLt5M) {
+            this.$message.warning('上传图片大小不能超过 5MB!');
+            return;
+        }
+        let index=file.raw.type.lastIndexOf("\/")
+        let str=file.raw.type.substring(index + 1, file.raw.type.length);
+        const filename=Date.parse(new Date())+'.'+str;
+        function dataURLtoFile(dataurl, filename) {//将base64转换为文件
+          var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+          while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          return new File([u8arr], filename, {type:mime});
+        }
+        var This = this;
+        var reader = new FileReader();
+        let result;
+        reader.readAsDataURL(file.raw);
+        reader.onload = function (e) {
+            let result = e.target.result;
+            let toCheckFile=dataURLtoFile(result,filename)
+            cos.putObject(
+              {
+                Bucket: "bugu-1300789911" /* 必须 */,
+                Region: "ap-guangzhou" /* 存储桶所在地域，必须字段 */,
+                Key: filename /* 必须 */,
+                StorageClass: "STANDARD",
+                Body: toCheckFile, // 上传文件对象
+                onProgress: function(progressData) {
+                  This.percentage=Math.ceil(progressData.loaded/progressData.total*100);
+                }
+              },
+              function(err, data) {
+                This.$message.success("上传成功！开始检查图片");
+                //上传成功的话，返回的data中的Location就是图片存储的地址
+                let resUrl="https://"+data.Location;
+                console.log(resUrl);
+                This.$api.user.checkPicture({
+                  fileurl:resUrl
+                }).then(res=>{
+                  if(res.data.EvilFlag==0){
+                    This.imageUrl=resUrl;
+                    This.$message.success("图片合格！");
+                  }else if(res.data.EvilFlag==1){
+                    This.$msgbox({
+                    title: '警告',
+                    center: true,
+                    type: 'warning',
+                    message: 
+                    h('div', null, [
+                      h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的图片'),
+                      h('p', null, '为了共建和谐网络环境，请注意自己的行为！')
+                      ]),
+                    showCancelButton: false,
+                    confirmButtonText: '对不起，了解了',
+                    beforeClose: (action, instance, done) => {
+                      done();
+                    }
+                    }).then(action => {
+                      This.$message({
+                        type: 'info',
+                        message: '下次注意哦！',
+                        showClose: true
+                      });
+                    });
+                  }
+                })
+              }
+            ); 
+          }
+    },
+    sendImage(){
+      if (this.imageUrl.length) {
+        this.$store.state.socket_instance.send(
+          JSON.stringify({
+            user_id: this.$store.state.user.user_id,
+            content: this.imageUrl,
+            session_id: this.cur_session.session_id,
+            sender_name: this.$store.state.user.nickname,
+            type: "chat"
+          })
+        );
+        this.uploadImageVisible=false;
+        this.imageUrl = "";
+        this.percentage=0;
+        this.scrollToBottom();
+        this.$store.commit("changeFirstSession", this.cur_session.session_id);
+      }
+    },
     sendInfo() {
       if (this.textarea != ""||this.textarea != "\n") {
         const h = this.$createElement;
         this.$api.user.checkContent({
           content: this.textarea
         }).then(res=>{
-          console.log(res)
           if(res.data.EvilFlag==1){
             this.$msgbox({
             title: '警告',
             center: true,
             type: 'warning',
-            message:
+            message: 
             h('div', null, [
               h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的聊天文本'),
               h('p', null, '敏感词为：'+res.data.Keywords.toString()),
@@ -614,13 +723,16 @@ export default {
               })
             );
             this.textarea = "";
-              if (this.pageType == 1) {
-                  let msg = document.getElementById("chat"); // 获取对象
-                  msg.scrollTop = msg.scrollHeight; // 滚动高度
-              }
+            this.scrollToBottom();
             this.$store.commit("changeFirstSession", this.cur_session.session_id);
           }
         });
+      }
+    },
+    scrollToBottom(){
+      if (this.pageType == 1) {
+        let msg = document.getElementById("chat"); // 获取对象
+        msg.scrollTop = msg.scrollHeight; // 滚动高度
       }
     }
   }
@@ -712,6 +824,14 @@ export default {
   overflow: scroll;
   overflow-x: auto;
   overflow-y: auto;
+}
+.loadingIcon{
+  width:100%;
+  padding: 10px 0px;
+  text-align: center;
+  font-size: 16px;
+  color: cornflowerblue;
+  font-weight: bold;
 }
 .scrollContent {
   max-height: 100%;
@@ -922,7 +1042,7 @@ export default {
   overflow-y: auto;
 }
 .mytransfer{
-  text-align: left;
+  text-align: left; 
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{
