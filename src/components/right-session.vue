@@ -48,10 +48,7 @@
                   ((i.content.length-i.content.lastIndexOf('.gif')==4)||
                   (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
                   (i.content.length-i.content.lastIndexOf('.png')==4)))">{{i.content}}</div>
-                  <el-image class="chatContentImg" v-if="!i.content.indexOf('http')&&
-                  ((i.content.length-i.content.lastIndexOf('.gif')==4)||
-                  (i.content.length-i.content.lastIndexOf('.jpeg')==5)||
-                  (i.content.length-i.content.lastIndexOf('.png')==4))" :src="i.content"></el-image>
+                  <el-image class="chatContentImg" v-else :src="i.content"></el-image>
                 </div>
               </div>
               <el-image :src="userInfo.avatar_url" class="chatAvatarUrl"></el-image>
@@ -82,12 +79,12 @@
                 ref="uploadAvatar"
                 :show-file-list="false"
                 :auto-upload="false"
-                :on-change="checkImage">                
+                :on-change="checkImage">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
               <div slot="footer" class="dialog-footer">
-                <el-button @click="uploadImageVisible = false;imageUrl='';percentage=0;">取 消</el-button>
+                <el-button @click="uploadImageVisible = false; imageUrl='';percentage=0;">取 消</el-button>
                 <el-button type="primary" @click="sendImage">确 定</el-button>
               </div>
               <el-progress style="margin-top:20px;" :text-inside="true" :stroke-width="26" :percentage="percentage" :color="colors"></el-progress>
@@ -158,7 +155,7 @@
             ref="uploadAvatar"
             :show-file-list="false"
             :auto-upload="false"
-            :on-change="toChangeImage">                
+            :on-change="toChangeImage">
             <img v-if="form.groupImg" :src="form.groupImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -178,7 +175,7 @@
           <el-button style="margin-top:10px;background: yellowgreen;font-weight: bold;" size="middle" @click="toGroupInfo">创建聊天室</el-button>
         </div>
       </div>
-    
+
       <div v-if="navSelected==2" class="applyList">
         <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
@@ -234,13 +231,14 @@ export default {
     }
   },
   updated() {
+    let that = this;
+    console.log("21212")
     // 首次进入会话，条件为真
-    if (this.pageType == 1 && this.if_register<3) {
+    if (this.pageType == 1 && this.if_register<4) {
       // 延迟置底
-      this.$nextTick(function(){
-        let msg = document.getElementById("chat"); // 获取对象
-        msg.scrollTop = msg.scrollHeight; // 滚动高度，置底
-      })
+        that.$nextTick(function(){
+            this.$refs.rightContent.scrollTop = this.$refs.rightContent.scrollHeight+1000; // 滚动高度，置底
+        })
       // 开始注册监听器
       this.$refs.rightContent.addEventListener('scroll', this.scrool,false);// 注册，冒泡模式
       this.if_register+=1;//注册过了，置假
@@ -262,6 +260,7 @@ export default {
   },
   data() {
     return {
+      charDiv: [],
       if_register:1,
       // 当前会话历史记录条数
       curHisCount: 0,
@@ -305,25 +304,29 @@ export default {
         if (scrolled == 0 && this.ifGetExtra){
             let that = this
             this.ifGetExtra = !this.ifGetExtra;
-            this.$api.main.getSessionsContent({
-                    session_id: this.cur_session.session_id,
-                    start: this.curHisCount,
-                    end: this.curHisCount + 10
+            setTimeout(function () {
+                that.$api.main.getSessionsContent({
+                    session_id: that.cur_session.session_id,
+                    start: that.curHisCount,
+                    end: that.curHisCount + 10
                 }).then(res => {
-                  let resLen = res.data.history_list.length;
-                      // 将获得的新数据连接到temp前端
-                      res.data.history_list.push.apply(
+                    let resLen = res.data.history_list.length;
+                    // 将获得的新数据连接到temp前端
+                    res.data.history_list.push.apply(
                         res.data.history_list,
-                        that.$store.state.temp_history[this.cur_session.session_id]
-                      );
-                  that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
-                  that.curHisCount += resLen;
-                  let msg = document.getElementById("chat");
-                  msg.scrollTop = msg.scrollHeight * resLen/this.curHisCount;
-                  setTimeout(function () {
-                      that.ifGetExtra = !that.ifGetExtra;
-                  }, 1000)  // 避免重复刷新
+                        that.$store.state.temp_history[that.cur_session.session_id]
+                    );
+                    that.$store.state.temp_history[that.cur_session.session_id] = res.data.history_list;
+                    that.curHisCount += resLen;
+                    that.$nextTick(function() {
+                        let msg = document.getElementById("chat");
+                        msg.scrollTop = msg.scrollHeight * resLen / this.curHisCount;
+                    });
+                    setTimeout(function () {
+                        that.ifGetExtra = !that.ifGetExtra;
+                    }, 1000)  // 避免重复刷新
                 })
+            }, 600) // 延迟刷新
         }
 
     },
@@ -446,7 +449,7 @@ export default {
           type: 'warning'
         });
       }
-      
+
     },
     toApply() {
       this.navSelected = 2;
@@ -487,7 +490,7 @@ export default {
               } else {
                 this.$message.error("获取通讯录失败");
               }
-            }); 
+            });
             this.toApply(); // 刷新被申请表
           } else if (res.data.state == 1) {
             this.$message.error("对方已经是聊天室的成员");
@@ -641,7 +644,7 @@ export default {
                     title: '警告',
                     center: true,
                     type: 'warning',
-                    message: 
+                    message:
                     h('div', null, [
                       h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的图片'),
                       h('p', null, '为了共建和谐网络环境，请注意自己的行为！')
@@ -661,7 +664,7 @@ export default {
                   }
                 })
               }
-            ); 
+            );
           }
     },
     sendImage(){
@@ -693,7 +696,7 @@ export default {
             title: '警告',
             center: true,
             type: 'warning',
-            message: 
+            message:
             h('div', null, [
               h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的聊天文本'),
               h('p', null, '敏感词为：'+res.data.Keywords.toString()),
@@ -871,8 +874,8 @@ export default {
   border: 1px solid #a4a6a9;
 }
 .chatContentImg{
-  max-width:400px;
-  max-height:400px;
+  max-width:200px;
+  max-height:200px;
   -webkit-filter: drop-shadow(1px 1px 1px rgba(0,0,0,.5)); /*考虑浏览器兼容性：兼容 Chrome, Safari, Opera */
   filter: drop-shadow(1px 1px 1px rgba(0,0,0,.5));
 }
@@ -1043,7 +1046,7 @@ export default {
   overflow-y: auto;
 }
 .mytransfer{
-  text-align: left; 
+  text-align: left;
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{
