@@ -35,7 +35,7 @@
         <span class="header-span">聊天室</span>
       </div>
       <div v-if="showSheets1" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id" 
+        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id"
         @click="groupDetail(i)">
            <div class="access" :style="{'background-color': i.group_id==currContactId&&currContactType==2?'#bdbdbd':''}">
             <div class="sheetImage">
@@ -53,11 +53,11 @@
         <span class="header-span">好友</span>
       </div>
       <div v-if="showSheets2" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id" 
+        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id"
         @click="friendDetail(i)">
           <div class="access" :style="{'background-color': i.friend_id==currContactId&&currContactType==1?'#bdbdbd':''}">
             <div class="sheetImage">
-              <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
+              <el-image :src=$store.state.avatar_list[i.friend_id] class="myAvatar" alt="好友头像"></el-image>
             </div>
             <span class="sheetContent">{{(i.friend_note==undefined||i.friend_note=='')?i.friend_name:i.friend_note}}</span>
           </div>

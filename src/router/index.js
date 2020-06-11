@@ -4,7 +4,7 @@ import login from '@/pages/login'
 import register from '@/pages/register'
 import main from '@/pages/main'
 import contact from '@/pages/contact'
-import socket from '@/pages/socket_demo'
+//import socket from '@/pages/socket_demo'
 import setting from '@/pages/setting'
 import store from "../store";
 Vue.use(Router)
@@ -50,11 +50,6 @@ const router = new Router({
       meta:{
         requireAuth:true
       }
-    },
-    {
-      path: "/socket",
-      name: "socket",
-      component: socket
     }
   ]
 });

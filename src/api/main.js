@@ -12,7 +12,11 @@ const main = {
   //获取通讯录列表
   getContacts(params) {
     return axios.post("/getContacts", JSON.stringify(params));
-  }
+  },
+  // 获得群员头像列表
+  getAvatarMap(params){
+    return axios.post("/ID_to_avatar", JSON.stringify(params));
+  },
 };
 
 export default main;

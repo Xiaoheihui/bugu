@@ -19,7 +19,7 @@
         <div class="scrollContent">
           <div v-for="(i, index) in $store.state.temp_history[cur_session.session_id]" :key="index">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
-              <el-image :src="cur_session.avatar_url" class="chatAvatarUrl"></el-image>
+              <el-image :src=$store.state.avatar_list[i.sender_id] class="chatAvatarUrl"></el-image>
               <div class="nameAndContent">
                 <div style="font-size:1.6vh;font-weight:bold;">
                   <span style="padding-right:10px;">{{i.sender_name}}</span>
@@ -75,7 +75,7 @@
                 ref="uploadAvatar"
                 :show-file-list="false"
                 action="https://jsonplaceholder.typicode.com"
-                :on-change="checkImage">                
+                :on-change="checkImage">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
@@ -151,7 +151,7 @@
             ref="uploadAvatar"
             :show-file-list="false"
             action="https://jsonplaceholder.typicode.com"
-            :on-change="toChangeImage">                
+            :on-change="toChangeImage">
             <img v-if="form.groupImg" :src="form.groupImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -171,7 +171,7 @@
           <el-button style="margin-top:10px;background: yellowgreen;font-weight: bold;" size="middle" @click="toGroupInfo">创建聊天室</el-button>
         </div>
       </div>
-    
+
       <div v-if="navSelected==2" class="applyList">
         <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
@@ -226,6 +226,15 @@ export default {
       this.faceList.push(appData[i].char);
     }
   },
+    created(){
+        this.$api.main.getAvatarMap({
+            user_id: this.$store.state.user["user_id"]
+        }).then((res)=>{
+            if (res.data.state == "0") {
+                this.$store.commit("setAvatar_list", res.data.ID_to_avatar_map );
+            }
+        })
+    },
   updated() {
     let that = this;
     // 首次进入会话，条件为真
@@ -441,7 +450,7 @@ export default {
           type: 'warning'
         });
       }
-      
+
     },
     toApply() {
       this.navSelected = 2;
@@ -482,7 +491,7 @@ export default {
               } else {
                 this.$message.error("获取通讯录失败");
               }
-            }); 
+            });
             this.toApply(); // 刷新被申请表
           } else if (res.data.state == 1) {
             this.$message.error("对方已经是聊天室的成员");
@@ -636,14 +645,14 @@ export default {
                     title: '警告',
                     center: true,
                     type: 'warning',
-                    message: 
+                    message:
                     h('div', null, [
                       h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的图片'),
                       h('p', null, '为了共建和谐网络环境，请注意自己的行为！')
                       ]),
                     showCancelButton: false,
                     confirmButtonText: '对不起，了解了',
-                    
+
                     beforeClose: (action, instance, done) => {
                       done();
                     }
@@ -657,7 +666,7 @@ export default {
                   }
                 })
               }
-            ); 
+            );
           }
     },
     sendImage(){
@@ -689,7 +698,7 @@ export default {
             title: '警告',
             center: true,
             type: 'warning',
-            message: 
+            message:
             h('div', null, [
               h('p', null, '你刚刚发布了包含“'+res.data.EvilType+'”内容的聊天文本'),
               h('p', null, '敏感词为：'+res.data.Keywords.toString()),
@@ -1041,7 +1050,7 @@ export default {
   overflow-y: auto;
 }
 .mytransfer{
-  text-align: left; 
+  text-align: left;
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{

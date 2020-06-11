@@ -18,7 +18,7 @@
         <el-button class="info" icon="el-icon-more" slot="reference"></el-button>
       </el-popover>
       <div class="friendIcon">
-        <el-image :src="selectedFriendInfo.avatar_url" class="head" alt="好友头像"></el-image>
+        <el-image :src=$store.state.avatar_list[selectedFriendInfo.friend_id] class="head" alt="好友头像"></el-image>
         <span class="name">{{selectedFriendInfo.friend_name}}</span>
       </div>
       <div class="diviveLine"></div>
@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="editNote">
-        <el-button type="primary" :disabled="isEdit" @click="isEdit=true;">
+        <el-button type="primary" :disabled="isEdit" @click="isEdit=true">
           修改备注
         </el-button>
         <el-button type="primary" :disabled="!isEdit" @click="saveNote">
@@ -187,7 +187,7 @@
         >
         </el-transfer>
       </div>
-      
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="inviteMemberVisible = false">取 消</el-button>
         <el-button type="primary" @click="addNewMember">确 定</el-button>
@@ -261,7 +261,7 @@ export default {
             key: Data[i].friend_id,
             label: (Data[i].friend_note==undefined||Data[i].friend_note=='')?Data[i].friend_name:Data[i].friend_note,
             disabled: false,
-            avatar_url: Data[i].avatar_url
+            avatar_url: this.$store.state.avatar_list[Data[i].friend_id]
           })
         }
       }
@@ -368,7 +368,7 @@ export default {
         This.$message({
           type: 'info',
           message: '已取消删除'
-        });          
+        });
       });
     },
     toSession(id, Id_type){
@@ -717,7 +717,7 @@ export default {
   height:40vh;
 }
 .mytransfer{
-  text-align: left; 
+  text-align: left;
   display: inline-block;
 }
 .mytransfer >>> .el-transfer-panel{

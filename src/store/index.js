@@ -38,6 +38,8 @@ export default new Vuex.Store({
 		},
 		cur_session: window.localStorage.getItem('cur_session' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem(
 			'cur_session' || '[]')),
+    avatar_list: window.localStorage.getItem('avatar_list' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem(
+      'avatar_list' || '[]')),
 		socket_instance: null,
 		path: "ws://localhost:8001",
 		// 为使响应快速，暂存若干条消息并从本地渲染，本地消息达到一定数量再一起从服务器获取并渲染
@@ -216,6 +218,9 @@ export default new Vuex.Store({
 				window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
 			}
 		},
-
+    setAvatar_list(state, avatarMap){
+		  state.avatar_list = avatarMap;
+      window.localStorage.setItem('avatarMap', JSON.stringify(avatarMap))
+    }
 	}
 })
