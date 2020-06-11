@@ -21,7 +21,7 @@
           <div>个性签名</div>
         </div>
         <div class="infoContent">
-          <div>{{selectedFriendInfo.friend_note}}</div>
+          <div>{{(selectedFriendInfo.friend_note==undefined||selectedFriendInfo.friend_note=='')?'无':selectedFriendInfo.friend_note}}</div>
           <div>{{selectedFriendInfo.phone}}</div>
           <div>{{selectedFriendInfo.gender?'男':'女'}}</div>
           <div>{{selectedFriendInfo.location}}</div>
