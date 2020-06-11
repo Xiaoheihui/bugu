@@ -40,8 +40,8 @@ export default {
           this.$message.error("获取会话列表失败");
         }
         if(this.$route.params.id){
-            this.changePageType(1);
-            this.$refs.midSessList.sessionDetail(this.$store.state.cur_session);
+          this.changePageType(1);
+          this.$refs.midSessList.sessionDetail(this.$store.state.cur_session);
         }
       });
   },

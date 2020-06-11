@@ -16,6 +16,10 @@ const friend = {
   //接受好友申请
   acceptFriendApplication(params) {
     return axios.post("/acceptFriendApplication", JSON.stringify(params));
+  },
+  //修改好友备注
+  changeNotes(params){
+    return axios.post("/changeNotes",JSON.stringify(params));
   }
 };
 

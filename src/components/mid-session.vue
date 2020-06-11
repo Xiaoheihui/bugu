@@ -45,7 +45,8 @@
 									(!i.last_record.indexOf('http')&&
 					((i.last_record.length-i.last_record.lastIndexOf('.gif')==4)||
 					(i.last_record.length-i.last_record.lastIndexOf('.jpeg')==5)||
-					(i.last_record.length-i.last_record.lastIndexOf('.png')==4))?"[图片]":(i.last_record.length>9?i.last_record.slice(0,6)+"...":i.last_record))
+					(i.last_record.length-i.last_record.lastIndexOf('.png')==4))?
+					"[图片]":(i.last_record.length>9?i.last_record.slice(0,6)+"...":i.last_record))
 									:""}}</span>
 							</div>
 						</div>
@@ -110,7 +111,6 @@
 				for(let i=0;i<source.length;i++){
 					if(source[i]["session_id"]==info.value){
 						this.sessionDetail(source[i]);
-
 						break;
 					}
 				}
@@ -139,28 +139,29 @@
 				this.currSessId = info.session_id;
 				this.$store.commit("readCurSessionMessage", this.currSessId);
 				let time_1 = moment().add(1, 's').utcOffset(+8).format('YYYY-MM-DD HH:mm:ss');
+				
 				this.$emit("pageTpye_", this.detailType);
-				if(lastSessId != this.currSessId){
-            this.getSessionsContent(this.currSessId);
-            this.$api.user.updateLeaveTime({
-                user_id:this.$store.state.user.user_id,
-                session_id:info.session_id,
-                updatetime:time_1
-            }).then(res=>{
-                console.log(res.data);
-            }).catch(e => {
-                this.$message.error(e);
-            });
-        }
+                if(lastSessId != this.currSessId){
+					this.getSessionsContent(this.currSessId);
+					this.$api.user.updateLeaveTime({
+						user_id:this.$store.state.user.user_id,
+						session_id:info.session_id,
+						updatetime:time_1
+					}).then(res=>{
+						console.log(res.data);
+					}).catch(e => {
+						this.$message.error(e);
+					});
+				}
 				if(this.$store.state.temp_history[lastSessId]){
 				    this.$store.commit("cleanTempHistory", lastSessId);
 				}
-          this.$route.query.id = -1;
+				this.$route.query.id = -1;
 			},
 			groupApply: function(info) {
 				this.detailType = 2;
 				this.$emit("pageTpye_",this.detailType);
-			},
+			}
 		}
 	};
 </script>
@@ -282,8 +283,8 @@
 		text-align: right;
 		font-size:11px;
 		font-weight: normal;
-    align-self:center;
-    margin-right: 6px;
+		align-self:center;
+		margin-right: 6px;
 	}
 
 	.redPoint {

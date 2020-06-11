@@ -35,9 +35,9 @@
         <span class="header-span">聊天室</span>
       </div>
       <div v-if="showSheets1" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id"
+        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id" 
         @click="groupDetail(i)">
-          <div class="access" :style="{'background-color': i.group_id==currContactId&&currContactType==2?'#bdbdbd':''}">
+           <div class="access" :style="{'background-color': i.group_id==currContactId&&currContactType==2?'#bdbdbd':''}">
             <div class="sheetImage">
               <el-image :src="i.group_avatar" class="myAvatar" alt="群头像"></el-image>
             </div>
@@ -53,7 +53,7 @@
         <span class="header-span">好友</span>
       </div>
       <div v-if="showSheets2" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id"
+        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id" 
         @click="friendDetail(i)">
           <div class="access" :style="{'background-color': i.friend_id==currContactId&&currContactType==1?'#bdbdbd':''}">
             <div class="sheetImage">
@@ -91,8 +91,8 @@ export default {
   mounted(){
     let group_arr=[];
     let friend_arr=[];
-    let friend_source=JSON.parse(JSON.stringify(this.contacts.friend_list));
-    let group_source=JSON.parse(JSON.stringify(this.contacts.group_list));
+    let friend_source=JSON.parse(JSON.stringify(this.$store.state.contacts.friend_list));
+    let group_source=JSON.parse(JSON.stringify(this.$store.state.contacts.group_list));
     for(let i=0;i<friend_source.length;i++){
       friend_arr.push({
         value:friend_source[i]["friend_id"],
@@ -119,8 +119,8 @@ export default {
   },
   methods: {
     chooseOptions(info){
-      let friend_source=JSON.parse(JSON.stringify(this.contacts.friend_list));
-      let group_source=JSON.parse(JSON.stringify(this.contacts.group_list));
+      let friend_source=JSON.parse(JSON.stringify(this.$store.state.contacts.friend_list));
+      let group_source=JSON.parse(JSON.stringify(this.$store.state.contacts.group_list));
       for(let i=0;i<friend_source.length;i++){
         if(friend_source[i]["friend_id"]==info.id){
           this.friendDetail(friend_source[i]);
@@ -148,6 +148,7 @@ export default {
     },
     friendDetail(info){
       this.detailType=1;
+      this.$emit("editRecover");
       this.$emit("pageType_",this.detailType);
       this.selectedFriendInfo=JSON.parse(JSON.stringify(info));
       this.$emit("selectedFriendInfo_",this.selectedFriendInfo);
@@ -156,6 +157,7 @@ export default {
     },
     groupDetail(info){
       this.detailType=2;
+      this.$emit("editRecover");
       this.$emit("pageType_",this.detailType);
       this.selectedGroupInfo=JSON.parse(JSON.stringify(info));
       this.$emit("selectedGroupInfo_",this.selectedGroupInfo);
@@ -164,6 +166,7 @@ export default {
     },
     friendApply(){
       this.detailType=3;
+      this.$emit("editRecover");
       this.$emit("pageType_",this.detailType);
     }
   }
@@ -239,12 +242,14 @@ export default {
   width: auto;
   margin-right: 20px;
 }
-.groupList .sheetList .access .sheetImage .myAvatar {
-  height:4vw;
-  width:4vw;
+.access .sheetImage .myAvatar {
+  height: 6.3vh;
+  width: 6.3vh;
+  min-height:54px;
+  min-width:54px;
   border-radius: 100%;
 }
-.groupList .sheetList .access .sheetContent {
+.access .sheetContent {
   width: auto;
   font-size: 1.8vh;
   font-weight:bold;

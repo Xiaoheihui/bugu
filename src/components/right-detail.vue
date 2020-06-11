@@ -5,8 +5,18 @@
     <div v-if="pageType==0" class="emptyPage"></div>
     <!-- 1表示好友信息的详情页 -->
     <div v-if="pageType==1" class="friendDetail">
-      <el-button class="info" icon="el-icon-more"></el-button>
-       <!-- @click="toDelete" -->
+      <el-popover
+        placement="top-end"
+        width="150"
+        height="100"
+        v-model="deleteFriendVisible">
+        <p>您希望删除好友吗？</p>
+        <div style="text-align: center;">
+          <el-button size="mini" type="primary" @click="deleteFriendVisible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click="deleteFriend">确定</el-button>
+        </div>
+        <el-button class="info" icon="el-icon-more" slot="reference"></el-button>
+      </el-popover>
       <div class="friendIcon">
         <el-image :src="selectedFriendInfo.avatar_url" class="head" alt="好友头像"></el-image>
         <span class="name">{{selectedFriendInfo.friend_name}}</span>
@@ -21,16 +31,27 @@
           <div>个性签名</div>
         </div>
         <div class="infoContent">
-          <div>{{(selectedFriendInfo.friend_note==undefined||selectedFriendInfo.friend_note=='')?'无':selectedFriendInfo.friend_note}}</div>
+          <el-input class="friendNoteInput"
+  show-word-limit v-model="selectedFriendInfo.friend_note" :disabled="!isEdit" maxlength="8">{{selectedFriendInfo.friend_note}}</el-input>
           <div>{{selectedFriendInfo.phone}}</div>
           <div>{{selectedFriendInfo.gender?'男':'女'}}</div>
-          <div>{{selectedFriendInfo.location}}</div>
-          <div>{{selectedFriendInfo.signature}}</div>
+          <div>{{selectedFriendInfo.location==''?'无':selectedFriendInfo.location}}</div>
+          <div>{{selectedFriendInfo.signature==''?'这个人什么都没有留下':selectedFriendInfo.signature}}</div>
         </div>
       </div>
-      <router-link :to="{name:'main',params:{id:targetSessionId}}">
-        <el-button type="primary" plain round v-on:click="toSession(selectedFriendInfo.friend_id ,1)">发起会话</el-button>
-      </router-link>
+      <div class="editNote">
+        <el-button type="primary" :disabled="isEdit" @click="isEdit=true;">
+          修改备注
+        </el-button>
+        <el-button type="primary" :disabled="!isEdit" @click="saveNote">
+          保存
+        </el-button>
+      </div>
+      <div class="toSessionRouter">
+        <router-link :to="{name:'main',params:{id:targetSessionId}}">
+          <el-button type="primary" plain round v-on:click="toSession(selectedFriendInfo.friend_id ,1)">发起会话</el-button>
+        </router-link>
+      </div>
     </div>
     <!-- 2表示群消息的详情页 -->
     <div v-if="pageType===2" class="groupDetail">
@@ -50,9 +71,11 @@
       <div class="intro">
         {{selectedGroupInfo.introduction==""?"群主很懒，什么都没有留下。":selectedGroupInfo.introduction}}
       </div>
-      <router-link :to="{name:'main',params:{id:targetSessionId}}">
-        <el-button type="primary" plain round v-on:click="toSession(selectedGroupInfo.group_id ,2)">发起会话</el-button>
-      </router-link>
+      <div class="toSessionRouter2">
+        <router-link :to="{name:'main',params:{id:targetSessionId}}">
+          <el-button type="primary" plain round v-on:click="toSession(selectedGroupInfo.group_id ,2)">发起会话</el-button>
+        </router-link>
+      </div>
     </div>
     <!-- 3表示添加好友和查看好友申请的详情页 -->
     <div v-if="pageType==3" class="applyPage">
@@ -60,7 +83,7 @@
       <div class="navTab">
         <el-button class="navBut" @click="toAdd">添加好友</el-button>
         <el-button class="navBut" @click="toApply">
-          <el-badge :is-dot="hasNewApplication" class="item">
+          <el-badge :is-dot="applicantLen!=0" class="item">
           <div style="padding-right:5px;">新的朋友</div>
           </el-badge>
         </el-button>
@@ -113,7 +136,7 @@
         </div>
       </div>
       <div v-if="navSelected" class="applyList">
-        <div class="friendApplyInfo" v-for="i in applicantList" :key="i.applicant_id">
+        <div class="friendApplyInfo" v-for="(i, index) in applicantList" :key="index">
           <el-image :src="i.avatar_url" class="head" alt="好友头像"></el-image>
           <div class="nameAndVerify">
             <div class="name">{{i.applicant_name}}</div>
@@ -131,7 +154,7 @@
                   </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                  <el-button @click="acceptApplyVisible = false">取 消</el-button>
+                  <el-button @click="acceptApplyVisible = false;">取 消</el-button>
                   <el-button type="primary" @click="acceptApply()">确 定</el-button>
                 </div>
               </el-dialog>
@@ -148,12 +171,14 @@
 <script>
 export default {
   name: "right-detail",
-  props: ["pageType", "selectedFriendInfo", "selectedGroupInfo","hasNewApplication"], // 获取父组件的传值
+  props: ["pageType", "selectedFriendInfo", "selectedGroupInfo"], // 获取父组件的传值
   data() {
     return {
+      isEdit:false,
       navSelected: 0,
       targetSessionId: -1,
       searchInput: "",
+      deleteFriendVisible:false,
       applyFormVisible: false,
       acceptApplyVisible: false,
       searchFriendResult: null,
@@ -169,6 +194,20 @@ export default {
       }
     };
   },
+  mounted(){
+    this.$api.user
+    .getFriendApplication({
+      user_id: this.$store.state.user["user_id"]
+    })
+    .then(res => {
+      if (res.data.state == "0") {
+        this.applicantList = res.data.applicant_list;
+        this.applicantLen = res.data.unApplyLen;
+      } else {
+        this.$message.error("获取好友申请列表失败");
+      }
+    });
+  },
   methods: {
     getContacts() {
       this.$api.main.getContacts({
@@ -177,10 +216,60 @@ export default {
         .then(res => {
           if (res.data.state == "0") {
             this.$store.commit("getContacts", res.data);
+            this.$emit("updateContact",res.data);
           } else {
             this.$message.error("获取通讯录失败");
           }
         });
+    },
+    saveNote(){
+      console.log(this.selectedFriendInfo["friend_note"])
+      this.$api.friend.changeNotes({
+        user_id:this.$store.state.user.user_id,
+        friend_id:this.selectedFriendInfo.friend_id,
+        friend_notes:this.selectedFriendInfo.friend_note
+      }).then(res=>{
+        console.log(res.data);
+        if(res.data.state=="0"){
+          this.$message.success("备注修改成功");
+        }
+      })
+      this.$emit("changeNote_",this.selectedFriendInfo);
+      this.isEdit=false;
+    },
+    deleteFriend() {
+      var This=this;
+      This.$confirm('此操作将删除您该好友之间的好友关系与聊天记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        This.$api.friend.deleteUser({
+          user_id:This.$store.state.user["user_id"],
+          friend_id:This.selectedFriendInfo["friend_id"]
+        }).then(res=>{
+          console.log(res.data);
+          if(res.data.state=="0"){
+            This.$message({
+              type: 'success',
+              message: '删除成功!'
+            });
+            This.deleteFriendVisible = false;
+            This.getContacts();
+            This.pageType=0;
+            This.$emit("pageType_",This.pageType);
+          }
+        }).catch(err=>{
+          This.$message.warning("出现异常");
+        })
+      }).catch((e) => {
+        console.log(e)
+        This.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
     toSession(id, Id_type){
         console.log(id)
@@ -211,7 +300,7 @@ export default {
         .then(res => {
           if (res.data.state == "0") {
             this.applicantList = res.data.applicant_list;
-            this.applicantLen = res.data.applicant_list.length;
+            this.applicantLen = res.data.unApplyLen;
           } else {
             this.$message.error("获取好友申请列表失败");
           }
@@ -388,6 +477,68 @@ export default {
   font-weight: bold;
   text-align: left;
   line-height: 26px;
+}
+.friendNoteInput{
+  font-size:1.8vh;
+  height:auto;
+  width:12vw;
+}
+.friendNoteInput >>> .el-input__inner{
+  height:26px;
+  font-weight: bold;
+  text-align: left;
+  padding-left:0;
+  min-height:26px;
+}
+.editNote{
+  padding-top: 6%;
+  height:12%;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+}
+.editNote >>> .el-button--primary{
+  margin:20px;
+  height:4vh;
+  font-size:1.6vh;
+  line-height:1vh;
+  min-height:30px;
+  width: 21%;
+  border-radius: 30px;
+}
+.toSessionRouter{
+  width:100%;
+  height:12%;
+}
+.toSessionRouter >>> .el-button--primary{
+  background:#409EFF;
+  color:#ffffff;
+  margin:10px;
+  height:4vh;
+  font-size:1.6vh;
+  line-height:1vh;
+  min-height:30px;
+  width: 21%;
+  border-radius: 30px;
+}
+.toSessionRouter2{
+  margin-top:10%;
+  width:100%;
+  height:12%;
+}
+.toSessionRouter2 >>> .el-button--primary{
+  background:#409EFF;
+  color:#ffffff;
+  margin:10px;
+  height:4vh;
+  font-size:1.6vh;
+  line-height:1vh;
+  min-height:30px;
+  width: 21%;
+  border-radius: 30px;
 }
 /* 聊天室详情 */
 .groupDetail {

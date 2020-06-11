@@ -6,10 +6,11 @@
 			<left-menu :menuList="menuList" :userInfo="userInfo"></left-menu>
             <!-- 中间的通讯录 -->
             <mid-contact :hasNewApplication="hasNewApplication_" :contacts="contacts" @pageType_="changePageType" 
-			@selectedFriendInfo_="changeSelectedFriendInfo" @selectedGroupInfo_="changeSelectedGroupInfo"></mid-contact>
+			@selectedFriendInfo_="changeSelectedFriendInfo" @selectedGroupInfo_="changeSelectedGroupInfo"
+			@editRecover="changeEdit"></mid-contact>
 			<!-- 好友申请主页/详情页面 -->
-			<right-detail @redPointCancel="changeRedPoint" :pageType="pageType_" :selectedFriendInfo="selectedFriendInfo_" 
-			:selectedGroupInfo="selectedGroupInfo_" :hasNewApplication="hasNewApplication_"></right-detail>
+			<right-detail ref="edit" @pageType_="changePageType" @updateContact="updateContacts" @redPointCancel="changeRedPoint" :pageType="pageType_" :selectedFriendInfo="selectedFriendInfo_" 
+			:selectedGroupInfo="selectedGroupInfo_" @changeNote_="changeNote"></right-detail>
 		  </el-row>
 	  </div>
   </div>
@@ -22,22 +23,22 @@
   import rightDetail from '../components/right-detail'
   export default {
 	computed: mapState({
-		userInfo: state => state.user,
-		contacts: state => state.contacts
+		userInfo: state => state.user
 	}),
 	name: 'contact',
-	created(){
+	mounted(){
       this.$api.main.getContacts({
           user_id: this.$store.state.user["user_id"]
         })
         .then(res => {
           if (res.data.state == "0") {
+			this.contacts = res.data
             this.$store.commit("getContacts", res.data);
           } else {
             this.$message.error("获取通讯录失败");
           }
 		});
-	  let result=false;
+	  	let result=false;
 		this.$api.user
 		.getFriendApplication({
 			user_id: this.$store.state.user["user_id"]
@@ -46,8 +47,8 @@
 			if (res.data.state == "0") {
 			for(let i=0;i<res.data.applicant_list.length;i++){
 				if(res.data.applicant_list[i].flag==1){
-				result=true;
-				break;
+					result=true;
+					break;
 				}
 			}
 			this.hasNewApplication_=result;
@@ -64,6 +65,7 @@
     },
     data () {
       return {
+		contacts:{},
 		menuList:[
 			{
 				name:0,
@@ -102,12 +104,26 @@
 		}
 	},
     methods:{
+		changeEdit(){
+			this.$refs.edit.isEdit=false;
+		},
+		changeNote(res){
+			var tempData=JSON.parse(JSON.stringify(this.contacts));
+			for(let i=0;i<tempData.friend_list.length;i++){
+				if(tempData.friend_list[i].friend_id==res.friend_id){
+					this.contacts.friend_list[i].friend_note=res.friend_note;
+					break;
+				}
+			}
+		},
+		updateContacts(res){
+			this.contacts=res;
+		},
 		changeRedPoint(){
 			this.hasNewApplication_=false;
 		},
 		changePageType(res){
 			this.pageType_ = res;
-			console.log(this.pageType_)
 		},
 		changeSelectedFriendInfo(res){
         	this.selectedFriendInfo_ = res;
