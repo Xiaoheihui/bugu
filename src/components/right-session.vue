@@ -74,7 +74,7 @@
                 class="avatar-uploader"
                 ref="uploadAvatar"
                 :show-file-list="false"
-                :auto-upload="false"
+                action="https://jsonplaceholder.typicode.com"
                 :on-change="checkImage">                
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -135,9 +135,9 @@
           :render-content="renderFunc"
           :titles="['我的好友', '聊天室成员']"
           :format="{
-        noChecked: '${total}',
-        hasChecked: '${checked}/${total}'
-      }"
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
           :data="transferData"
         >
         </el-transfer>
@@ -150,7 +150,7 @@
             class="avatar-uploader"
             ref="uploadAvatar"
             :show-file-list="false"
-            :auto-upload="false"
+            action="https://jsonplaceholder.typicode.com"
             :on-change="toChangeImage">                
             <img v-if="form.groupImg" :src="form.groupImg" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -643,6 +643,7 @@ export default {
                       ]),
                     showCancelButton: false,
                     confirmButtonText: '对不起，了解了',
+                    
                     beforeClose: (action, instance, done) => {
                       done();
                     }

@@ -60,9 +60,13 @@
         <div class="groupTitle">{{selectedGroupInfo.group_name}}({{selectedGroupInfo.member_num}})</div>
       </div>
       <div class="memberList">
+        <div class="memberIcon">
+          <el-image @click="toAddMember" class="memberAvatar" src="https://bugu-1300789911.cos.ap-guangzhou.myqcloud.com/1591878363000.jpeg"></el-image>
+          <div class="memberName">添加成员</div>
+        </div>
         <div class="memberIcon" v-for="i in selectedGroupInfo.member_list" :key="i.group_id">
           <el-image class="memberAvatar" :src="i.avatar_url"></el-image>
-          <div class="memberName">{{i.user_notes==undefined?i.nickname:i.user_notes}}</div>
+          <div class="memberName">{{i.user_notes==undefined?i.nickname.slice(0,4)+'...':i.user_notes.slice(0,4)+'...'}}</div>
         </div>
       </div>
       <div class="groupIntroduct">
@@ -166,6 +170,29 @@
         </div>
       </div>
     </div>
+    <el-dialog title="邀请新成员" :visible.sync="inviteMemberVisible">
+      <div class="inviteForm">
+        <el-transfer
+          class="mytransfer"
+          v-model="value"
+          filterable
+          filter-placeholder="搜索好友"
+          :render-content="renderFunc"
+          :titles="['可邀请好友', '聊天室成员']"
+          :format="{
+            noChecked: '${total}',
+            hasChecked: '${checked}/${total}'
+          }"
+          :data="transferData"
+        >
+        </el-transfer>
+      </div>
+      
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="inviteMemberVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addNewMember">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-col>
 </template>
 <script>
@@ -178,6 +205,11 @@ export default {
       navSelected: 0,
       targetSessionId: -1,
       searchInput: "",
+      inviteMemberVisible:false,
+      group:[{avatar_url:'',friend_name:"sss"},{avatar_url:'',friend_name:"sss"},{avatar_url:'',friend_name:"sss"},
+      {avatar_url:'',friend_name:"sss"},
+      {avatar_url:'',friend_name:"sss"},
+      {avatar_url:'',friend_name:"sss"}],
       deleteFriendVisible:false,
       applyFormVisible: false,
       acceptApplyVisible: false,
@@ -191,6 +223,12 @@ export default {
       },
       acceptForm: {
         notes: ""
+      },
+      transferData: [],
+      value: [],
+      renderFunc(h, option) {
+        return <div style="display: flex;align-items: center;"><el-image style="min-height:20px;min-width: 20px;height: 20px;width: 20px;margin-right: 5px;border-radius: 100%;"
+          src={option.avatar_url}></el-image><span>{ option.label }</span></div>;
       }
     };
   },
@@ -209,6 +247,72 @@ export default {
     });
   },
   methods: {
+    toAddMember() {
+      this.inviteMemberVisible=true;
+      const data = [];
+      let Data=this.$store.state.contacts.friend_list;
+      let groupMem=[];
+      for(let j = 0; j < this.selectedGroupInfo.member_list.length; j++){
+        groupMem.push(this.selectedGroupInfo.member_list[j].user_id)
+      }
+      for (let i = 0; i < Data.length; i++) {
+        if(groupMem.indexOf(Data[i].friend_id)==-1){
+          data.push({
+            key: Data[i].friend_id,
+            label: (Data[i].friend_note==undefined||Data[i].friend_note=='')?Data[i].friend_name:Data[i].friend_note,
+            disabled: false,
+            avatar_url: Data[i].avatar_url
+          })
+        }
+      }
+      this.transferData=data;
+    },
+    addNewMember(){
+      let member_list=[];
+      for(let i = 0;i<this.value.length;i++){
+        member_list.push({member_user_id: this.value[i]});
+      }
+      console.log(member_list)
+      if(member_list.length){
+        this.$confirm('确定邀请这些用户加入名为 “'+this.selectedGroupInfo.group_name+'” 的聊天室吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          center: true,
+          type: 'warning'
+        }).then(() => {
+          this.$api.group
+          .addGroupMember({
+            user_id: this.$store.state.user.user_id,
+            group_id: this.selectedGroupInfo.group_id,
+            new_member_list: member_list,
+          })
+          .then(res => {
+            if (res.data.state == "0") {
+              this.$message({
+                type: 'success',
+                message: '邀请成功，好友已加入聊天室!'
+              });
+              this.inviteMemberVisible=false;
+              this.selectedGroupInfo=res.data.groupInfo;
+            } else {
+              this.$message.error(res.data.msg);
+            }
+          });
+        }).catch(() => {
+          this.$message({
+            showClose: true,
+            type: 'info',
+            message: '已取消'
+          });
+        });
+      }else if(!member_list.length){
+        this.$message({
+          showClose: true,
+          message: "至少要邀请一人",
+          type: 'warning'
+        });
+      }
+    },
     getContacts() {
       this.$api.main.getContacts({
           user_id: this.$store.state.user["user_id"]
@@ -223,13 +327,11 @@ export default {
         });
     },
     saveNote(){
-      console.log(this.selectedFriendInfo["friend_note"])
       this.$api.friend.changeNotes({
         user_id:this.$store.state.user.user_id,
         friend_id:this.selectedFriendInfo.friend_id,
         friend_notes:this.selectedFriendInfo.friend_note
       }).then(res=>{
-        console.log(res.data);
         if(res.data.state=="0"){
           this.$message.success("备注修改成功");
         }
@@ -249,7 +351,6 @@ export default {
           user_id:This.$store.state.user["user_id"],
           friend_id:This.selectedFriendInfo["friend_id"]
         }).then(res=>{
-          console.log(res.data);
           if(res.data.state=="0"){
             This.$message({
               type: 'success',
@@ -264,7 +365,6 @@ export default {
           This.$message.warning("出现异常");
         })
       }).catch((e) => {
-        console.log(e)
         This.$message({
           type: 'info',
           message: '已取消删除'
@@ -272,7 +372,7 @@ export default {
       });
     },
     toSession(id, Id_type){
-        console.log(id)
+        // console.log(id)
         // get sessionId by friendId(type==1) / groupId(type==2)
         const sessionList = this.$store.state.sessions.session_list;
         for(let i=0;i<sessionList.length;i++){
@@ -527,9 +627,10 @@ export default {
 /* 聊天室详情 */
 .groupDetail {
   width: 100%;
+  height:100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
 }
 .groupHeader{
@@ -553,7 +654,7 @@ export default {
 .memberList{
   height:auto;
   flex-wrap:wrap;
-  max-height:800px;
+  max-height:50vh;
   width:100%;
   display: flex;
   flex-direction: row;
@@ -565,6 +666,8 @@ export default {
 .memberIcon{
   height:auto;
   margin:3%;
+  width:5.4vw;
+  min-width:90px;
 }
 .memberAvatar{
   height: 7vh;
@@ -607,6 +710,19 @@ export default {
   min-height:30px;
   width: 21%;
   border-radius: 30px;
+}
+/* 邀请新成员 */
+.inviteForm{
+  width:auto;
+  height:40vh;
+}
+.mytransfer{
+  text-align: left; 
+  display: inline-block;
+}
+.mytransfer >>> .el-transfer-panel{
+  width:13vw;
+  height:40vh;
 }
 /* 添加好友页 */
 .applyPage {

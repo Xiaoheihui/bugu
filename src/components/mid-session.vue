@@ -148,7 +148,7 @@
 						session_id:info.session_id,
 						updatetime:time_1
 					}).then(res=>{
-						console.log(res.data);
+						// console.log(res.data);
 					}).catch(e => {
 						this.$message.error(e);
 					});
