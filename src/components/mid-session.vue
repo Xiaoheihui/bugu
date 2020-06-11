@@ -155,6 +155,7 @@
 				if(this.$store.state.temp_history[lastSessId]){
 				    this.$store.commit("cleanTempHistory", lastSessId);
 				}
+          this.$route.query.id = -1;
 			},
 			groupApply: function(info) {
 				this.detailType = 2;

@@ -232,7 +232,6 @@ export default {
   },
   updated() {
     let that = this;
-    console.log("21212")
     // 首次进入会话，条件为真
     if (this.pageType == 1 && this.if_register<4) {
       // 延迟置底

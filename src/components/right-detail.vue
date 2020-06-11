@@ -28,6 +28,9 @@
           <div>{{selectedFriendInfo.signature}}</div>
         </div>
       </div>
+      <router-link :to="{name:'main',params:{id:targetSessionId}}">
+        <el-button type="primary" plain round v-on:click="toSession(selectedFriendInfo.friend_id ,1)">发起会话</el-button>
+      </router-link>
     </div>
     <!-- 2表示群消息的详情页 -->
     <div v-if="pageType===2" class="groupDetail">
@@ -47,6 +50,9 @@
       <div class="intro">
         {{selectedGroupInfo.introduction==""?"群主很懒，什么都没有留下。":selectedGroupInfo.introduction}}
       </div>
+      <router-link :to="{name:'main',params:{id:targetSessionId}}">
+        <el-button type="primary" plain round v-on:click="toSession(selectedGroupInfo.group_id ,2)">发起会话</el-button>
+      </router-link>
     </div>
     <!-- 3表示添加好友和查看好友申请的详情页 -->
     <div v-if="pageType==3" class="applyPage">
@@ -146,6 +152,7 @@ export default {
   data() {
     return {
       navSelected: 0,
+      targetSessionId: -1,
       searchInput: "",
       applyFormVisible: false,
       acceptApplyVisible: false,
@@ -174,6 +181,19 @@ export default {
             this.$message.error("获取通讯录失败");
           }
         });
+    },
+    toSession(id, Id_type){
+        console.log(id)
+        // get sessionId by friendId(type==1) / groupId(type==2)
+        const sessionList = this.$store.state.sessions.session_list;
+        for(let i=0;i<sessionList.length;i++){
+            if((sessionList[i].friend_id == id && Id_type==1)
+            ||(sessionList[i].group_id == id && Id_type==2)){
+                this.targetSessionId = sessionList[i].session_id;
+                this.$store.state.cur_session = sessionList[i];
+                break;
+            }
+        }
     },
     toAdd() {
       this.navSelected = 0;

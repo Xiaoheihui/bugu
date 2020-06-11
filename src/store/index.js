@@ -72,7 +72,7 @@ export default new Vuex.Store({
 					// 保证temp数据不会过于多
 					let count = state.temp_history[msg.session_id].length - maxTempHistoryCount;
 					if(count > 0){
-					  state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);	
+					  state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);
 					}
 				}
 				// 然后修改会话列表，主要是 显示最后一条消息
@@ -148,7 +148,7 @@ export default new Vuex.Store({
 					// 保证temp数据不会过于多
 					let count = state.temp_history[msg.session_id].length - maxTempHistoryCount;
 					if(count > 0){
-					  state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);	
+					  state.temp_history[msg.session_id] = state.temp_history[msg.session_id].slice(count);
 					}
 				}
 				// 然后修改会话列表，主要是 显示最后一条消息
@@ -175,7 +175,7 @@ export default new Vuex.Store({
 			state.socket_instance.onmessage = getMessage
 		},
 
-    
+
     	clearTempHis(state, data){
 		  	state.temp_history = []
     	},
@@ -215,6 +215,7 @@ export default new Vuex.Store({
 				state.temp_history[sessionId] = state.temp_history[sessionId].slice(count);
 				window.localStorage.setItem('temp_history', JSON.stringify(state.temp_history))
 			}
-		}
+		},
+
 	}
 })

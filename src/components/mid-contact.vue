@@ -35,9 +35,9 @@
         <span class="header-span">聊天室</span>
       </div>
       <div v-if="showSheets1" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id" 
+        <div class="sheetList" v-for="i in contacts.group_list" :key="i.group_id"
         @click="groupDetail(i)">
-          <div class="access">
+          <div class="access" :style="{'background-color': i.group_id==currContactId&&currContactType==2?'#bdbdbd':''}">
             <div class="sheetImage">
               <el-image :src="i.group_avatar" class="myAvatar" alt="群头像"></el-image>
             </div>
@@ -53,9 +53,9 @@
         <span class="header-span">好友</span>
       </div>
       <div v-if="showSheets2" style="width:100%;">
-        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id" 
+        <div class="sheetList" v-for="i in contacts.friend_list" :key="i.friend_id"
         @click="friendDetail(i)">
-          <div class="access">
+          <div class="access" :style="{'background-color': i.friend_id==currContactId&&currContactType==1?'#bdbdbd':''}">
             <div class="sheetImage">
               <el-image :src="i.avatar_url" class="myAvatar" alt="好友头像"></el-image>
             </div>
@@ -84,6 +84,8 @@ export default {
       detailType:0,
       selectedFriendInfo:{},
       selectedGroupInfo:{},
+      currContactType: 1, // 1:friend | 2:group
+      currContactId:-1
     };
   },
   mounted(){
@@ -149,13 +151,16 @@ export default {
       this.$emit("pageType_",this.detailType);
       this.selectedFriendInfo=JSON.parse(JSON.stringify(info));
       this.$emit("selectedFriendInfo_",this.selectedFriendInfo);
-      
+      this.currContactType = 1;
+      this.currContactId = info.friend_id;
     },
     groupDetail(info){
       this.detailType=2;
       this.$emit("pageType_",this.detailType);
       this.selectedGroupInfo=JSON.parse(JSON.stringify(info));
       this.$emit("selectedGroupInfo_",this.selectedGroupInfo);
+      this.currContactType = 2;
+      this.currContactId = info.group_id;
     },
     friendApply(){
       this.detailType=3;
