@@ -524,22 +524,6 @@ export default {
   width: 21%;
   border-radius: 30px;
 }
-.toSessionRouter2{
-  margin-top:10%;
-  width:100%;
-  height:12%;
-}
-.toSessionRouter2 >>> .el-button--primary{
-  background:#409EFF;
-  color:#ffffff;
-  margin:10px;
-  height:4vh;
-  font-size:1.6vh;
-  line-height:1vh;
-  min-height:30px;
-  width: 21%;
-  border-radius: 30px;
-}
 /* 聊天室详情 */
 .groupDetail {
   width: 100%;
@@ -567,14 +551,16 @@ export default {
   font-size:2.4vh;
 }
 .memberList{
+  height:auto;
   flex-wrap:wrap;
-  max-height:50vh;
-  overflow-x: auto;
+  max-height:800px;
   width:100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: left;
+  overflow-x:hidden;
+  overflow-y:auto;
 }
 .memberIcon{
   height:auto;
@@ -599,9 +585,28 @@ export default {
   background:#ececec;
 }
 .intro{
-  margin:2% 4%;
+  width:92%;
+  margin-top:2%;
+  margin-bottom:4%;
+  margin-left: 4%;
+  margin-right: 4%;
   text-align: left;
   font-size:1.8vh;
+}
+.toSessionRouter2{
+  width:100%;
+  height:12%;
+}
+.toSessionRouter2 >>> .el-button--primary{
+  background:#409EFF;
+  color:#ffffff;
+  margin:10px;
+  height:4vh;
+  font-size:1.6vh;
+  line-height:1vh;
+  min-height:30px;
+  width: 21%;
+  border-radius: 30px;
 }
 /* 添加好友页 */
 .applyPage {
