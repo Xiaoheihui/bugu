@@ -57,7 +57,7 @@
         @click="friendDetail(i)">
           <div class="access" :style="{'background-color': i.friend_id==currContactId&&currContactType==1?'#bdbdbd':''}">
             <div class="sheetImage">
-              <el-image :src=$store.state.avatar_list[i.friend_id] class="myAvatar" alt="好友头像"></el-image>
+              <el-image :src="$store.state.avatar_list[i.friend_id]" class="myAvatar" alt="好友头像"></el-image>
             </div>
             <span class="sheetContent">{{(i.friend_note==undefined||i.friend_note=='')?i.friend_name:i.friend_note}}</span>
           </div>
@@ -98,7 +98,7 @@ export default {
         value:friend_source[i]["friend_id"],
         id:friend_source[i]["friend_id"],
         label:(friend_source[i].friend_note==""||friend_source[i].friend_note==undefined)?friend_source[i].friend_name:friend_source[i].friend_note,
-        avatar:friend_source[i].avatar_url
+        avatar:this.$store.state.avatar_list[friend_source[i]["friend_id"]]
       })
     }
     for(let j=0;j<group_source.length;j++){

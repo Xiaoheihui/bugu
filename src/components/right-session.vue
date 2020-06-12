@@ -19,7 +19,7 @@
         <div class="scrollContent">
           <div v-for="(i, index) in $store.state.temp_history[cur_session.session_id]" :key="index">
             <div class="sessionContentLeft" v-if="i.sender_id!=userInfo.user_id">
-              <el-image :src=$store.state.avatar_list[i.sender_id] class="chatAvatarUrl"></el-image>
+              <el-image :src="$store.state.avatar_list[i.sender_id]" class="chatAvatarUrl"></el-image>
               <div class="nameAndContent">
                 <div style="font-size:1.6vh;font-weight:bold;">
                   <span style="padding-right:10px;">{{i.sender_name}}</span>
@@ -348,7 +348,7 @@ export default {
                 key: Data[i-1].friend_id,
                 label: (Data[i-1].friend_note==undefined||Data[i-1].friend_note=='')?Data[i-1].friend_name:Data[i-1].friend_note,
                 disabled: false,
-                avatar_url: Data[i-1].avatar_url
+                avatar_url: this.$store.state.avatar_list[Data[i-1].friend_id]
               });
             }
             this.transferData=data;
@@ -366,7 +366,7 @@ export default {
             key: Data[i-1].friend_id,
             label: (Data[i-1].friend_note==undefined||Data[i-1].friend_note=='')?Data[i-1].friend_name:Data[i-1].friend_note,
             disabled: false,
-            avatar_url: Data[i-1].avatar_url
+            avatar_url: this.$store.state.avatar_list[Data[i-1].friend_id]
           });
         }
         this.transferData=data;

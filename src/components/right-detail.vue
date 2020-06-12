@@ -117,8 +117,8 @@
             <div class="infoContent">
               <div>{{searchFriendResult.phone}}</div>
               <div>{{searchFriendResult.gender?'男':'女'}}</div>
-              <div>{{searchFriendResult.location}}</div>
-              <div>{{searchFriendResult.signature}}</div>
+              <div>{{searchFriendResult.location?searchFriendResult.location:'无'}}</div>
+              <div>{{searchFriendResult.signature?searchFriendResult.signature:'这个人什么都没有留下'}}</div>
             </div>
           </div>
           <el-button class="toAddBut" @click="applyFormVisible = true">添加为联系人</el-button>

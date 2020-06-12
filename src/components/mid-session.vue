@@ -279,7 +279,7 @@
 	}
 
 	.sheetTime{
-		width:4.8vw;
+		width:4.4vw;
 		text-align: right;
 		font-size:11px;
 		font-weight: normal;
