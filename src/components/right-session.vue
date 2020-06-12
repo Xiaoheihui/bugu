@@ -717,10 +717,24 @@ export default {
               });
             });
           }else if(res.data.EvilFlag==0){
+             let target_userIdList = [];
+            if(this.cur_session.is_group){ // 群
+                for(let index in this.$store.state.contacts.group_list){
+                    if(this.cur_session.group_id == this.$store.state.contacts.group_list[index].group_id){
+                        for(let item of this.$store.state.contacts.group_list[index].member_list){
+                            target_userIdList.push(item.user_id);
+                        }
+                        break;
+                    }
+                }
+            }else{
+                target_userIdList.push(this.cur_session.friend_id);
+            }
             this.$store.state.socket_instance.send(
               JSON.stringify({
                 user_id: this.$store.state.user.user_id,
                 content: this.textarea,
+                target_userIdList: target_userIdList,
                 session_id: this.cur_session.session_id,
                 sender_name: this.$store.state.user.nickname,
                 type: "chat"
