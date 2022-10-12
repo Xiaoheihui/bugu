@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "cos-js-sdk-v5": "^0.5.26",
+    "cos-js-sdk-v5": "^1.4.6",
     "element-ui": "^2.13.1",
     "image-conversion": "^2.1.1",
     "moment": "^2.25.3",
